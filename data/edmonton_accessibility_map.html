@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Send the full page URL as the referrer so cross-origin Street View Static
+     <img> requests match an HTTP-referrer-restricted key locked to this path.
+     (Default policy sends only the origin, which fails the path restriction.) -->
+<meta name="referrer" content="no-referrer-when-downgrade">
 <title>Edmonton Accessible Housing &ndash; Permit Locations</title>
 <style>
   html,body{margin:0;height:100%}
