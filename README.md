@@ -14,7 +14,8 @@ For people with spinal cord injuries and other mobility disabilities, finding
 housing that is actually wheelchair-accessible or barrier-free in Edmonton is
 hard. There is **no central list** of which homes have ramps, lifts, or
 barrier-free bathrooms, so individuals and the organizations supporting them
-often have to search blind, one listing at a time.
+often have to piece it together one listing at a time, with no way to search
+for the features that matter.
 
 Meanwhile, the City of Edmonton's public building and development permits **do**
 record this work — when a ramp is added, an elevator installed, or a bathroom

@@ -101,8 +101,8 @@ def popup_html(p):
     """Pre-render the static part of the popup. The Street View element is
     injected client-side (at the __SV__ token) so the API key is read at
     runtime and never baked into this committed file."""
-    parts = ["<div style='font:13px sans-serif;max-width:280px;"
-             "max-height:340px;overflow:auto'>"]
+    parts = ["<div style='font:14px sans-serif;max-width:290px;"
+             "max-height:360px;overflow:auto'>"]
     parts.append("<b>%s</b><br>" % html.escape(p["address"]))
     loc = p["neighbourhood"]
     if p["ward"]:
@@ -117,7 +117,7 @@ def popup_html(p):
         span = p["d0"] if p["d0"] == p["d1"] else "%s &ndash; %s" % (p["d0"], p["d1"])
         parts.append("<b>Dates:</b> %s<br>" % span)
     if p["desc"]:
-        parts.append("<div style='color:#666;font-size:11px;margin-top:4px'>%s</div>"
+        parts.append("<div style='color:#555;font-size:12.5px;margin-top:4px'>%s</div>"
                      % html.escape(p["desc"]))
     parts.append("__SV__")  # filled in by JS (link, or thumbnail if key present)
     parts.append("</div>")
@@ -153,20 +153,20 @@ def main():
   html,body{margin:0;height:100%}
   #map{height:100%;background:#e8e8e8}
   .panel{position:absolute;top:10px;right:10px;z-index:5;background:#fff;
-    padding:10px 12px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);
-    font:13px sans-serif;max-width:250px}
-  .panel h3{margin:0 0 4px;font-size:14px}
-  .panel .sub{margin:0 0 8px;color:#444;font-size:12px;line-height:1.35}
-  .panel details.about{margin:0 0 8px;font-size:11px;color:#666}
-  .panel details.about summary{cursor:pointer;color:#1f78b4;outline:none}
-  .panel details.about .body{margin-top:5px;line-height:1.4}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
-  .btn{margin-top:6px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;
-    background:#f5f5f5;cursor:pointer;font-size:12px}
-  #filter-toggle{margin-top:8px;cursor:pointer;color:#1f78b4;user-select:none;font-size:12px}
+    padding:12px 14px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);
+    font:14px sans-serif;max-width:300px;max-height:90vh;overflow:auto}
+  .panel h3{margin:0 0 5px;font-size:17px}
+  .panel .sub{margin:0 0 8px;color:#333;font-size:13.5px;line-height:1.4}
+  .panel details.about{margin:0 0 8px;font-size:13px;color:#555}
+  .panel details.about summary{cursor:pointer;color:#1f78b4;outline:none;font-size:13px}
+  .panel details.about .body{margin-top:6px;line-height:1.5}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
+  .btn{margin-top:6px;padding:5px 9px;border:1px solid #ccc;border-radius:4px;
+    background:#f5f5f5;cursor:pointer;font-size:13px}
+  #filter-toggle{margin-top:8px;cursor:pointer;color:#1f78b4;user-select:none;font-size:13px}
   #filter-body{margin-top:6px;display:none}
-  #filter-body label{display:block;margin:3px 0;cursor:pointer}
-  #filter-actions a{color:#1f78b4;cursor:pointer;margin-right:8px;font-size:11px}
+  #filter-body label{display:block;margin:4px 0;cursor:pointer}
+  #filter-actions a{color:#1f78b4;cursor:pointer;margin-right:8px;font-size:12px}
 </style>
 </head>
 <body>
@@ -176,14 +176,15 @@ def main():
   <div class="sub">A map to help find accessible housing in Edmonton &mdash; homes
     whose building permits mention ramps, lifts, wheelchair access, or
     barrier-free features. Click any dot for details and a Street View photo.</div>
-  <details class="about">
+  <details class="about" open>
     <summary>Why this exists &amp; data source</summary>
     <div class="body"><b>The problem:</b> there is no central list of which Edmonton
       homes are wheelchair-accessible or barrier-free, so finding accessible
-      housing often means searching blind. The City's public building &amp;
-      development permits <i>do</i> record this work &mdash; ramps, lifts,
-      barrier-free bathrooms &mdash; but it is buried in large datasets not built
-      for this purpose.<br><br>
+      housing often means checking listings one at a time, with no way to search
+      for the features that matter. The City's public building &amp; development
+      permits <i>do</i> record this work &mdash; ramps, lifts, barrier-free
+      bathrooms &mdash; but it is buried in large datasets not built for this
+      purpose.<br><br>
       <b>How this helps:</b> this tool pulls those accessibility-related permits
       (2009&ndash;present), narrows them to homes, and maps them so they can be
       browsed and filtered &mdash; a starting point for <b>Spinal Cord Injury
