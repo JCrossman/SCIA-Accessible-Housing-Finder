@@ -8,14 +8,37 @@ access, barrier-free features, and similar — to support
 All data comes from the **City of Edmonton's free public Open Data** (Socrata).
 No API key is required to gather the data.
 
+## The problem
+
+For people with spinal cord injuries and other mobility disabilities, finding
+housing that is actually wheelchair-accessible or barrier-free in Edmonton is
+hard. There is **no central list** of which homes have ramps, lifts, or
+barrier-free bathrooms, so individuals and the organizations supporting them
+often have to search blind, one listing at a time.
+
+Meanwhile, the City of Edmonton's public building and development permits **do**
+record this work — when a ramp is added, an elevator installed, or a bathroom
+made barrier-free — but that information sits buried inside large permit datasets
+that were never designed to answer the question "where is the accessible
+housing?"
+
+## How this helps
+
+This project mines those public permit records for accessibility-related work,
+narrows the results to homes, pins them on a searchable, filterable map, and
+shows a Street View photo of each one. It turns scattered permit data into a
+**browsable starting point** that Spinal Cord Injury Alberta and the people it
+serves can use to find and track accessible housing across the city.
+
 ## In plain language
 
 We built a free, online map that shows Edmonton homes that have had
 accessibility-related work done — things like wheelchair ramps, lifts, and
-barrier-free bathrooms. The information comes from the City of Edmonton's public
-building records going back to 2009. You can open the map in any web browser,
-click any dot to see the address and what work was done, and even view a
-street-level photo of the property. It's a starting point to help us find and
+barrier-free bathrooms. There's no existing list of accessible homes, but the
+City of Edmonton's public building records (going back to 2009) quietly capture
+this work — so we pulled it out and put it on a map. You can open it in any web
+browser, click any dot to see the address and what work was done, and even view
+a street-level photo of the property. It's a starting point to help us find and
 track accessible housing across the city. One thing to keep in mind: it's an
 early draft pulled automatically from city data, so a few entries may not be
 true accessibility features (for example, a "ramp" that's actually a
