@@ -9,4 +9,4 @@
 //   3. Daily quota caps + a billing budget alert (caps your cost hard)
 //
 // Leave it as "" to fall back to the in-browser key button.
-window.GOOGLE_MAPS_KEY = "";
+window.GOOGLE_MAPS_KEY = "AIzaSyDSJ693bk2Gd_zEf4ZydEVvE6dScUaG0es";
