@@ -35,6 +35,12 @@ accessibility work done, permit history, and a Street View photo. Use the
 | Geocoded / mappable | **310 (93%)** |
 | Could not be auto-located (for manual review) | 25 |
 
+**Data coverage:** building permits from **2009**, development permits from
+**2015**, both through the present — the full span the City of Edmonton
+currently publishes (no date filter is applied). Coverage is not uniform across
+those years: older permits less often use modern terms like "barrier-free," so
+recent years are over-represented.
+
 > **Caveat — keyword false positives.** A word like "ramp" sometimes refers to a
 > *parking-garage* ramp rather than a wheelchair ramp. Each record keeps its full
 > permit description so these can be reviewed and filtered.
