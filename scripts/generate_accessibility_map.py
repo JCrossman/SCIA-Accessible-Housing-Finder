@@ -129,6 +129,11 @@ def main():
   <div id="svnote" style="margin-top:6px;color:#666;font-size:11px"></div>
   <button id="svbtn" class="btn"></button>
 </div>
+<!-- Optional published key. For a shared GitHub Pages map, set the key in
+     config.js (window.GOOGLE_MAPS_KEY). It is a browser key: public by design
+     and must be HTTP-referrer + quota restricted in the Google Cloud Console.
+     The file is optional; the map falls back to a local in-browser key. -->
+<script src="config.js" onerror="window.__noConfig=true"></script>
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script>
 var points = __DATA__;
@@ -139,7 +144,10 @@ function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null
 function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
 
-var KEY = (lsGet('gmap_key') || lsGet('sv_key') || (window.GOOGLE_MAPS_KEY || '')).trim();
+// A published (config.js) key applies to everyone; a personal localStorage key
+// only overrides it in your own browser.
+var EMBEDDED_KEY = (window.GOOGLE_MAPS_KEY || '').trim();
+var KEY = (lsGet('gmap_key') || lsGet('sv_key') || EMBEDDED_KEY).trim();
 
 function svImgFail(img){ img.parentNode.innerHTML = '(no Street View image at this spot)'; }
 
@@ -208,10 +216,15 @@ function promptForKey(initial){
   return true;
 }
 
-document.getElementById('svbtn').textContent = KEY ? 'Change Google key' : 'Enter Google key to load map';
-document.getElementById('svbtn').onclick = function(){
-  if (promptForKey(KEY)) { location.reload(); }
-};
+// With a published key, viewers don't need the button at all -- hide it.
+if (EMBEDDED_KEY) {
+  document.getElementById('svbtn').style.display = 'none';
+} else {
+  document.getElementById('svbtn').textContent = KEY ? 'Change Google key' : 'Enter Google key to load map';
+  document.getElementById('svbtn').onclick = function(){
+    if (promptForKey(KEY)) { location.reload(); }
+  };
+}
 
 if (KEY) {
   document.getElementById('svnote').textContent = 'Loading Google map…';
