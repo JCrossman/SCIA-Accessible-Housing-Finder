@@ -8,6 +8,14 @@ access, barrier-free features, and similar — to support
 All data comes from the **City of Edmonton's free public Open Data** (Socrata).
 No API key is required to gather the data.
 
+## 🗺️ Live map
+
+**[View the interactive map →](https://jcrossman.github.io/SCIA-Accessible-Housing-Finder/)**
+
+No setup needed — just open the link. Click any dot for the address, the
+accessibility work done, permit history, and a Street View photo. Use the
+**Map / Satellite** toggle (top-left) to switch to satellite imagery.
+
 ## What it produces
 
 - **An interactive map** (`data/edmonton_accessibility_map.html`) — open in any
