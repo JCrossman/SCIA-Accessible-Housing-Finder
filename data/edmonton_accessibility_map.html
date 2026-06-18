@@ -26,11 +26,28 @@
   #filter-body{margin-top:6px;display:none}
   #filter-body label{display:block;margin:4px 0;cursor:pointer}
   #filter-actions a{color:#1f78b4;cursor:pointer;margin-right:8px;font-size:12px}
+  /* Mobile toggle: hidden on desktop, where the panel is always visible. */
+  #panel-toggle{display:none}
+  #panel-close{display:none}
+  @media (max-width:640px){
+    .panel{display:none;top:10px;left:10px;right:10px;max-width:none;
+      max-height:80vh;overflow:auto}
+    body.panel-open .panel{display:block}
+    #panel-toggle{display:block;position:absolute;top:10px;right:10px;z-index:6;
+      padding:9px 13px;border:none;border-radius:6px;background:#1f78b4;color:#fff;
+      font:14px sans-serif;box-shadow:0 1px 5px rgba(0,0,0,.35);cursor:pointer}
+    body.panel-open #panel-toggle{display:none}
+    #panel-close{display:block;position:absolute;top:8px;right:12px;font-size:24px;
+      line-height:1;color:#888;cursor:pointer}
+    .panel h3{padding-right:24px}
+  }
 </style>
 </head>
 <body>
 <div id="map"></div>
+<button id="panel-toggle">&#9432; Info &amp; filter</button>
 <div class="panel">
+  <span id="panel-close" title="Close">&times;</span>
   <h3>Edmonton Accessible Housing Map</h3>
   <div class="sub">A map to help find accessible housing in Edmonton &mdash; homes
     whose building permits mention ramps, lifts, wheelchair access, or
@@ -114,7 +131,7 @@ function loadGoogle(){
 window.initMap = function(){
   var map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 53.5461, lng: -113.4938}, zoom: 11, mapTypeControl: true,
-    streetViewControl: true
+    streetViewControl: true, fullscreenControl: false
   });
   var info = new google.maps.InfoWindow({maxWidth: 300});
   var bounds = new google.maps.LatLngBounds();
@@ -218,6 +235,15 @@ if (KEY) {
   document.getElementById('svnote').textContent =
     'Enter your Google key (button below) to load the map and Street View photos.';
 }
+
+// Mobile: the info/filter panel is hidden behind a button so it does not cover
+// the map. These controls do nothing on desktop (the panel is always shown).
+document.getElementById('panel-toggle').onclick = function(){
+  document.body.classList.add('panel-open');
+};
+document.getElementById('panel-close').onclick = function(){
+  document.body.classList.remove('panel-open');
+};
 </script>
 </body>
 </html>
