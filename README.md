@@ -8,13 +8,28 @@ access, barrier-free features, and similar — to support
 All data comes from the **City of Edmonton's free public Open Data** (Socrata).
 No API key is required to gather the data.
 
+## In plain language
+
+We built a free, online map that shows Edmonton homes that have had
+accessibility-related work done — things like wheelchair ramps, lifts, and
+barrier-free bathrooms. The information comes from the City of Edmonton's public
+building records going back to 2009. You can open the map in any web browser,
+click any dot to see the address and what work was done, and even view a
+street-level photo of the property. It's a starting point to help us find and
+track accessible housing across the city. One thing to keep in mind: it's an
+early draft pulled automatically from city data, so a few entries may not be
+true accessibility features (for example, a "ramp" that's actually a
+parking-garage ramp) — we'll refine the list over time.
+
 ## 🗺️ Live map
 
 **[View the interactive map →](https://jcrossman.github.io/SCIA-Accessible-Housing-Finder/)**
 
 No setup needed — just open the link. Click any dot for the address, the
 accessibility work done, permit history, and a Street View photo. Use the
-**Map / Satellite** toggle (top-left) to switch to satellite imagery.
+**Map / Satellite** toggle (top-left) to switch to satellite imagery, and
+**Filter by feature** (in the panel) to show only ramps, lifts, wheelchair
+access, step-free entries, or general barrier-free work.
 
 ## What it produces
 
@@ -28,12 +43,12 @@ accessibility work done, permit history, and a Street View photo. Use the
 
 | Step | Result |
 | --- | --- |
-| Building permits mentioning accessibility | 1,390 |
-| Development permits mentioning accessibility | 299 |
-| Narrowed to residential (homes) | 279 building + 121 development |
-| Combined into unique addresses | **335 properties** |
-| Geocoded / mappable | **310 (93%)** |
-| Could not be auto-located (for manual review) | 25 |
+| Building permits mentioning accessibility | 1,429 |
+| Development permits mentioning accessibility | 305 |
+| Narrowed to residential (homes) | 299 building + 121 development |
+| Combined into unique addresses | **355 properties** |
+| Geocoded / mappable | **324 (91%)** |
+| Could not be auto-located (for manual review) | 31 |
 
 **Data coverage:** building permits from **2009**, development permits from
 **2015**, both through the present — the full span the City of Edmonton

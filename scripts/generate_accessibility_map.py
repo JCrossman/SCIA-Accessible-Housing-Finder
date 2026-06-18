@@ -26,6 +26,38 @@ SOURCE_COLORS = {
     "parcel_geocode": "#33a02c",  # green
 }
 
+# Group the many keyword labels into a few human-friendly filter categories so
+# the map's filter stays compact (6 buckets, not 17 checkboxes).
+CATEGORY_OF_KEYWORD = {
+    "ramp": "ramps", "handrail": "ramps",
+    "lift": "lifts",
+    "wheelchair": "wheelchair",
+    "step-free entry": "entry", "wider doorway": "entry", "automatic door": "entry",
+    "grab bar": "bathroom", "accessible bathroom": "bathroom",
+    "accessible": "general", "barrier-free": "general", "universal design": "general",
+    "ada": "general", "handicap": "general", "mobility": "general",
+    "adaptable/visitable": "general", "aging in place": "general",
+}
+# Display order + labels for the filter checkboxes.
+CATEGORY_ORDER = [
+    ("ramps", "Ramps & rails"),
+    ("lifts", "Lifts & elevators"),
+    ("wheelchair", "Wheelchair access"),
+    ("entry", "Step-free entry & doors"),
+    ("bathroom", "Bathrooms"),
+    ("general", "Barrier-free / accessible"),
+]
+
+
+def categories_for(keywords_str):
+    """Map a '; '-joined keyword string to its sorted filter-category ids."""
+    cats = set()
+    for kw in (k.strip() for k in keywords_str.split(";")):
+        c = CATEGORY_OF_KEYWORD.get(kw)
+        if c:
+            cats.add(c)
+    return sorted(cats)
+
 
 def build_points():
     points = []
@@ -53,6 +85,7 @@ def build_points():
                 "neighbourhood": r.get("neighbourhood", ""),
                 "ward": r.get("ward", ""),
                 "keywords": r.get("keywords", ""),
+                "cats": categories_for(r.get("keywords", "")),
                 "total": r.get("total_permits", ""),
                 "n_b": r.get("n_building_permits", ""),
                 "n_d": r.get("n_development_permits", ""),
@@ -98,6 +131,13 @@ def main():
         p["color"] = SOURCE_COLORS.get(p["source"], "#888")
 
     data_json = json.dumps(points)
+    # Only offer filter categories that actually have mapped properties, so
+    # there are no dead checkboxes that filter to zero results.
+    present = set()
+    for p in points:
+        present.update(p["cats"])
+    visible_categories = [c for c in CATEGORY_ORDER if c[0] in present]
+    categories_json = json.dumps(visible_categories)
 
     html_doc = """<!DOCTYPE html>
 <html lang="en">
@@ -119,6 +159,10 @@ def main():
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
   .btn{margin-top:6px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:12px}
+  #filter-toggle{margin-top:8px;cursor:pointer;color:#1f78b4;user-select:none;font-size:12px}
+  #filter-body{margin-top:6px;display:none}
+  #filter-body label{display:block;margin:3px 0;cursor:pointer}
+  #filter-actions a{color:#1f78b4;cursor:pointer;margin-right:8px;font-size:11px}
 </style>
 </head>
 <body>
@@ -129,6 +173,12 @@ def main():
   <div style="margin-top:6px">
     <span class="dot" style="background:#1f78b4"></span>From development permit<br>
     <span class="dot" style="background:#33a02c"></span>Geocoded (parcel)
+  </div>
+  <!-- Filter is collapsed by default to keep the interface uncluttered. -->
+  <div id="filter-toggle">&#9656; Filter by feature</div>
+  <div id="filter-body">
+    <div id="filter-actions"><a id="filter-all">All</a><a id="filter-none">None</a></div>
+    <div id="filter-boxes"></div>
   </div>
   <div id="svnote" style="margin-top:6px;color:#666;font-size:11px"></div>
   <button id="svbtn" class="btn"></button>
@@ -141,6 +191,7 @@ def main():
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script>
 var points = __DATA__;
+var CATEGORIES = __CATEGORIES__;  // [[id, label], ...] for the feature filter
 
 // localStorage can throw on file:// (e.g. Safari treats it as a unique
 // origin), so guard every access.
@@ -184,7 +235,7 @@ window.initMap = function(){
   });
   var info = new google.maps.InfoWindow({maxWidth: 300});
   var bounds = new google.maps.LatLngBounds();
-  var markers = points.map(function(p){
+  var allMarkers = points.map(function(p){
     var pos = {lat: p.lat, lng: p.lon};
     bounds.extend(pos);
     var m = new google.maps.Marker({
@@ -193,17 +244,61 @@ window.initMap = function(){
              fillColor: p.color, fillOpacity: 0.95,
              strokeColor: '#fff', strokeWeight: 1.5}
     });
+    m._cats = p.cats || [];
     m.addListener('click', function(){
       info.setContent(p.popup.replace('__SV__', svElement(p)));
       info.open(map, m);
     });
     return m;
   });
-  new markerClusterer.MarkerClusterer({map: map, markers: markers});
+  var cluster = new markerClusterer.MarkerClusterer({map: map, markers: allMarkers});
   if (points.length) { map.fitBounds(bounds); }
-  document.getElementById('count').textContent = points.length + ' located addresses';
-  // Map is ready -- clear the "Loading…" status.
   document.getElementById('svnote').textContent = 'Tip: use the Map / Satellite toggle (top-left).';
+
+  // ---- Feature filter (collapsed by default to avoid clutter) ----
+  var active = {};
+  CATEGORIES.forEach(function(c){ active[c[0]] = true; });
+
+  function applyFilter(){
+    var shown = allMarkers.filter(function(m){
+      return m._cats.some(function(c){ return active[c]; });
+    });
+    cluster.clearMarkers();
+    cluster.addMarkers(shown);
+    var n = shown.length, total = allMarkers.length;
+    document.getElementById('count').textContent =
+      (n === total) ? (total + ' located addresses')
+                    : ('Showing ' + n + ' of ' + total + ' addresses');
+  }
+
+  var boxes = document.getElementById('filter-boxes');
+  CATEGORIES.forEach(function(c){
+    var id = 'cat-' + c[0];
+    var lbl = document.createElement('label');
+    lbl.innerHTML = "<input type='checkbox' id='" + id + "' checked> " + c[1];
+    boxes.appendChild(lbl);
+    lbl.querySelector('input').addEventListener('change', function(e){
+      active[c[0]] = e.target.checked; applyFilter();
+    });
+  });
+  function setAll(v){
+    CATEGORIES.forEach(function(c){
+      active[c[0]] = v;
+      document.getElementById('cat-' + c[0]).checked = v;
+    });
+    applyFilter();
+  }
+  document.getElementById('filter-all').onclick = function(){ setAll(true); };
+  document.getElementById('filter-none').onclick = function(){ setAll(false); };
+  var ft = document.getElementById('filter-toggle');
+  ft.onclick = function(){
+    var b = document.getElementById('filter-body');
+    var open = b.style.display === 'block';
+    b.style.display = open ? 'none' : 'block';
+    ft.innerHTML = (open ? '\\u25B8' : '\\u25BE') + ' Filter by feature';
+  };
+
+  applyFilter();  // sets the initial count
 };
 
 // Shown by Google when the key is missing/unauthorized for Maps JS API.
@@ -245,6 +340,7 @@ if (KEY) {
 </html>
 """
     html_doc = html_doc.replace("__DATA__", data_json)
+    html_doc = html_doc.replace("__CATEGORIES__", categories_json)
 
     with open(OUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_doc)

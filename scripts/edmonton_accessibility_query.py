@@ -38,6 +38,20 @@ KEYWORDS = {
     "handicap": ["handicap"],
     "universal design": ["universal design"],
     "ada": ["ada compliant", "ada-compliant"],
+    # High-value additions, especially for older years (2009-2015) that used
+    # plainer construction wording rather than "barrier-free"/"accessible".
+    "handrail": ["handrail", "hand rail"],
+    "step-free entry": ["no-step", "no step", "step-free", "step free",
+                        "level entry", "zero threshold", "no threshold",
+                        "curbless"],
+    "accessible bathroom": ["roll-in shower", "roll in shower", "walk-in tub",
+                            "walk in tub", "curbless shower"],
+    "wider doorway": ["widen door", "door widening", "wider door",
+                      "widened door", "doorway widening"],
+    "adaptable/visitable": ["adaptable", "visitable", "visitability"],
+    "aging in place": ["aging in place", "age in place"],
+    "automatic door": ["automatic door", "power door operator",
+                       "powered door", "auto door operator"],
 }
 
 PAGE = 50000  # Socrata max rows per request
