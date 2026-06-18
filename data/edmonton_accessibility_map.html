@@ -14,7 +14,11 @@
   .panel{position:absolute;top:10px;right:10px;z-index:5;background:#fff;
     padding:10px 12px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);
     font:13px sans-serif;max-width:250px}
-  .panel h3{margin:0 0 6px;font-size:14px}
+  .panel h3{margin:0 0 4px;font-size:14px}
+  .panel .sub{margin:0 0 8px;color:#444;font-size:12px;line-height:1.35}
+  .panel details.about{margin:0 0 8px;font-size:11px;color:#666}
+  .panel details.about summary{cursor:pointer;color:#1f78b4;outline:none}
+  .panel details.about .body{margin-top:5px;line-height:1.4}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
   .btn{margin-top:6px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:12px}
@@ -27,7 +31,18 @@
 <body>
 <div id="map"></div>
 <div class="panel">
-  <h3>Accessible Housing Permits</h3>
+  <h3>Edmonton Accessible Housing Map</h3>
+  <div class="sub">Edmonton homes with accessibility-related building permits
+    &mdash; ramps, lifts, wheelchair access, barrier-free features. Click any dot
+    for details and a Street View photo.</div>
+  <details class="about">
+    <summary>About &amp; data source</summary>
+    <div class="body">Built for <b>Spinal Cord Injury Alberta</b> from the City of
+      Edmonton's public building &amp; development permit records (2009&ndash;present).
+      This is an automatically generated draft, so some entries may be false
+      matches (for example, a parking-garage &ldquo;ramp&rdquo;) &mdash; check the
+      permit description in each popup. Not an official listing.</div>
+  </details>
   <div id="count"></div>
   <div style="margin-top:6px">
     <span class="dot" style="background:#1f78b4"></span>From development permit<br>
