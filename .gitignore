@@ -1,0 +1,12 @@
+# python
+__pycache__/
+*.pyc
+
+# local-only secrets (never commit API keys)
+streetview-key.local.js
+**/streetview-key.local.js
+.env
+
+# os
+.DS_Store
+Thumbs.db
