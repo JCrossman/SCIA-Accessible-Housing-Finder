@@ -101,6 +101,8 @@ window.initMap = function(){
   new markerClusterer.MarkerClusterer({map: map, markers: markers});
   if (points.length) { map.fitBounds(bounds); }
   document.getElementById('count').textContent = points.length + ' located addresses';
+  // Map is ready -- clear the "Loading…" status.
+  document.getElementById('svnote').textContent = 'Tip: use the Map / Satellite toggle (top-left).';
 };
 
 // Shown by Google when the key is missing/unauthorized for Maps JS API.
