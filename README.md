@@ -155,5 +155,70 @@ generates, so in practice it stays within the free tier.
 
 - Results reflect what the City currently publishes (a rolling window of recent
   years), so re-running refreshes the numbers.
-- The Google Maps API key is **never** stored in this repository. It is entered
-  in the browser at runtime and kept in local storage on your machine only.
+- The published map uses a **public browser key** in `data/config.js`, which is
+  restricted to this site's domain and capped by daily quotas (a Maps
+  JavaScript key is public by design — see the alignment notes below). For
+  local or private use you can instead enter a key via the in-map button, which
+  is stored only in your own browser.
+
+## The Open State alignment
+
+This project is built under **[The Open State](https://github.com/JCrossman/the-open-state)**
+and is governed by its
+**[Constitution](https://github.com/JCrossman/the-open-state/blob/main/CONSTITUTION.md)**
+at tag **`constitution-v1.1`**.
+
+**What it is — and what it is not.** The Open State's Civic Access Protocol is
+designed for *transactional assistive technology*: tools that act inside a
+citizen's own authenticated session to complete an action (a booking, a payment,
+a submission). This project is a different shape — a **read-only discovery
+tool**, a public map built from open data. It has no citizen login, no session,
+no credentials, and takes no consequential actions. It therefore makes **no
+claim of full Civic Access Protocol compliance**, and it deliberately does
+**not** use `@open-state/kit` (the `vault` / `confirm-gate` / `capture`
+primitives) — those exist for the session and credential articles that do not
+apply here.
+
+**The articles it lives by:**
+
+- **Art. 3 — Accessibility is the purpose.** Accessibility is the whole point,
+  not a feature. Accessibility attributes are surfaced as first-class and are
+  **filterable**, so a citizen can restrict the map to the features they need.
+- **Arts. 5 / 6 — Minimization & no exploitation.** It collects no citizen
+  data, is not monetized, and sells nothing.
+- **Art. 7 — Honesty about limits.** It separates what is verified from what is
+  assumed (see the caveats below and on the map itself).
+- **Art. 8 — Openness.** Public, MIT-licensed, and forkable, so the method can
+  be reused for the next service.
+
+### Honest notes and known limits
+
+*Recorded rather than hidden (Constitution Art. 7):*
+
+- **Permits are not availability, and not proof of current accessibility.** A
+  permit shows accessibility work was approved or done at some point; it does
+  not mean the home is still accessible, or is for sale or rent today. Treat
+  every pin as "worth checking," not as fact.
+- **Third-party dependency, against the movement's usual grain.** The map uses
+  **Google Maps and Street View** (and loads a clustering library from a CDN).
+  Google is a third party that meters and can profile usage, which runs against
+  The Open State's preference for no third-party trackers or CDNs (Art. 6). This
+  is a **deliberate trade-off**: Street View's coverage is uniquely valuable for
+  judging a property from the street, and no open alternative matches it today.
+  The browser key is public by design but is **restricted to this site's domain
+  and capped by daily quotas**. A privacy-respecting, self-hosted map stack is a
+  known future option (it would cost the Street View feature).
+- **Keyword false positives.** Substring matches like "ramp" / "lift" can catch
+  parking-garage ramps or freight lifts. Full permit text is kept in every
+  record so a human can judge.
+- **Geocoding coverage is ~91%.** The remainder are listed in
+  `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
+
+### The genuine Civic Access Protocol piece is the next layer
+
+The map is the *discovery* front door. The point where The Open State's protocol
+truly applies is the planned **availability / application-assist** step (see
+[issue #2](https://github.com/JCrossman/SCIA-Accessible-Housing-Finder/issues/2)):
+helping a citizen *act* — check a listing or navigate a housing application —
+inside their own session, at their direction. That layer should adopt
+`@open-state/kit` and meet Articles 1, 2, 9, and 10 in full.
