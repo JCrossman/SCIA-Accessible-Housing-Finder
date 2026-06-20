@@ -53,9 +53,9 @@ parking-garage ramp) — we'll refine the list over time.
 
 No setup needed — just open the link. Click any dot for the address, the
 accessibility work done, permit history, and a Street View photo. Use the
-**Map / Satellite** toggle (top-left) to switch to satellite imagery, and
-**Filter by feature** (in the panel) to show only ramps, lifts, wheelchair
-access, step-free entries, or general barrier-free work.
+**Map / Satellite** toggle (top-left) to switch to satellite imagery, and the
+**Filter** panel to narrow by feature (ramps, lifts, wheelchair access,
+step-free entries, or general barrier-free work) and by **permit year**.
 
 ## What it produces
 

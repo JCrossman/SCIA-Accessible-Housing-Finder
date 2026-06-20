@@ -77,6 +77,13 @@ def build_points():
             addr_q = raw_addr.replace(" - ", " ").strip()
             if addr_q:
                 addr_q += ", Edmonton, AB, Canada"
+            d0 = r.get("earliest_permit_date", "")[:10]
+            d1 = r.get("latest_permit_date", "")[:10]
+
+            def _yr(s):
+                s = (s or "")[:4]
+                return int(s) if s.isdigit() else None
+
             points.append({
                 "lat": latf,
                 "lon": lonf,
@@ -89,8 +96,10 @@ def build_points():
                 "total": r.get("total_permits", ""),
                 "n_b": r.get("n_building_permits", ""),
                 "n_d": r.get("n_development_permits", ""),
-                "d0": r.get("earliest_permit_date", "")[:10],
-                "d1": r.get("latest_permit_date", "")[:10],
+                "d0": d0,
+                "d1": d1,
+                "y0": _yr(d0),  # earliest permit year (int or None)
+                "y1": _yr(d1),  # latest permit year (int or None)
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
             })
@@ -165,8 +174,12 @@ def main():
     background:#f5f5f5;cursor:pointer;font-size:13px}
   #filter-toggle{margin-top:8px;cursor:pointer;color:#1f78b4;user-select:none;font-size:13px}
   #filter-body{margin-top:6px;display:none}
-  #filter-body label{display:block;margin:4px 0;cursor:pointer}
-  #filter-actions a{color:#1f78b4;cursor:pointer;margin-right:8px;font-size:12px}
+  .filter-head{font-weight:bold;margin:8px 0 3px}
+  #filter-boxes label{display:block;margin:4px 0;cursor:pointer}
+  #filter-actions{font-weight:normal}
+  #filter-actions a{color:#1f78b4;cursor:pointer;margin-left:8px;font-size:12px}
+  #year-row{font-size:13px}
+  #year-row select{font-size:13px;padding:1px 2px;margin:0 3px}
   /* "Aligned with The Open State" badge, bottom-centre so it clears Google's
      logo (bottom-left) and Terms link (bottom-right). */
   #os-badge{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
@@ -226,10 +239,17 @@ def main():
     <span class="dot" style="background:#33a02c"></span>Geocoded (parcel)
   </div>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
-  <div id="filter-toggle">&#9656; Filter by feature</div>
+  <div id="filter-toggle">&#9656; Filter</div>
   <div id="filter-body">
-    <div id="filter-actions"><a id="filter-all">All</a><a id="filter-none">None</a></div>
+    <div class="filter-head">Feature <span id="filter-actions"><a id="filter-all">all</a><a id="filter-none">none</a></span></div>
     <div id="filter-boxes"></div>
+    <div id="year-section">
+      <div class="filter-head">Permit year</div>
+      <div id="year-row">
+        <label for="year-from">From</label> <select id="year-from"></select>
+        <label for="year-to">to</label> <select id="year-to"></select>
+      </div>
+    </div>
   </div>
   <div id="svnote" style="margin-top:6px;color:#666;font-size:11px"></div>
   <button id="svbtn" class="btn"></button>
@@ -296,6 +316,7 @@ window.initMap = function(){
              strokeColor: '#fff', strokeWeight: 1.5}
     });
     m._cats = p.cats || [];
+    m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m.addListener('click', function(){
       info.setContent(p.popup.replace('__SV__', svElement(p)));
       info.open(map, m);
@@ -306,13 +327,29 @@ window.initMap = function(){
   if (points.length) { map.fitBounds(bounds); }
   document.getElementById('svnote').textContent = 'Tip: use the Map / Satellite toggle (top-left).';
 
-  // ---- Feature filter (collapsed by default to avoid clutter) ----
+  // ---- Filter (collapsed by default to avoid clutter) ----
   var active = {};
   CATEGORIES.forEach(function(c){ active[c[0]] = true; });
 
+  // Year range, derived from the data. fromY/toY are the current selection.
+  var years = [];
+  allMarkers.forEach(function(m){
+    if (m._y0 != null) years.push(m._y0);
+    if (m._y1 != null) years.push(m._y1);
+  });
+  var yearMin = years.length ? Math.min.apply(null, years) : null;
+  var yearMax = years.length ? Math.max.apply(null, years) : null;
+  var fromY = yearMin, toY = yearMax;
+
+  function yearOk(m){
+    if (fromY == null) return true;          // no year data at all
+    if (m._y1 == null) return true;          // undated permit -> never hidden
+    return m._y0 <= toY && m._y1 >= fromY;    // activity overlaps selected range
+  }
+
   function applyFilter(){
     var shown = allMarkers.filter(function(m){
-      return m._cats.some(function(c){ return active[c]; });
+      return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
     cluster.addMarkers(shown);
@@ -341,12 +378,37 @@ window.initMap = function(){
   }
   document.getElementById('filter-all').onclick = function(){ setAll(true); };
   document.getElementById('filter-none').onclick = function(){ setAll(false); };
+
+  // Year dropdowns (From / To) -- accessible alternative to a range slider.
+  var yearSection = document.getElementById('year-section');
+  if (yearMin == null) {
+    yearSection.style.display = 'none';
+  } else {
+    var selFrom = document.getElementById('year-from');
+    var selTo = document.getElementById('year-to');
+    for (var y = yearMin; y <= yearMax; y++) {
+      var oF = document.createElement('option'); oF.value = y; oF.text = y; selFrom.appendChild(oF);
+      var oT = document.createElement('option'); oT.value = y; oT.text = y; selTo.appendChild(oT);
+    }
+    selFrom.value = yearMin; selTo.value = yearMax;
+    selFrom.addEventListener('change', function(){
+      fromY = parseInt(selFrom.value, 10);
+      if (fromY > toY) { toY = fromY; selTo.value = toY; }   // keep From <= To
+      applyFilter();
+    });
+    selTo.addEventListener('change', function(){
+      toY = parseInt(selTo.value, 10);
+      if (toY < fromY) { fromY = toY; selFrom.value = fromY; }
+      applyFilter();
+    });
+  }
+
   var ft = document.getElementById('filter-toggle');
   ft.onclick = function(){
     var b = document.getElementById('filter-body');
     var open = b.style.display === 'block';
     b.style.display = open ? 'none' : 'block';
-    ft.innerHTML = (open ? '\\u25B8' : '\\u25BE') + ' Filter by feature';
+    ft.innerHTML = (open ? '\\u25B8' : '\\u25BE') + ' Filter';
   };
 
   applyFilter();  // sets the initial count
