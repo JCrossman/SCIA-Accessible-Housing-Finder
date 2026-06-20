@@ -231,6 +231,12 @@ def main():
   .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
   .btn{margin-top:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:13px;color:#1a1a1a}
+  /* Prominent wheelchair-only toggle button (aria-pressed = on/off). */
+  #wc-only{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;
+    padding:9px 12px;border:2px solid #1f78b4;border-radius:8px;background:#fff;
+    color:#1f78b4;font:600 13.5px sans-serif;cursor:pointer;text-align:left}
+  #wc-only svg{flex:0 0 auto}
+  #wc-only[aria-pressed="true"]{background:#1f78b4;color:#fff}
   /* link-styled but real, keyboard-operable buttons */
   .linkbtn{background:none;border:0;padding:0;color:#1f78b4;cursor:pointer;
     font:inherit;text-decoration:underline}
@@ -318,9 +324,11 @@ def main():
     __MARKER_WC_LEGEND__ Mentions wheelchair access<br>
     __MARKER_UNSURE_LEGEND__ Accessibility permit &ndash; wheelchair not confirmed
   </div>
-  <label id="wc-only-row" style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer">
-    <input type="checkbox" id="wc-only"> Show only confirmed wheelchair access
-  </label>
+  <button id="wc-only" type="button" aria-pressed="false">
+    <svg width="20" height="20" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d="__FA_PATH__"/></svg>
+    <span>Show only confirmed wheelchair access</span>
+  </button>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
   <button id="filter-toggle" class="linkbtn" aria-expanded="false" aria-controls="filter-body">Filter</button>
   <div id="filter-body">
@@ -478,7 +486,7 @@ window.initMap = function(){
   }
 
   function applyFilter(){
-    var wcOnly = document.getElementById('wc-only').checked;
+    var wcOnly = document.getElementById('wc-only').getAttribute('aria-pressed') === 'true';
     var shown = allMarkers.filter(function(m){
       if (wcOnly && !m._wc) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
@@ -511,9 +519,14 @@ window.initMap = function(){
   }
   document.getElementById('filter-all').onclick = function(){ setAll(true); };
   document.getElementById('filter-none').onclick = function(){ setAll(false); };
-  // Confirmed-wheelchair-only toggle (default off): composes with the filters
-  // above; map, list and count all update together.
-  document.getElementById('wc-only').addEventListener('change', applyFilter);
+  // Confirmed-wheelchair-only toggle button (default off): composes with the
+  // filters above; map, list and count all update together.
+  var wcBtn = document.getElementById('wc-only');
+  wcBtn.addEventListener('click', function(){
+    var on = wcBtn.getAttribute('aria-pressed') === 'true';
+    wcBtn.setAttribute('aria-pressed', on ? 'false' : 'true');
+    applyFilter();
+  });
 
   // Year dropdowns (From / To) -- accessible alternative to a range slider.
   var yearSection = document.getElementById('year-section');
@@ -629,6 +642,7 @@ panelClose.onclick = function(){
     html_doc = html_doc.replace("__MARKER_UNSURE_JS__", json.dumps(marker_unsure(28, 40)))
     html_doc = html_doc.replace("__MARKER_WC_LEGEND__", marker_wheelchair(16, 23, legend_attrs))
     html_doc = html_doc.replace("__MARKER_UNSURE_LEGEND__", marker_unsure(16, 23, legend_attrs))
+    html_doc = html_doc.replace("__FA_PATH__", _FA_WHEELCHAIR)
 
     with open(OUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_doc)
