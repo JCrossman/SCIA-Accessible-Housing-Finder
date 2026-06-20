@@ -34,6 +34,24 @@ When you change a script, re-run the affected steps and commit the regenerated
 - After editing `generate_accessibility_map.py`, validate the emitted
   JavaScript (extract the inline `<script>` block and run `node --check`).
 
+## Accessibility audit
+
+Accessibility is the purpose of this project (Constitution Art. 3), so changes to
+the map are checked with [axe-core](https://github.com/dequelabs/axe-core). The
+audit runs **offline** — it stubs Google Maps, so no API key or network is
+needed:
+
+```bash
+npm install                                  # one time
+npx playwright install --with-deps chromium  # one time
+python3 scripts/generate_accessibility_map.py
+npm run audit                                # fails on serious/critical issues
+```
+
+The same steps run in CI — see [`docs/accessibility-workflow.yml`](docs/accessibility-workflow.yml)
+(copy it to `.github/workflows/accessibility.yml` to activate). Run the audit
+locally before opening a PR that touches the map.
+
 ## Never commit secrets
 
 Do not commit Google API keys or any credential. The map handles keys at

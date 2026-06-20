@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+# node (accessibility audit tooling)
+node_modules/
+
 # local-only secrets (never commit API keys)
 streetview-key.local.js
 **/streetview-key.local.js

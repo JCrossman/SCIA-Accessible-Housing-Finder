@@ -1,0 +1,14 @@
+{
+  "name": "scia-accessible-housing-finder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tooling for the SCIA Accessible Housing Finder (accessibility audit).",
+  "scripts": {
+    "audit": "node scripts/audit.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "playwright": "^1.48.0"
+  }
+}

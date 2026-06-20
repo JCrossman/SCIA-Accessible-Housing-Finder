@@ -1,0 +1,38 @@
+# Accessibility CI workflow.
+#
+# NOTE: this file is kept in docs/ because the automation token that wrote it
+# cannot push files under .github/workflows/. To activate it, copy this file to
+# .github/workflows/accessibility.yml (the repo owner can do this in the GitHub
+# web UI: Add file -> Create new file -> name it
+# ".github/workflows/accessibility.yml" -> paste this content -> Commit).
+#
+# It regenerates the map from committed data (no network) and runs the offline
+# axe-core audit (scripts/audit.mjs) on every push and pull request to main.
+
+name: Accessibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Regenerate the map from committed data (offline)
+        run: python3 scripts/generate_accessibility_map.py
+      - name: Install audit dependencies
+        run: npm ci
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Run axe-core accessibility audit
+        run: npm run audit
