@@ -429,7 +429,6 @@ window.initMap = function(){
              anchor: new google.maps.Point(14, 40)}
     });
     m._cats = p.cats || [];
-    m._wc = !!p.wc;               // confirmed wheelchair?
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
@@ -445,6 +444,16 @@ window.initMap = function(){
   // ---- Filter (collapsed by default to avoid clutter) ----
   var active = {};
   CATEGORIES.forEach(function(c){ active[c[0]] = true; });
+  // "Confirmed wheelchair only" button state. Turning it on sets the Feature
+  // filter to Wheelchair access only; turning it off restores the prior choice.
+  var wcBtn = document.getElementById('wc-only');
+  var savedFeatures = null;
+  function wcButtonOff(){ wcBtn.setAttribute('aria-pressed', 'false'); savedFeatures = null; }
+  function syncFeatureCheckboxes(){
+    CATEGORIES.forEach(function(c){
+      document.getElementById('cat-' + c[0]).checked = active[c[0]];
+    });
+  }
 
   // Year range, derived from the data. fromY/toY are the current selection.
   var years = [];
@@ -486,9 +495,7 @@ window.initMap = function(){
   }
 
   function applyFilter(){
-    var wcOnly = document.getElementById('wc-only').getAttribute('aria-pressed') === 'true';
     var shown = allMarkers.filter(function(m){
-      if (wcOnly && !m._wc) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
@@ -507,7 +514,9 @@ window.initMap = function(){
     lbl.innerHTML = "<input type='checkbox' id='" + id + "' checked> " + c[1];
     boxes.appendChild(lbl);
     lbl.querySelector('input').addEventListener('change', function(e){
-      active[c[0]] = e.target.checked; applyFilter();
+      active[c[0]] = e.target.checked;
+      wcButtonOff();   // a manual feature change exits "wheelchair only"
+      applyFilter();
     });
   });
   function setAll(v){
@@ -515,16 +524,32 @@ window.initMap = function(){
       active[c[0]] = v;
       document.getElementById('cat-' + c[0]).checked = v;
     });
+    wcButtonOff();
     applyFilter();
   }
   document.getElementById('filter-all').onclick = function(){ setAll(true); };
   document.getElementById('filter-none').onclick = function(){ setAll(false); };
-  // Confirmed-wheelchair-only toggle button (default off): composes with the
-  // filters above; map, list and count all update together.
-  var wcBtn = document.getElementById('wc-only');
+  // "Show only confirmed wheelchair access": turning it ON sets the Feature
+  // filter to Wheelchair access only (checkboxes update to match); turning it
+  // OFF restores the prior feature selection. So the filter panel always
+  // reflects what the map shows.
   wcBtn.addEventListener('click', function(){
-    var on = wcBtn.getAttribute('aria-pressed') === 'true';
-    wcBtn.setAttribute('aria-pressed', on ? 'false' : 'true');
+    var turningOn = wcBtn.getAttribute('aria-pressed') !== 'true';
+    if (turningOn) {
+      savedFeatures = {};
+      CATEGORIES.forEach(function(c){
+        savedFeatures[c[0]] = active[c[0]];
+        active[c[0]] = (c[0] === 'wheelchair');
+      });
+      wcBtn.setAttribute('aria-pressed', 'true');
+    } else {
+      CATEGORIES.forEach(function(c){
+        active[c[0]] = savedFeatures ? !!savedFeatures[c[0]] : true;
+      });
+      savedFeatures = null;
+      wcBtn.setAttribute('aria-pressed', 'false');
+    }
+    syncFeatureCheckboxes();
     applyFilter();
   });
 
