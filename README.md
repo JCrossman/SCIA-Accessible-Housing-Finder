@@ -169,6 +169,12 @@ generates, so in practice it stays within the free tier.
   local or private use you can instead enter a key via the in-map button, which
   is stored only in your own browser.
 
+## Credits
+
+- Map marker wheelchair glyph: the "wheelchair" icon from
+  [Font Awesome Free](https://fontawesome.com/) 6, licensed under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
 ## The Open State alignment
 
 This project is built under **[The Open State](https://github.com/JCrossman/the-open-state)**

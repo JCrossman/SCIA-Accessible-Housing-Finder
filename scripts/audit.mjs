@@ -30,6 +30,7 @@ const STUBS = `
     InfoWindow: function(){ return { setContent: noop, open: noop }; },
     LatLngBounds: function(){ return { extend: noop }; },
     Marker: function(){ this.addListener = noop; },
+    Size: function(){}, Point: function(){},
     SymbolPath: { CIRCLE: 0 },
   }};
 `;
