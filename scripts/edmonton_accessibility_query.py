@@ -233,6 +233,11 @@ def main():
     write_csv(b_res_csv, building_res)
     print("  saved -> %s (%d residential)" % (b_res_csv, len(building_res)))
 
+    building_com = [r for r in building if not is_residential_building(r)]
+    b_com_csv = os.path.join(OUT_DIR, "edmonton_building_permits_accessibility_commercial.csv")
+    write_csv(b_com_csv, building_com)
+    print("  saved -> %s (%d non-residential)" % (b_com_csv, len(building_com)))
+
     # Development permits: descriptive text in description_of_development.
     d_text = ["description_of_development"]
     d_where = build_where(d_text)
@@ -246,6 +251,11 @@ def main():
     d_res_csv = os.path.join(OUT_DIR, "edmonton_development_permits_accessibility_residential.csv")
     write_csv(d_res_csv, development_res)
     print("  saved -> %s (%d residential)" % (d_res_csv, len(development_res)))
+
+    development_com = [r for r in development if not is_residential_development(r)]
+    d_com_csv = os.path.join(OUT_DIR, "edmonton_development_permits_accessibility_commercial.csv")
+    write_csv(d_com_csv, development_com)
+    print("  saved -> %s (%d non-residential)" % (d_com_csv, len(development_com)))
 
     # --- Sample output ---
     def show_sample(name, rows, fields):

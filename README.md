@@ -64,13 +64,22 @@ accessibility work done, permit history, and a Street View photo.
 
 **Controls:**
 
+- **Homes / Businesses / Both** toggle — homes by default; switch to commercial
+  & public places (offices, shops, restaurants, rec centres, clinics, schools,
+  etc.) or show both.
 - **Show only confirmed wheelchair access** — a one-tap button that narrows the
-  map (and the Feature filter) to just the blue-pin homes.
+  map (and the Feature filter) to just the blue-pin (confirmed-wheelchair) ones.
 - **Map / Satellite** toggle (top-left) for satellite imagery.
 - **Filter** panel to narrow by feature (ramps, lifts, wheelchair access,
   step-free entries, or general barrier-free work) and by **permit year**.
 - **View as list** — a keyboard- and screen-reader-friendly text version of the
-  same homes.
+  same places.
+
+> **Note on businesses:** commercial accessibility is largely *required* by the
+> Alberta Building Code, so a business permit is a weaker signal than a home
+> retrofit — and big chunks (warehouses, parkades) are freight lifts / loading
+> ramps, not human access. Treat business pins as "worth checking," and see the
+> honest notes below.
 
 ## What it produces
 
@@ -86,10 +95,13 @@ accessibility work done, permit history, and a Street View photo.
 | --- | --- |
 | Building permits mentioning accessibility | 1,429 |
 | Development permits mentioning accessibility | 305 |
-| Narrowed to residential (homes) | 299 building + 121 development |
-| Combined into unique addresses | **355 properties** |
-| Geocoded / mappable | **324 (91%)** |
-| Could not be auto-located (for manual review) | 31 |
+| **Homes** — unique addresses (geocoded) | **355 (324 mapped, 91%)** |
+| **Businesses / public places** — unique addresses (geocoded) | **1,044 (1,032 mapped, 99%)** |
+| **Total on the map** | **~1,356 places** |
+
+For context, those ~1,734 accessibility-keyword permits are a tiny slice of the
+City's **242,280** building + **118,329** development permits — and a *floor*,
+since many real accessibility upgrades don't use these keywords.
 
 **Data coverage:** building permits from **2009**, development permits from
 **2015**, both through the present — the full span the City of Edmonton
@@ -115,11 +127,12 @@ recent years are over-represented.
 | --- | --- |
 | `data/edmonton_building_permits_accessibility.csv` | All building-permit matches |
 | `data/edmonton_development_permits_accessibility.csv` | All development-permit matches |
-| `data/edmonton_building_permits_accessibility_residential.csv` | Residential-only building permits |
-| `data/edmonton_development_permits_accessibility_residential.csv` | Residential-only development permits |
-| `data/edmonton_accessibility_residential_merged.csv` | **Master list** — 335 unique addresses, deduped, with coordinates |
-| `data/edmonton_accessibility_unmatched_addresses.csv` | The 25 addresses needing manual location lookup |
-| `data/edmonton_accessibility_map.html` | The interactive map |
+| `..._residential.csv` (building + development) | Residential-only cuts |
+| `..._commercial.csv` (building + development) | Non-residential (business / public place) cuts |
+| `data/edmonton_accessibility_residential_merged.csv` | **Homes master list** — deduped, geocoded |
+| `data/edmonton_accessibility_commercial_merged.csv` | **Businesses master list** — deduped, geocoded |
+| `data/edmonton_accessibility_unmatched_addresses.csv` | Homes that need a manual location lookup |
+| `data/edmonton_accessibility_map.html` | The interactive map (homes + businesses) |
 
 ## How to re-run / refresh the data
 
@@ -128,19 +141,21 @@ Requires Python 3.9+ and the `requests` library.
 ```bash
 pip install -r requirements.txt
 
-# 1. Query Edmonton Open Data and write the raw + residential CSVs
+# 1. Query Edmonton Open Data and write the raw + residential + commercial CSVs
 python scripts/edmonton_accessibility_query.py
 
-# 2. Merge residential building + development permits into one address list
-python scripts/merge_residential_accessibility.py
+# 2. Merge building + development permits into one address list per cut
+python scripts/merge_residential_accessibility.py             # homes (default)
+python scripts/merge_residential_accessibility.py commercial  # businesses
 
 # 3. Fill in coordinates from the Parcel Addresses dataset
 python scripts/geocode_residential_accessibility.py
+python scripts/geocode_residential_accessibility.py data/edmonton_accessibility_commercial_merged.csv
 
 # 4. (optional) Export the addresses that couldn't be geocoded
 python scripts/export_unmatched_addresses.py
 
-# 5. Build the interactive map
+# 5. Build the interactive map (reads both merged lists)
 python scripts/generate_accessibility_map.py
 ```
 

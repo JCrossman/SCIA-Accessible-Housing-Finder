@@ -50,8 +50,14 @@ def load(path):
 
 
 def main():
-    building = load(B_CSV)
-    development = load(D_CSV)
+    import sys
+    # "residential" (default) or "commercial" — picks input + output filenames.
+    cut = sys.argv[1] if len(sys.argv) > 1 else "residential"
+    b_csv = os.path.join(DATA_DIR, "edmonton_building_permits_accessibility_%s.csv" % cut)
+    d_csv = os.path.join(DATA_DIR, "edmonton_development_permits_accessibility_%s.csv" % cut)
+    out_csv = os.path.join(DATA_DIR, "edmonton_accessibility_%s_merged.csv" % cut)
+    building = load(b_csv)
+    development = load(d_csv)
 
     # key -> aggregated record
     merged = {}
@@ -140,7 +146,7 @@ def main():
     out.sort(key=lambda x: (-x["total_permits"], x["address"]))
 
     fieldnames = list(out[0].keys())
-    with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
+    with open(out_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         w.writerows(out)
@@ -165,7 +171,7 @@ def main():
     print("\nAddresses with the most accessibility permits:")
     for x in out[:10]:
         print("  %2d permits  %-32s [%s]" % (x["total_permits"], x["address"], x["keywords"]))
-    print("\nSaved -> %s" % OUT_CSV)
+    print("\nSaved -> %s" % out_csv)
 
 
 if __name__ == "__main__":

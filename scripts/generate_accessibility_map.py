@@ -19,6 +19,7 @@ import os
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 MERGED_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_residential_merged.csv")
+COMMERCIAL_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_commercial_merged.csv")
 OUT_HTML = os.path.join(DATA_DIR, "edmonton_accessibility_map.html")
 
 SOURCE_COLORS = {
@@ -105,9 +106,11 @@ def categories_for(keywords_str):
     return sorted(cats)
 
 
-def build_points():
+def build_points(csv_path, ptype):
     points = []
-    with open(MERGED_CSV, encoding="utf-8") as f:
+    if not os.path.exists(csv_path):
+        return points
+    with open(csv_path, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             lat, lon = r.get("latitude"), r.get("longitude")
             if not (lat and lon):
@@ -154,6 +157,7 @@ def build_points():
                 "y0": _yr(d0),  # earliest permit year (int or None)
                 "y1": _yr(d1),  # latest permit year (int or None)
                 "wc": is_wheelchair,
+                "type": ptype,   # "home" or "business"
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
             })
@@ -167,6 +171,10 @@ def popup_html(p):
     parts = ["<div style='font:14px sans-serif;max-width:290px;"
              "max-height:360px;overflow:auto'>"]
     parts.append("<b>%s</b><br>" % html.escape(p["address"]))
+    type_label = "Business / public place" if p.get("type") == "business" else "Home"
+    parts.append("<span style='display:inline-block;background:#eef;color:#334;"
+                 "font-size:11px;padding:1px 6px;border-radius:3px;margin:2px 0'>"
+                 "%s</span><br>" % type_label)
     loc = p["neighbourhood"]
     if p["ward"]:
         loc += " &middot; Ward %s" % html.escape(p["ward"])
@@ -193,7 +201,7 @@ def popup_html(p):
 
 
 def main():
-    points = build_points()
+    points = build_points(MERGED_CSV, "home") + build_points(COMMERCIAL_CSV, "business")
     for p in points:
         p["popup"] = popup_html(p)
         p["color"] = SOURCE_COLORS.get(p["source"], "#888")
@@ -234,6 +242,13 @@ def main():
   .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
   .btn{margin-top:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:13px;color:#1a1a1a}
+  /* Homes / Businesses / Both segmented toggle. */
+  #type-toggle{display:flex;margin-top:8px;border:1px solid #1f78b4;border-radius:6px;
+    overflow:hidden}
+  #type-toggle button{flex:1;padding:6px 4px;border:0;background:#fff;color:#1f78b4;
+    font:600 13px sans-serif;cursor:pointer;border-left:1px solid #1f78b4}
+  #type-toggle button:first-child{border-left:0}
+  #type-toggle button[aria-pressed="true"]{background:#1f78b4;color:#fff}
   /* Prominent wheelchair-only toggle button (aria-pressed = on/off). */
   #wc-only{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;
     padding:9px 12px;border:2px solid #1f78b4;border-radius:8px;background:#fff;
@@ -294,7 +309,7 @@ def main():
 </head>
 <body>
 <main id="map" role="application"
-  aria-label="Interactive map of Edmonton homes with accessibility permits. This visual map is hard to use with a keyboard or screen reader; use the 'View as list' button for an accessible text version of the same homes."></main>
+  aria-label="Interactive map of Edmonton homes and businesses with accessibility permits. This visual map is hard to use with a keyboard or screen reader; use the 'View as list' button for an accessible text version of the same places."></main>
 <button id="panel-toggle" aria-expanded="false" aria-controls="info-panel">&#9432; Info &amp; filter</button>
 <a id="os-badge" href="https://github.com/JCrossman/the-open-state" target="_blank"
    rel="noopener"
@@ -302,9 +317,10 @@ def main():
 <aside id="info-panel" class="panel" aria-label="Information and filters">
   <button id="panel-close" aria-label="Close information panel">&times;</button>
   <h1>Edmonton Accessible Housing Map</h1>
-  <div class="sub">A map to help find accessible housing in Edmonton &mdash; homes
-    whose building permits mention ramps, lifts, wheelchair access, or
-    barrier-free features. Click any dot for details and a Street View photo.</div>
+  <div class="sub">A map of Edmonton <b>homes</b> &mdash; and now <b>businesses
+    &amp; public places</b> &mdash; whose building permits mention ramps, lifts,
+    wheelchair access, or barrier-free features. Use the Homes / Businesses
+    toggle below. Click any pin for details and a Street View photo.</div>
   <details class="about" open>
     <summary>Why this exists &amp; data source</summary>
     <div class="body"><b>The problem:</b> there is no central list of which Edmonton
@@ -315,14 +331,20 @@ def main():
       bathrooms &mdash; but it is buried in large datasets not built for this
       purpose.<br><br>
       <b>How this helps:</b> this tool pulls those accessibility-related permits
-      (2009&ndash;present), narrows them to homes, and maps them so they can be
-      browsed and filtered &mdash; a starting point for <b>Spinal Cord Injury
-      Alberta</b> and the people it serves to find and track accessible housing.<br><br>
+      (2009&ndash;present) and maps them &mdash; homes by default, with a toggle for
+      businesses &amp; public places &mdash; so they can be browsed and filtered. A
+      starting point for <b>Spinal Cord Injury Alberta</b> and the people it
+      serves to find and track accessible places.<br><br>
       It is an automatically generated draft, so some entries may be false matches
       (for example, a parking-garage &ldquo;ramp&rdquo;) &mdash; check the permit
       description in each popup. Not an official listing.</div>
   </details>
   <div id="count"></div>
+  <div id="type-toggle" role="group" aria-label="Show homes, businesses, or both">
+    <button type="button" data-type="home" aria-pressed="true">Homes</button>
+    <button type="button" data-type="business" aria-pressed="false">Businesses</button>
+    <button type="button" data-type="both" aria-pressed="false">Both</button>
+  </div>
   <div style="margin-top:6px;line-height:1.7">
     __MARKER_WC_LEGEND__ Mentions wheelchair access<br>
     __MARKER_UNSURE_LEGEND__ Accessibility permit &ndash; wheelchair not confirmed
@@ -432,6 +454,7 @@ window.initMap = function(){
              anchor: new google.maps.Point(14, 40)}
     });
     m._cats = p.cats || [];
+    m._type = p.type;            // "home" or "business"
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
@@ -443,6 +466,19 @@ window.initMap = function(){
   var cluster = new markerClusterer.MarkerClusterer({map: map, markers: allMarkers});
   if (points.length) { map.fitBounds(bounds); }
   document.getElementById('svnote').textContent = 'Tip: use the Map / Satellite toggle (top-left).';
+
+  // ---- Type (Homes / Businesses / Both), default Homes ----
+  var typeFilter = 'home';
+  var typeBtns = document.querySelectorAll('#type-toggle button');
+  typeBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      typeFilter = btn.getAttribute('data-type');
+      typeBtns.forEach(function(b){
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      applyFilter();
+    });
+  });
 
   // ---- Filter (collapsed by default to avoid clutter) ----
   var active = {};
@@ -494,19 +530,25 @@ window.initMap = function(){
     }).join('');
     ul.innerHTML = html;
     document.getElementById('list-count').textContent =
-      shown.length + ' of ' + allMarkers.length + ' homes shown (matching the current filters).';
+      shown.length + ' place(s) shown (matching the current filters).';
   }
 
   function applyFilter(){
     var shown = allMarkers.filter(function(m){
+      if (typeFilter !== 'both' && m._type !== typeFilter) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
     cluster.addMarkers(shown);
-    var n = shown.length, total = allMarkers.length;
+    // Denominator = everything of the selected type (ignoring other filters).
+    var noun = typeFilter === 'home' ? 'homes'
+             : typeFilter === 'business' ? 'businesses / public places' : 'places';
+    var typeTotal = allMarkers.filter(function(m){
+      return typeFilter === 'both' || m._type === typeFilter; }).length;
+    var n = shown.length;
     document.getElementById('count').textContent =
-      (n === total) ? (total + ' located addresses')
-                    : ('Showing ' + n + ' of ' + total + ' addresses');
+      (n === typeTotal) ? (typeTotal + ' ' + noun)
+                        : ('Showing ' + n + ' of ' + typeTotal + ' ' + noun);
     renderList(shown);
   }
 

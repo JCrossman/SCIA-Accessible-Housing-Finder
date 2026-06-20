@@ -53,11 +53,15 @@ def _query(pairs):
     for hn, st in pairs:
         clauses.append("(house_number='%s' AND street_name='%s')"
                        % (soql_escape(hn), soql_escape(st)))
-    where = "object_type='PARCEL' AND (" + " OR ".join(clauses) + ")"
+    # Match any address record (PARCEL or SUITE). Commercial / multi-tenant
+    # buildings are often only registered as SUITE; their coordinates are within
+    # a few metres of the parcel, which is fine for mapping. We keep the first
+    # match per address.
+    where = "(" + " OR ".join(clauses) + ")"
     params = {
         "$select": "house_number,street_name,latitude,longitude",
         "$where": where,
-        "$limit": 5000,
+        "$limit": 50000,
     }
     for attempt in range(4):
         try:
@@ -98,7 +102,10 @@ def fetch_batch(pairs):
 
 
 def main():
-    rows = list(csv.DictReader(open(MERGED_CSV, encoding="utf-8")))
+    import sys
+    # Optional path to a merged CSV (defaults to the residential one).
+    merged_csv = sys.argv[1] if len(sys.argv) > 1 else MERGED_CSV
+    rows = list(csv.DictReader(open(merged_csv, encoding="utf-8")))
 
     # Determine which rows need geocoding and parse their addresses.
     need = []          # list of (row, hn, st)
@@ -149,7 +156,7 @@ def main():
     fieldnames = list(rows[0].keys())
     if "coord_source" not in fieldnames:
         fieldnames.insert(fieldnames.index("has_coords") + 1, "coord_source")
-    with open(MERGED_CSV, "w", newline="", encoding="utf-8") as f:
+    with open(merged_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         w.writerows(rows)
@@ -163,7 +170,7 @@ def main():
     for r in rows:
         by_source[r["coord_source"]] = by_source.get(r["coord_source"], 0) + 1
     print("Coord source breakdown : %s" % by_source)
-    print("Saved -> %s" % MERGED_CSV)
+    print("Saved -> %s" % merged_csv)
 
 
 if __name__ == "__main__":

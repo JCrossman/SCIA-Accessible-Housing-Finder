@@ -23,27 +23,41 @@ package.json / scripts/audit.mjs   Node tooling for the offline axe-core audit
 ### The pipeline (run in this order)
 
 1. `scripts/edmonton_accessibility_query.py` — query Edmonton Open Data for
-   accessibility keywords; write raw + residential CSVs.
-2. `scripts/merge_residential_accessibility.py` — dedupe residential building +
-   development permits into one address-level master list.
-3. `scripts/geocode_residential_accessibility.py` — fill in coordinates by
-   matching the Parcel Addresses dataset (`ut27-nrpn`).
+   accessibility keywords; write raw + residential + commercial CSVs (each
+   permit is classified residential vs non-residential).
+2. `scripts/merge_residential_accessibility.py [residential|commercial]` —
+   dedupe building + development permits into one address-level master list for
+   the chosen cut (default `residential`). Run once per cut.
+3. `scripts/geocode_residential_accessibility.py [merged_csv]` — fill in
+   coordinates by matching the Parcel Addresses dataset (`ut27-nrpn`). Pass the
+   commercial merged CSV path to geocode businesses; defaults to residential.
 4. `scripts/export_unmatched_addresses.py` — export addresses still missing
    coordinates for manual review.
-5. `scripts/generate_accessibility_map.py` — build the Google Maps HTML view.
+5. `scripts/generate_accessibility_map.py` — build the Google Maps HTML view
+   (reads both the residential and commercial merged lists).
+
+The pipeline scripts are parameterized by "cut": the same merge/geocode code
+serves homes and businesses. `commercial` is everything classified
+non-residential — offices, shops, restaurants, rec centres, clinics, schools,
+warehouses, parkades, etc.
 
 ## The map (`generate_accessibility_map.py`)
 
 - **Base**: Google Maps JS API + marker clustering. The API key is read at
   runtime from `data/config.js` (a public, referrer-restricted browser key) or
   an in-map button; never a private secret.
+- **Two layers**: homes + businesses on one map. `build_points()` tags each
+  point with `type` (`home` / `business`); a **Homes / Businesses / Both**
+  segmented toggle (`typeFilter`, default `home`) filters by it. The count and
+  list noun adapt to the active type.
 - **Two pins**: blue wheelchair pin when the keywords/description contain
   "wheelchair" (`p.wc`), else a grey "?" pin (wheelchair not confirmed). Pins
-  differ by glyph + colour (not colour alone).
-- **Filters** (one `applyFilter()` pass drives map + list + count): a feature
-  filter (keyword categories), a permit-year range, and a "Show only confirmed
-  wheelchair access" button that sets the feature filter to wheelchair-only and
-  restores on toggle-off.
+  differ by glyph + colour (not colour alone). Pin type is independent of the
+  home/business layer.
+- **Filters** (one `applyFilter()` pass drives map + list + count): the
+  home/business type toggle, a feature filter (keyword categories), a permit-year
+  range, and a "Show only confirmed wheelchair access" button that sets the
+  feature filter to wheelchair-only and restores on toggle-off.
 - **Accessible list view** ("View as list") is the keyboard/screen-reader path —
   the visual marker map is not keyboard-operable, so keep the list in sync.
 - **Marker glyph**: Font Awesome 6 "wheelchair" (CC BY 4.0) — keep the
@@ -119,8 +133,13 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
-- **Coverage**: ~91% of unique addresses are geocoded (324 of 355); the rest are
-  in `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
+- **Coverage**: ~91% of homes are geocoded (324 of 355) and ~99% of businesses
+  (1,032 of 1,044); the unmatched homes are in
+  `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
+- **Businesses are a weaker signal than homes**: commercial accessibility is
+  largely *required* by the Alberta Building Code, and some matches are freight
+  lifts / loading ramps (warehouses, parkades), not human access. Keep the
+  "worth checking" framing and the README's "Note on businesses" caveat.
 - Results reflect the City's currently published (rolling) data, so counts
   change when the pipeline is re-run.
 
