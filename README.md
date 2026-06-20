@@ -52,10 +52,24 @@ parking-garage ramp) — we'll refine the list over time.
 **[View the interactive map →](https://jcrossman.github.io/SCIA-Accessible-Housing-Finder/)**
 
 No setup needed — just open the link. Click any dot for the address, the
-accessibility work done, permit history, and a Street View photo. Use the
-**Map / Satellite** toggle (top-left) to switch to satellite imagery, and the
-**Filter** panel to narrow by feature (ramps, lifts, wheelchair access,
-step-free entries, or general barrier-free work) and by **permit year**.
+accessibility work done, permit history, and a Street View photo.
+
+**Two pin types:**
+
+- 🔵 **Blue wheelchair pin** — the permit's keywords or description explicitly
+  mention *wheelchair* (confirmed wheelchair access).
+- ⚪ **Grey "?" pin** — an accessibility permit (ramp, lift, barrier-free, etc.)
+  where wheelchair access is *not* confirmed — worth a closer look.
+
+**Controls:**
+
+- **Show only confirmed wheelchair access** — a one-tap button that narrows the
+  map (and the Feature filter) to just the blue-pin homes.
+- **Map / Satellite** toggle (top-left) for satellite imagery.
+- **Filter** panel to narrow by feature (ramps, lifts, wheelchair access,
+  step-free entries, or general barrier-free work) and by **permit year**.
+- **View as list** — a keyboard- and screen-reader-friendly text version of the
+  same homes.
 
 ## What it produces
 
@@ -157,7 +171,13 @@ generates, so in practice it stays within the free tier.
 
 `ramp`, `wheelchair`, `accessible` / `accessibility`, `barrier-free`,
 `grab bar`, `lift` / `elevator`, `mobility`, `handicap`, `universal design`,
-`ada compliant`.
+`ada compliant`, `handrail`, `step-free entry` (no-step, level entry,
+curbless, zero/no threshold), `accessible bathroom` (roll-in shower,
+walk-in tub), `wider doorway` (door widening), `adaptable` / `visitable`,
+`aging in place`, and `automatic door` / `power door operator`.
+
+The later terms were added to catch older permits (2009–2015) that described the
+same work in plainer language rather than "barrier-free"/"accessible".
 
 ## Notes
 

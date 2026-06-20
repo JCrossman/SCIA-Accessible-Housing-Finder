@@ -13,9 +13,11 @@ Open Data Portal** (Socrata); no API key is needed to gather data.
 ## Repository layout
 
 ```
-scripts/   Python data pipeline (stdlib + requests only; no pandas)
-data/      Generated CSVs and the interactive map (committed outputs)
+scripts/   Python data pipeline + the map generator and the JS a11y audit
+data/      Generated CSVs, the interactive map, and config.js (the public key)
+docs/      Banner image + the accessibility CI workflow (copy to .github to use)
 README.md  User-facing overview and run instructions
+package.json / scripts/audit.mjs   Node tooling for the offline axe-core audit
 ```
 
 ### The pipeline (run in this order)
@@ -29,6 +31,23 @@ README.md  User-facing overview and run instructions
 4. `scripts/export_unmatched_addresses.py` — export addresses still missing
    coordinates for manual review.
 5. `scripts/generate_accessibility_map.py` — build the Google Maps HTML view.
+
+## The map (`generate_accessibility_map.py`)
+
+- **Base**: Google Maps JS API + marker clustering. The API key is read at
+  runtime from `data/config.js` (a public, referrer-restricted browser key) or
+  an in-map button; never a private secret.
+- **Two pins**: blue wheelchair pin when the keywords/description contain
+  "wheelchair" (`p.wc`), else a grey "?" pin (wheelchair not confirmed). Pins
+  differ by glyph + colour (not colour alone).
+- **Filters** (one `applyFilter()` pass drives map + list + count): a feature
+  filter (keyword categories), a permit-year range, and a "Show only confirmed
+  wheelchair access" button that sets the feature filter to wheelchair-only and
+  restores on toggle-off.
+- **Accessible list view** ("View as list") is the keyboard/screen-reader path —
+  the visual marker map is not keyboard-operable, so keep the list in sync.
+- **Marker glyph**: Font Awesome 6 "wheelchair" (CC BY 4.0) — keep the
+  attribution in the README Credits.
 
 ## Conventions
 
@@ -100,8 +119,8 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
-- **Coverage**: ~93% of unique addresses are geocoded; the rest are in
-  `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
+- **Coverage**: ~91% of unique addresses are geocoded (324 of 355); the rest are
+  in `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
 - Results reflect the City's currently published (rolling) data, so counts
   change when the pipeline is re-run.
 
@@ -112,4 +131,7 @@ complying — cite the article.
 - After editing the map generator, syntax-check the emitted JavaScript (e.g.
   extract the inline `<script>` and run `node --check`) — nested quotes have
   broken it before.
-- Keep the README's "Results at a glance" numbers in sync with reality.
+- Run the accessibility audit after map changes: `npm run audit` (offline; stubs
+  Google Maps). It must report no serious/critical violations.
+- Keep the README's "Results at a glance" numbers, the "Keywords searched" list,
+  and the "Live map" pin/filter descriptions in sync with the code.
