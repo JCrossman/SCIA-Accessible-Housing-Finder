@@ -44,15 +44,32 @@ _FA_WHEELCHAIR = (
     "-32l-76.2 0z")
 
 
-def marker_svg(width, height, extra_attrs=""):
-    """The pin-with-wheelchair marker SVG at a given pixel size."""
+def _pin_svg(width, height, fill, glyph, extra_attrs=""):
+    """A teardrop pin of a given colour with an inner glyph, at a pixel size."""
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" '
         'viewBox="0 0 28 40"%s>'
-        '<path d="%s" fill="#1f78b4" stroke="#fff" stroke-width="1"/>'
-        '<g transform="translate(6.6 6.2) scale(0.0293)" fill="#fff">'
-        '<path d="%s"/></g></svg>'
-        % (width, height, extra_attrs, _PIN_PATH, _FA_WHEELCHAIR))
+        '<path d="%s" fill="%s" stroke="#fff" stroke-width="1"/>%s</svg>'
+        % (width, height, extra_attrs, _PIN_PATH, fill, glyph))
+
+
+_WC_GLYPH = ('<g transform="translate(6.6 6.2) scale(0.0293)" fill="#fff">'
+             '<path d="%s"/></g>' % _FA_WHEELCHAIR)
+# Grey "?" pin for permits where wheelchair access is not explicitly confirmed.
+_Q_GLYPH = ('<text x="14" y="19" text-anchor="middle" '
+            'font-family="Arial, Helvetica, sans-serif" font-size="14" '
+            'font-weight="bold" fill="#fff">?</text>')
+
+
+def marker_wheelchair(width, height, extra_attrs=""):
+    """Blue pin + white wheelchair: listing explicitly mentions wheelchair."""
+    return _pin_svg(width, height, "#1f78b4", _WC_GLYPH, extra_attrs)
+
+
+def marker_unsure(width, height, extra_attrs=""):
+    """Grey pin + white '?': accessibility permit, wheelchair not confirmed."""
+    return _pin_svg(width, height, "#5b6b7b", _Q_GLYPH, extra_attrs)
+
 
 
 # Group the many keyword labels into a few human-friendly filter categories so
@@ -113,6 +130,13 @@ def build_points():
                 s = (s or "")[:4]
                 return int(s) if s.isdigit() else None
 
+            # "Explicit wheelchair" = the word appears in the matched keywords
+            # or in the permit description shown in the popup.
+            kw = r.get("keywords", "")
+            desc = r.get("sample_description", "")
+            is_wheelchair = ("wheelchair" in kw.lower()
+                             or "wheelchair" in desc.lower())
+
             points.append({
                 "lat": latf,
                 "lon": lonf,
@@ -129,6 +153,7 @@ def build_points():
                 "d1": d1,
                 "y0": _yr(d0),  # earliest permit year (int or None)
                 "y1": _yr(d1),  # latest permit year (int or None)
+                "wc": is_wheelchair,
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
             })
@@ -289,8 +314,9 @@ def main():
       description in each popup. Not an official listing.</div>
   </details>
   <div id="count"></div>
-  <div style="margin-top:6px">
-    __MARKER_SVG_LEGEND__ Home with an accessibility-related permit
+  <div style="margin-top:6px;line-height:1.7">
+    __MARKER_WC_LEGEND__ Mentions wheelchair access<br>
+    __MARKER_UNSURE_LEGEND__ Accessibility permit &ndash; wheelchair not confirmed
   </div>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
   <button id="filter-toggle" class="linkbtn" aria-expanded="false" aria-controls="filter-body">Filter</button>
@@ -338,9 +364,12 @@ function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
 var EMBEDDED_KEY = (window.GOOGLE_MAPS_KEY || '').trim();
 var KEY = (lsGet('gmap_key') || lsGet('sv_key') || EMBEDDED_KEY).trim();
 
-// Blue pin + white wheelchair, as an inline SVG data-URI (no Map ID needed).
-var MARKER_ICON_URL = 'data:image/svg+xml;charset=UTF-8,'
-  + encodeURIComponent(__MARKER_SVG_JS__);
+// Two pins (inline SVG data-URIs, no Map ID): blue wheelchair for listings that
+// explicitly mention wheelchair, grey "?" for unconfirmed accessibility permits.
+var MARKER_WC_URL = 'data:image/svg+xml;charset=UTF-8,'
+  + encodeURIComponent(__MARKER_WC_JS__);
+var MARKER_UNSURE_URL = 'data:image/svg+xml;charset=UTF-8,'
+  + encodeURIComponent(__MARKER_UNSURE_JS__);
 
 function svImgFail(img){ img.parentNode.innerHTML = '(no Street View image at this spot)'; }
 function esc(s){ return String(s == null ? '' : s)
@@ -381,10 +410,10 @@ window.initMap = function(){
   var allMarkers = points.map(function(p){
     var pos = {lat: p.lat, lng: p.lon};
     bounds.extend(pos);
-    // One uniform marker for every home: blue pin + white wheelchair.
+    // Pin depends on whether wheelchair access is explicit.
     var m = new google.maps.Marker({
       position: pos,
-      icon: {url: MARKER_ICON_URL,
+      icon: {url: p.wc ? MARKER_WC_URL : MARKER_UNSURE_URL,
              scaledSize: new google.maps.Size(28, 40),
              anchor: new google.maps.Point(14, 40)}
     });
@@ -583,13 +612,14 @@ panelClose.onclick = function(){
 </body>
 </html>
 """
+    legend_attrs = (' aria-hidden="true" focusable="false" '
+                    'style="vertical-align:middle;margin-right:5px"')
     html_doc = html_doc.replace("__DATA__", data_json)
     html_doc = html_doc.replace("__CATEGORIES__", categories_json)
-    html_doc = html_doc.replace("__MARKER_SVG_JS__", json.dumps(marker_svg(28, 40)))
-    html_doc = html_doc.replace(
-        "__MARKER_SVG_LEGEND__",
-        marker_svg(16, 23, ' aria-hidden="true" focusable="false" '
-                           'style="vertical-align:middle;margin-right:5px"'))
+    html_doc = html_doc.replace("__MARKER_WC_JS__", json.dumps(marker_wheelchair(28, 40)))
+    html_doc = html_doc.replace("__MARKER_UNSURE_JS__", json.dumps(marker_unsure(28, 40)))
+    html_doc = html_doc.replace("__MARKER_WC_LEGEND__", marker_wheelchair(16, 23, legend_attrs))
+    html_doc = html_doc.replace("__MARKER_UNSURE_LEGEND__", marker_unsure(16, 23, legend_attrs))
 
     with open(OUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_doc)
