@@ -56,10 +56,11 @@ accessibility work done, permit history, and a Street View photo.
 
 **Two pin types:**
 
-- 🔵 **Blue wheelchair pin** — the permit's keywords or description explicitly
-  mention *wheelchair* (confirmed wheelchair access).
-- ⚪ **Grey "?" pin** — an accessibility permit (ramp, lift, barrier-free, etc.)
-  where wheelchair access is *not* confirmed — worth a closer look.
+- <img src="docs/pin-wheelchair.png" alt="Blue pin with a white wheelchair symbol" height="22" valign="middle"> **Blue wheelchair pin** — the permit's keywords or description
+  explicitly mention *wheelchair* (confirmed wheelchair access).
+- <img src="docs/pin-unsure.png" alt="Grey pin with a white question mark" height="22" valign="middle"> **Grey "?" pin** — an accessibility permit (ramp, lift,
+  barrier-free, etc.) where wheelchair access is *not* confirmed — worth a
+  closer look.
 
 **Controls:**
 
@@ -74,7 +75,7 @@ accessibility work done, permit history, and a Street View photo.
 ## What it produces
 
 - **An interactive map** (`data/edmonton_accessibility_map.html`) — open in any
-  browser. Each dot is a property; click it for the address, neighbourhood,
+  browser. Each pin is a property; click it for the address, neighbourhood,
   what accessibility work was done, permit counts, dates, and a Street View
   photo of the front of the building.
 - **Spreadsheets (CSV)** you can open in Excel — see [Data files](#data-files).
