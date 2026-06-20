@@ -128,6 +128,11 @@ def popup_html(p):
     if p["desc"]:
         parts.append("<div style='color:#555;font-size:12.5px;margin-top:4px'>%s</div>"
                      % html.escape(p["desc"]))
+    # Honesty (Art. 7): flag pins whose location was matched from the address
+    # rather than supplied with the record, so users know it may be approximate.
+    if p["source"] == "parcel_geocode":
+        parts.append("<div style='color:#888;font-size:11px;margin-top:4px'>"
+                     "Approximate location (matched by address)</div>")
     parts.append("__SV__")  # filled in by JS (link, or thumbnail if key present)
     parts.append("</div>")
     return "".join(parts)
@@ -170,8 +175,6 @@ def main():
   .panel details.about summary{cursor:pointer;color:#1f78b4;font-size:13px}
   .panel details.about .body{margin-top:6px;line-height:1.5}
   .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
-  .diamond{display:inline-block;width:9px;height:9px;transform:rotate(45deg);
-    margin:0 6px 0 1px;vertical-align:middle}
   .btn{margin-top:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:13px;color:#1a1a1a}
   /* link-styled but real, keyboard-operable buttons */
@@ -258,8 +261,7 @@ def main():
   </details>
   <div id="count"></div>
   <div style="margin-top:6px">
-    <span class="dot" style="background:#1f78b4"></span>From development permit (circle)<br>
-    <span class="diamond" style="background:#33a02c"></span>Geocoded / parcel (diamond)
+    <span class="dot" style="background:#1f78b4"></span>Home with an accessibility-related permit
   </div>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
   <button id="filter-toggle" class="linkbtn" aria-expanded="false" aria-controls="filter-body">Filter</button>
@@ -346,15 +348,13 @@ window.initMap = function(){
   var allMarkers = points.map(function(p){
     var pos = {lat: p.lat, lng: p.lon};
     bounds.extend(pos);
-    // Distinguish source by SHAPE as well as colour (WCAG 1.4.1, no
-    // meaning by colour alone): development = circle, geocoded = diamond.
-    var isGeo = (p.source === 'parcel_geocode');
-    var icon = isGeo
-      ? {path: 'M 0,-8 L 8,0 L 0,8 L -8,0 Z', scale: 1,
-         fillColor: p.color, fillOpacity: 0.95, strokeColor: '#fff', strokeWeight: 1.5}
-      : {path: google.maps.SymbolPath.CIRCLE, scale: 7,
-         fillColor: p.color, fillOpacity: 0.95, strokeColor: '#fff', strokeWeight: 1.5};
-    var m = new google.maps.Marker({position: pos, icon: icon});
+    // One uniform marker for every home (nothing is conveyed by colour alone).
+    var m = new google.maps.Marker({
+      position: pos,
+      icon: {path: google.maps.SymbolPath.CIRCLE, scale: 7,
+             fillColor: '#1f78b4', fillOpacity: 0.95,
+             strokeColor: '#fff', strokeWeight: 1.5}
+    });
     m._cats = p.cats || [];
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
