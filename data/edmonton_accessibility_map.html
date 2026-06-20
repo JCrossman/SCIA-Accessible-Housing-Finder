@@ -14,22 +14,41 @@
   .panel{position:absolute;top:10px;right:10px;z-index:5;background:#fff;
     padding:12px 14px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);
     font:14px sans-serif;max-width:300px;max-height:90vh;overflow:auto}
-  .panel h3{margin:0 0 5px;font-size:17px}
+  .panel h1{margin:0 0 5px;font-size:17px}
   .panel .sub{margin:0 0 8px;color:#333;font-size:13.5px;line-height:1.4}
   .panel details.about{margin:0 0 8px;font-size:13px;color:#555}
-  .panel details.about summary{cursor:pointer;color:#1f78b4;outline:none;font-size:13px}
+  .panel details.about summary{cursor:pointer;color:#1f78b4;font-size:13px}
   .panel details.about .body{margin-top:6px;line-height:1.5}
   .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
-  .btn{margin-top:6px;padding:5px 9px;border:1px solid #ccc;border-radius:4px;
-    background:#f5f5f5;cursor:pointer;font-size:13px}
-  #filter-toggle{margin-top:8px;cursor:pointer;color:#1f78b4;user-select:none;font-size:13px}
+  .btn{margin-top:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;
+    background:#f5f5f5;cursor:pointer;font-size:13px;color:#1a1a1a}
+  /* link-styled but real, keyboard-operable buttons */
+  .linkbtn{background:none;border:0;padding:0;color:#1f78b4;cursor:pointer;
+    font:inherit;text-decoration:underline}
+  #filter-toggle{margin-top:8px;font-size:13px;text-decoration:none}
+  #filter-toggle::before{content:"\25B8 "}
+  #filter-toggle[aria-expanded="true"]::before{content:"\25BE "}
   #filter-body{margin-top:6px;display:none}
   .filter-head{font-weight:bold;margin:8px 0 3px}
   #filter-boxes label{display:block;margin:4px 0;cursor:pointer}
   #filter-actions{font-weight:normal}
-  #filter-actions a{color:#1f78b4;cursor:pointer;margin-left:8px;font-size:12px}
+  #filter-actions .linkbtn{margin-left:8px;font-size:12px}
   #year-row{font-size:13px}
-  #year-row select{font-size:13px;padding:1px 2px;margin:0 3px}
+  #year-row select{font-size:13px;padding:2px 3px;margin:0 3px}
+  /* always-visible focus indicator (WCAG 2.4.7) */
+  a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,
+  input:focus-visible{outline:3px solid #1a5e9c;outline-offset:2px}
+  /* accessible text-list alternative to the visual map */
+  #list-view{position:absolute;top:0;left:0;bottom:0;width:380px;max-width:92vw;
+    z-index:7;background:#fff;box-shadow:2px 0 10px rgba(0,0,0,.3);overflow:auto;
+    padding:14px 16px;font:14px sans-serif}
+  #list-view[hidden]{display:none}
+  #list-view h2{margin:0 28px 2px 0;font-size:18px}
+  #list-view ul{list-style:none;margin:10px 0 0;padding:0}
+  #list-view li{padding:10px 0;border-top:1px solid #eee;line-height:1.4}
+  #list-view li .addr{font-weight:bold}
+  #list-view li .meta{color:#444;font-size:13px}
+  #list-close{position:absolute;top:10px;right:12px}
   /* "Aligned with The Open State" badge, bottom-centre so it clears Google's
      logo (bottom-left) and Terms link (bottom-right). */
   #os-badge{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
@@ -48,21 +67,23 @@
       padding:9px 13px;border:none;border-radius:6px;background:#1f78b4;color:#fff;
       font:14px sans-serif;box-shadow:0 1px 5px rgba(0,0,0,.35);cursor:pointer}
     body.panel-open #panel-toggle{display:none}
-    #panel-close{display:block;position:absolute;top:8px;right:12px;font-size:24px;
-      line-height:1;color:#888;cursor:pointer}
-    .panel h3{padding-right:24px}
+    #panel-close{display:block;position:absolute;top:6px;right:10px;font-size:26px;
+      line-height:1;color:#666;cursor:pointer;background:none;border:0}
+    .panel h1{padding-right:24px}
+    #list-view{width:100vw;max-width:100vw}
   }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<button id="panel-toggle">&#9432; Info &amp; filter</button>
+<main id="map" role="application"
+  aria-label="Interactive map of Edmonton homes with accessibility permits. This visual map is hard to use with a keyboard or screen reader; use the 'View as list' button for an accessible text version of the same homes."></main>
+<button id="panel-toggle" aria-expanded="false" aria-controls="info-panel">&#9432; Info &amp; filter</button>
 <a id="os-badge" href="https://github.com/JCrossman/the-open-state" target="_blank"
    rel="noopener"
    title="This map is built to The Open State's accessibility and openness principles (it is not a full Civic Access Protocol implementation). Learn more.">Aligned with The Open State &#8599;</a>
-<div class="panel">
-  <span id="panel-close" title="Close">&times;</span>
-  <h3>Edmonton Accessible Housing Map</h3>
+<aside id="info-panel" class="panel" aria-label="Information and filters">
+  <button id="panel-close" aria-label="Close information panel">&times;</button>
+  <h1>Edmonton Accessible Housing Map</h1>
   <div class="sub">A map to help find accessible housing in Edmonton &mdash; homes
     whose building permits mention ramps, lifts, wheelchair access, or
     barrier-free features. Click any dot for details and a Street View photo.</div>
@@ -89,9 +110,9 @@
     <span class="dot" style="background:#33a02c"></span>Geocoded (parcel)
   </div>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
-  <div id="filter-toggle">&#9656; Filter</div>
+  <button id="filter-toggle" class="linkbtn" aria-expanded="false" aria-controls="filter-body">Filter</button>
   <div id="filter-body">
-    <div class="filter-head">Feature <span id="filter-actions"><a id="filter-all">all</a><a id="filter-none">none</a></span></div>
+    <div class="filter-head">Feature <span id="filter-actions"><button id="filter-all" class="linkbtn">all</button><button id="filter-none" class="linkbtn">none</button></span></div>
     <div id="filter-boxes"></div>
     <div id="year-section">
       <div class="filter-head">Permit year</div>
@@ -101,9 +122,18 @@
       </div>
     </div>
   </div>
+  <button id="list-toggle" class="btn" aria-expanded="false" aria-controls="list-view">View as list</button>
   <div id="svnote" style="margin-top:6px;color:#666;font-size:11px"></div>
   <button id="svbtn" class="btn"></button>
-</div>
+</aside>
+<!-- Accessible text-list alternative to the visual map (keyboard / screen
+     reader friendly). Mirrors the current filters. -->
+<section id="list-view" aria-label="Accessible housing list" hidden>
+  <button id="list-close" class="btn" aria-label="Close list and return to map">Close</button>
+  <h2>Accessible housing &mdash; list</h2>
+  <p id="list-count"></p>
+  <ul id="list-items"></ul>
+</section>
 <!-- Optional published key. For a shared GitHub Pages map, set the key in
      config.js (window.GOOGLE_MAPS_KEY). It is a browser key: public by design
      and must be HTTP-referrer + quota restricted in the Google Cloud Console.
@@ -126,6 +156,9 @@ var EMBEDDED_KEY = (window.GOOGLE_MAPS_KEY || '').trim();
 var KEY = (lsGet('gmap_key') || lsGet('sv_key') || EMBEDDED_KEY).trim();
 
 function svImgFail(img){ img.parentNode.innerHTML = '(no Street View image at this spot)'; }
+function esc(s){ return String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // Street View uses the street ADDRESS (not raw coords) so Google places the
 // camera on the road in front of the property, not in the rear lane.
@@ -134,8 +167,10 @@ function svElement(p){
   var link = 'https://www.google.com/maps/search/?api=1&query=' + q;
   var img = 'https://maps.googleapis.com/maps/api/streetview?size=280x160&fov=80&location='
           + q + '&key=' + KEY;
-  return "<a href='" + link + "' target='_blank' title='Open in Google Maps'>"
-       + "<img src='" + img + "' alt='Street View' onerror='svImgFail(this)' "
+  var alt = 'Street View of ' + esc(p.address || 'this address');
+  return "<a href='" + link + "' target='_blank' rel='noopener' "
+       + "title='Open " + esc(p.address || 'this address') + " in Google Maps'>"
+       + "<img src='" + img + "' alt='" + alt + "' onerror='svImgFail(this)' "
        + "style='margin-top:6px;border-radius:4px;display:block'></a>";
 }
 
@@ -167,6 +202,7 @@ window.initMap = function(){
     });
     m._cats = p.cats || [];
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
+    m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
       info.setContent(p.popup.replace('__SV__', svElement(p)));
       info.open(map, m);
@@ -197,6 +233,29 @@ window.initMap = function(){
     return m._y0 <= toY && m._y1 >= fromY;    // activity overlaps selected range
   }
 
+  function renderList(shown){
+    var ul = document.getElementById('list-items');
+    var html = shown.map(function(m){
+      var p = m._p;
+      var q = encodeURIComponent(p.q || (p.lat + ',' + p.lon));
+      var maps = 'https://www.google.com/maps/search/?api=1&query=' + q;
+      var loc = esc(p.neighbourhood) + (p.ward ? ' &middot; Ward ' + esc(p.ward) : '');
+      var yrs = p.y0 ? (p.y0 === p.y1 ? p.y0 : p.y0 + '\u2013' + p.y1) : '';
+      var meta = [];
+      if (p.keywords) meta.push('Features: ' + esc(p.keywords));
+      meta.push('Permits: ' + esc(p.total));
+      if (yrs) meta.push('Years: ' + yrs);
+      return "<li><span class='addr'>" + esc(p.address) + "</span><br>"
+        + "<span class='meta'>" + loc + "</span><br>"
+        + "<span class='meta'>" + meta.join(' &middot; ') + "</span><br>"
+        + "<a href='" + maps + "' target='_blank' rel='noopener'>Open in Google Maps / Street View &#8599;</a>"
+        + "</li>";
+    }).join('');
+    ul.innerHTML = html;
+    document.getElementById('list-count').textContent =
+      shown.length + ' of ' + allMarkers.length + ' homes shown (matching the current filters).';
+  }
+
   function applyFilter(){
     var shown = allMarkers.filter(function(m){
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
@@ -207,6 +266,7 @@ window.initMap = function(){
     document.getElementById('count').textContent =
       (n === total) ? (total + ' located addresses')
                     : ('Showing ' + n + ' of ' + total + ' addresses');
+    renderList(shown);
   }
 
   var boxes = document.getElementById('filter-boxes');
@@ -258,10 +318,28 @@ window.initMap = function(){
     var b = document.getElementById('filter-body');
     var open = b.style.display === 'block';
     b.style.display = open ? 'none' : 'block';
-    ft.innerHTML = (open ? '\u25B8' : '\u25BE') + ' Filter';
+    ft.setAttribute('aria-expanded', open ? 'false' : 'true');
   };
 
-  applyFilter();  // sets the initial count
+  // Accessible list view: open/close, move focus, restore focus on close.
+  var listView = document.getElementById('list-view');
+  var listToggle = document.getElementById('list-toggle');
+  var listClose = document.getElementById('list-close');
+  listToggle.onclick = function(){
+    listView.hidden = false;
+    listToggle.setAttribute('aria-expanded', 'true');
+    listClose.focus();
+  };
+  listClose.onclick = function(){
+    listView.hidden = true;
+    listToggle.setAttribute('aria-expanded', 'false');
+    listToggle.focus();
+  };
+  listView.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { listClose.click(); }
+  });
+
+  applyFilter();  // sets the initial count + builds the list
 };
 
 // Shown by Google when the key is missing/unauthorized for Maps JS API.
@@ -301,11 +379,17 @@ if (KEY) {
 
 // Mobile: the info/filter panel is hidden behind a button so it does not cover
 // the map. These controls do nothing on desktop (the panel is always shown).
-document.getElementById('panel-toggle').onclick = function(){
+var panelToggle = document.getElementById('panel-toggle');
+var panelClose = document.getElementById('panel-close');
+panelToggle.onclick = function(){
   document.body.classList.add('panel-open');
+  panelToggle.setAttribute('aria-expanded', 'true');
+  panelClose.focus();
 };
-document.getElementById('panel-close').onclick = function(){
+panelClose.onclick = function(){
   document.body.classList.remove('panel-open');
+  panelToggle.setAttribute('aria-expanded', 'false');
+  panelToggle.focus();
 };
 </script>
 </body>

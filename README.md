@@ -138,6 +138,12 @@ All scripts read/write the `data/` folder.
    (it is stored in your browser only — never committed or shared).
 3. Click any dot to see the property details and a Street View photo.
 
+**Accessible alternative:** because an interactive pin map is hard to use with a
+keyboard or screen reader, the panel includes a **"View as list"** button that
+opens a keyboard- and screen-reader-friendly text list of the same homes
+(address, features, years, and a link to each in Google Maps / Street View). The
+list reflects whatever filters are active.
+
 The map uses the **Google Maps JavaScript API**, so the key needs both of these
 enabled in the [Google Cloud Console](https://console.cloud.google.com/):
 
