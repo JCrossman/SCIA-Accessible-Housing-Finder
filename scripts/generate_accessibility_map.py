@@ -230,7 +230,9 @@ def main():
 <link rel="apple-touch-icon" href="../favicon.png">
 <style>
   html,body{margin:0;height:100%}
-  #map{height:100%;background:#e8e8e8}
+  /* 100dvh tracks the *dynamic* viewport so the map fills the screen even as a
+     mobile browser's address bar collapses (100vh is the pre-dvh fallback). */
+  #map{height:100vh;height:100dvh;background:#e8e8e8}
   .panel{position:absolute;top:10px;right:10px;z-index:5;background:#fff;
     padding:12px 14px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);
     font:14px sans-serif;max-width:300px;max-height:90vh;overflow:auto}
@@ -466,6 +468,21 @@ window.initMap = function(){
   var cluster = new markerClusterer.MarkerClusterer({map: map, markers: allMarkers});
   if (points.length) { map.fitBounds(bounds); }
   document.getElementById('svnote').textContent = 'Tip: use the Map / Satellite toggle (top-left).';
+
+  // Mobile browsers collapse the address bar shortly after load, changing the
+  // viewport height. Google Maps can paint tiles for the initial (smaller) size
+  // and never recover -- leaving grey around a small block of real map. Force a
+  // re-measure when the viewport changes, and once after the address bar settles.
+  var keepCenter = null;
+  map.addListener('idle', function(){ keepCenter = map.getCenter(); });
+  function syncMapSize(refit){
+    google.maps.event.trigger(map, 'resize');
+    if (refit && points.length) { map.fitBounds(bounds); }
+    else if (keepCenter) { map.setCenter(keepCenter); }
+  }
+  window.addEventListener('resize', function(){ syncMapSize(false); });
+  window.addEventListener('orientationchange', function(){ setTimeout(function(){ syncMapSize(false); }, 350); });
+  setTimeout(function(){ syncMapSize(true); }, 500);  // initial settle -> re-fit
 
   // ---- Type (Homes / Businesses / Both), default Homes ----
   var typeFilter = 'home';
