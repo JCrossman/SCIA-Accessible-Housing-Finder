@@ -2,14 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=data/edmonton_accessibility_map.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Keep this launcher uncached so it always points at the newest map build.
+     The map URL carries a content hash (?v=...), so the heavy map is cached for
+     speed but re-fetched automatically whenever it changes. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>SCIA Accessible Housing Finder</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
+<script>
+  /* Replace (not push) so the launcher stays out of back-button history. */
+  location.replace("data/edmonton_accessibility_map.html?v=4041204995b5");
+</script>
+<noscript>
+  <meta http-equiv="refresh" content="0; url=data/edmonton_accessibility_map.html?v=4041204995b5">
+</noscript>
 </head>
 <body style="font:15px sans-serif;margin:40px">
 <p>Loading the Edmonton accessible-housing map&hellip;</p>
 <p>If it doesn't open automatically,
-<a href="data/edmonton_accessibility_map.html">click here</a>.</p>
+<a href="data/edmonton_accessibility_map.html?v=4041204995b5">click here</a>.</p>
 </body>
 </html>

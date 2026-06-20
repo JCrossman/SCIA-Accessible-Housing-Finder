@@ -13,6 +13,7 @@ Reads  : data/edmonton_accessibility_residential_merged.csv
 Writes : data/edmonton_accessibility_map.html
 """
 import csv
+import hashlib
 import html
 import json
 import os
@@ -21,6 +22,8 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 MERGED_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_residential_merged.csv")
 COMMERCIAL_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_commercial_merged.csv")
 OUT_HTML = os.path.join(DATA_DIR, "edmonton_accessibility_map.html")
+ROOT_DIR = os.path.dirname(DATA_DIR)  # repo root (one level above data/)
+INDEX_HTML = os.path.join(ROOT_DIR, "index.html")
 
 SOURCE_COLORS = {
     "development": "#1f78b4",     # blue
@@ -734,7 +737,49 @@ panelClose.onclick = function(){
     with open(OUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_doc)
 
+    # Write the launcher (index.html) that redirects to a CONTENT-HASHED map URL.
+    # Why: browsers (especially mobile Safari) cache the map aggressively, so
+    # without this a returning visitor can be stuck on an old build. The hash
+    # changes only when the map content changes, so the heavy map still caches
+    # normally for speed, but a new build = new URL = everyone gets it fresh,
+    # with no manual cache-clearing. The tiny launcher asks not to be cached so
+    # it can always point at the newest build.
+    version = hashlib.sha256(html_doc.encode("utf-8")).hexdigest()[:12]
+    map_url = "data/edmonton_accessibility_map.html?v=" + version
+    index_doc = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Keep this launcher uncached so it always points at the newest map build.
+     The map URL carries a content hash (?v=...), so the heavy map is cached for
+     speed but re-fetched automatically whenever it changes. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>SCIA Accessible Housing Finder</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<script>
+  /* Replace (not push) so the launcher stays out of back-button history. */
+  location.replace(%(map_url_js)s);
+</script>
+<noscript>
+  <meta http-equiv="refresh" content="0; url=%(map_url)s">
+</noscript>
+</head>
+<body style="font:15px sans-serif;margin:40px">
+<p>Loading the Edmonton accessible-housing map&hellip;</p>
+<p>If it doesn't open automatically,
+<a href="%(map_url)s">click here</a>.</p>
+</body>
+</html>
+""" % {"map_url": map_url, "map_url_js": json.dumps(map_url)}
+    with open(INDEX_HTML, "w", encoding="utf-8") as f:
+        f.write(index_doc)
+
     print("Mapped %d located addresses -> %s" % (len(points), OUT_HTML))
+    print("Launcher -> %s (map build %s)" % (INDEX_HTML, version))
     print("Base map: Google Maps JavaScript API. Enter the key via the in-map "
           "button (stored in the browser only). The key needs both the Maps "
           "JavaScript API and Street View Static API enabled.")
