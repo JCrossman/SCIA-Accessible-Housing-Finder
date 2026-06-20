@@ -318,6 +318,9 @@ def main():
     __MARKER_WC_LEGEND__ Mentions wheelchair access<br>
     __MARKER_UNSURE_LEGEND__ Accessibility permit &ndash; wheelchair not confirmed
   </div>
+  <label id="wc-only-row" style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer">
+    <input type="checkbox" id="wc-only"> Show only confirmed wheelchair access
+  </label>
   <!-- Filter is collapsed by default to keep the interface uncluttered. -->
   <button id="filter-toggle" class="linkbtn" aria-expanded="false" aria-controls="filter-body">Filter</button>
   <div id="filter-body">
@@ -418,6 +421,7 @@ window.initMap = function(){
              anchor: new google.maps.Point(14, 40)}
     });
     m._cats = p.cats || [];
+    m._wc = !!p.wc;               // confirmed wheelchair?
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
@@ -474,7 +478,9 @@ window.initMap = function(){
   }
 
   function applyFilter(){
+    var wcOnly = document.getElementById('wc-only').checked;
     var shown = allMarkers.filter(function(m){
+      if (wcOnly && !m._wc) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
@@ -505,6 +511,9 @@ window.initMap = function(){
   }
   document.getElementById('filter-all').onclick = function(){ setAll(true); };
   document.getElementById('filter-none').onclick = function(){ setAll(false); };
+  // Confirmed-wheelchair-only toggle (default off): composes with the filters
+  // above; map, list and count all update together.
+  document.getElementById('wc-only').addEventListener('change', applyFilter);
 
   // Year dropdowns (From / To) -- accessible alternative to a range slider.
   var yearSection = document.getElementById('year-section');
