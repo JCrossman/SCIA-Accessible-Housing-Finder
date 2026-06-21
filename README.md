@@ -1,6 +1,6 @@
 # SCIA Accessible Housing Finder
 
-![Accessible Housing Finder — mapping Edmonton homes with accessibility features. Built for Spinal Cord Injury Alberta using City of Edmonton open data.](docs/social-preview.png)
+![Accessible Housing Finder — mapping Edmonton and Calgary homes with accessibility features. Built for Spinal Cord Injury Alberta using City of Edmonton and City of Calgary open data.](docs/social-preview.png)
 
 A tool that builds a database and interactive map of Alberta properties
 (**Edmonton and Calgary**) with **accessibility-related building work** — ramps,

@@ -62,6 +62,9 @@ CITIES = {
             "date_field": "issueddate",
             "id_field": "permitnum",
             "lat_field": "latitude", "lon_field": "longitude",  # coords present
+            # Personal/identifying columns the pipeline never uses -- dropped
+            # before writing CSVs so no names are republished (minimization).
+            "drop_fields": ["applicantname", "contractorname"],
         },
         "development": {
             "dataset": "6933-unw5",
@@ -72,6 +75,7 @@ CITIES = {
             "date_field": "applieddate",
             "id_field": "permitnum",
             "lat_field": "latitude", "lon_field": "longitude",
+            "drop_fields": ["applicant"],
         },
         "residential": {
             "kind": "calgary",

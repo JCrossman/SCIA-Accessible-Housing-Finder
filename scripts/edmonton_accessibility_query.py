@@ -218,6 +218,13 @@ def classify_keywords(row, text_fields):
     return hits
 
 
+def strip_fields(rows, fields):
+    """Drop the given columns from every row in place (privacy minimization)."""
+    for row in rows:
+        for f in fields:
+            row.pop(f, None)
+
+
 def write_csv(path, rows):
     """Write rows (list of dicts) to CSV, unioning all keys for the header."""
     if not rows:
@@ -281,6 +288,7 @@ def main():
     b_where = build_where(b_text)
     print("Querying %s building permits ..." % cfg["display_name"])
     building = fetch_all(dataset_url(cfg, "building"), b_where)
+    strip_fields(building, b_cfg.get("drop_fields", []))  # drop unused name cols
     write_csv(path("building_permits_accessibility.csv"), building)
 
     building_res = [r for r in building if is_residential_building(r, cfg)]
@@ -296,6 +304,7 @@ def main():
     d_where = build_where(d_text)
     print("\nQuerying %s development permits ..." % cfg["display_name"])
     development = fetch_all(dataset_url(cfg, "development"), d_where)
+    strip_fields(development, d_cfg.get("drop_fields", []))  # drop unused name cols
     write_csv(path("development_permits_accessibility.csv"), development)
 
     development_res = [r for r in development if is_residential_development(r, cfg)]
