@@ -1,43 +1,45 @@
 #!/usr/bin/env python3
-"""Merge the residential building- and development-permit accessibility CSVs
-into a single deduplicated, address-level list for the SCI Alberta accessible
-housing database.
+"""Merge a city's building- and development-permit accessibility CSVs into a
+single deduplicated, address-level list for the SCI Alberta accessible housing
+database.
 
 - Dedupes by normalized street address.
-- Carries latitude/longitude from development permits (which have coordinates)
-  onto matching building-permit addresses so the merged list is mappable.
+- Carries latitude/longitude from whichever permits supply them (development
+  permits in Edmonton; both permit types in Calgary) so the list is mappable.
 - Unions the accessibility keywords and records which source datasets and how
   many permits contributed to each address.
 
-Input : data/edmonton_building_permits_accessibility_residential.csv
-        data/edmonton_development_permits_accessibility_residential.csv
-Output: data/edmonton_accessibility_residential_merged.csv
+Field names, dataset locations and which permits carry coordinates all come
+from scripts/cities.py, so this script is city-agnostic.
+
+Usage : python scripts/merge_residential_accessibility.py <city> [residential|commercial]
+Input : data/<city>/{building,development}_permits_accessibility_<cut>.csv
+Output: data/<city>/accessibility_<cut>_merged.csv
 """
 import csv
 import os
 import re
+import sys
 
+from cities import get_city
 from edmonton_accessibility_query import classify_keywords
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-B_CSV = os.path.join(DATA_DIR, "edmonton_building_permits_accessibility_residential.csv")
-D_CSV = os.path.join(DATA_DIR, "edmonton_development_permits_accessibility_residential.csv")
-OUT_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_residential_merged.csv")
-
-B_TEXT = ["job_description", "job_category"]
-D_TEXT = ["description_of_development"]
 
 
 def normalize_address(addr):
-    """Normalize an Edmonton permit address for matching.
+    """Normalize a permit address for matching/deduplication.
 
-    Forms seen: '11622 - 127 AVENUE NW', '11, 2930 - 51 AVENUE NW'
-    (suite, house - street). Uppercase, drop suite prefix before the house
-    number, collapse the ' - ' separator and all punctuation/space runs.
+    Handles Edmonton forms ('11622 - 127 AVENUE NW', '11, 2930 - 51 AVENUE NW')
+    and Calgary forms ('403 52 AV SW', '#705 3204 RIDEAU PL SW'). Uppercase,
+    drop a leading '#unit' or 'suite,' prefix, then collapse the ' - ' separator
+    and all punctuation/space runs.
     """
     a = (addr or "").upper().strip()
     if not a:
         return ""
+    # Drop a leading unit prefix: "#705 3204 ..." -> "3204 ..."
+    a = re.sub(r"^#\s*\w+\s+", "", a)
     # Drop a leading "suite," prefix like "11, 2930 - ..." -> "2930 - ..."
     a = re.sub(r"^\s*\d+\s*,\s*", "", a)
     # Replace the dash separator and any punctuation with single spaces.
@@ -50,12 +52,15 @@ def load(path):
 
 
 def main():
-    import sys
+    city = sys.argv[1] if len(sys.argv) > 1 else "edmonton"
     # "residential" (default) or "commercial" — picks input + output filenames.
-    cut = sys.argv[1] if len(sys.argv) > 1 else "residential"
-    b_csv = os.path.join(DATA_DIR, "edmonton_building_permits_accessibility_%s.csv" % cut)
-    d_csv = os.path.join(DATA_DIR, "edmonton_development_permits_accessibility_%s.csv" % cut)
-    out_csv = os.path.join(DATA_DIR, "edmonton_accessibility_%s_merged.csv" % cut)
+    cut = sys.argv[2] if len(sys.argv) > 2 else "residential"
+    cfg = get_city(city)
+    b_cfg, d_cfg = cfg["building"], cfg["development"]
+    data_city = os.path.join(DATA_DIR, city)
+    b_csv = os.path.join(data_city, "building_permits_accessibility_%s.csv" % cut)
+    d_csv = os.path.join(data_city, "development_permits_accessibility_%s.csv" % cut)
+    out_csv = os.path.join(data_city, "accessibility_%s_merged.csv" % cut)
     building = load(b_csv)
     development = load(d_csv)
 
@@ -81,49 +86,58 @@ def main():
             }
         return merged[key]
 
+    def carry_coords(rec, row, sub_cfg):
+        """Copy lat/lon onto the record if this dataset supplies them."""
+        lat_f, lon_f = sub_cfg.get("lat_field"), sub_cfg.get("lon_field")
+        if lat_f and row.get(lat_f) and row.get(lon_f) and not rec["latitude"]:
+            rec["latitude"] = row[lat_f]
+            rec["longitude"] = row[lon_f]
+
+    b_text, d_text = b_cfg["text_fields"], d_cfg["text_fields"]
+
     for r in building:
-        addr = r.get("address", "")
+        addr = r.get(b_cfg["address_field"], "")
         key = normalize_address(addr)
         if not key:
             continue
-        rec = get(key, addr, r.get("neighbourhood"))
+        rec = get(key, addr, r.get(b_cfg["neighbourhood_field"]))
         rec["sources"].add("building")
         rec["n_building_permits"] += 1
-        rec["keywords"] |= classify_keywords(r, B_TEXT)
-        if r.get("row_id"):
-            rec["building_row_ids"].append(r["row_id"])
-        if r.get("permit_date"):
-            rec["permit_dates"].append(r["permit_date"])
+        rec["keywords"] |= classify_keywords(r, b_text)
+        if r.get(b_cfg["id_field"]):
+            rec["building_row_ids"].append(r[b_cfg["id_field"]])
+        if r.get(b_cfg["date_field"]):
+            rec["permit_dates"].append(r[b_cfg["date_field"]])
+        carry_coords(rec, r, b_cfg)
         if not rec["sample_description"]:
-            rec["sample_description"] = (r.get("job_description") or "").strip()
+            rec["sample_description"] = (r.get(b_text[0]) or "").strip()
 
     for r in development:
-        addr = r.get("address", "")
+        addr = r.get(d_cfg["address_field"], "")
         key = normalize_address(addr)
         if not key:
             continue
-        rec = get(key, addr, r.get("neighbourhood"))
+        rec = get(key, addr, r.get(d_cfg["neighbourhood_field"]))
         rec["sources"].add("development")
         rec["n_development_permits"] += 1
-        rec["keywords"] |= classify_keywords(r, D_TEXT)
-        if r.get("city_file_number"):
-            rec["development_file_numbers"].append(r["city_file_number"])
-        if r.get("permit_date"):
-            rec["permit_dates"].append(r["permit_date"])
-        # Development permits carry coordinates + ward; prefer them.
-        if r.get("latitude") and r.get("longitude"):
-            rec["latitude"] = r["latitude"]
-            rec["longitude"] = r["longitude"]
-        if r.get("ward"):
-            rec["ward"] = r["ward"]
+        rec["keywords"] |= classify_keywords(r, d_text)
+        if r.get(d_cfg["id_field"]):
+            rec["development_file_numbers"].append(r[d_cfg["id_field"]])
+        if r.get(d_cfg["date_field"]):
+            rec["permit_dates"].append(r[d_cfg["date_field"]])
+        carry_coords(rec, r, d_cfg)
+        ward_f = d_cfg.get("ward_field")
+        if ward_f and r.get(ward_f):
+            rec["ward"] = r[ward_f]
         if not rec["sample_description"]:
-            rec["sample_description"] = (r.get("description_of_development") or "").strip()
+            rec["sample_description"] = (r.get(d_text[0]) or "").strip()
 
     # Flatten to rows.
     out = []
     for rec in merged.values():
         dates = sorted(d for d in rec["permit_dates"] if d)
         out.append({
+            "city": city,
             "address": rec["address"],
             "neighbourhood": rec["neighbourhood"],
             "ward": rec["ward"],
@@ -159,7 +173,7 @@ def main():
     with_coords = sum(1 for x in out if x["has_coords"] == "yes")
     dup_collapsed = (len(building) + len(development)) - total
 
-    print("Merged residential accessibility list")
+    print("Merged %s %s accessibility list" % (cfg["display_name"], cut))
     print("=" * 50)
     print("Input permits      : %d building + %d development = %d"
           % (len(building), len(development), len(building) + len(development)))

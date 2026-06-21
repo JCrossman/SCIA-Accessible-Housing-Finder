@@ -4,52 +4,71 @@ Guidance for Claude Code (and other AI assistants) working in this repository.
 
 ## What this project is
 
-A data pipeline + interactive map that identifies Edmonton properties with
-**accessibility-related building work** (ramps, lifts/elevators, wheelchair
-access, barrier-free features, etc.), built for Spinal Cord Injury Alberta's
-accessible housing efforts. All source data is from the **City of Edmonton
-Open Data Portal** (Socrata); no API key is needed to gather data.
+A data pipeline + interactive map that identifies Alberta properties
+(**Edmonton and Calgary**) with **accessibility-related building work** (ramps,
+lifts/elevators, wheelchair access, barrier-free features, etc.), built for
+Spinal Cord Injury Alberta's accessible housing efforts. All source data is from
+the cities' **Open Data portals** (Socrata: `data.edmonton.ca`,
+`data.calgary.ca`); no API key is needed to gather data.
 
 ## Repository layout
 
 ```
 scripts/   Python data pipeline + the map generator and the JS a11y audit
-data/      Generated CSVs, the interactive map, and config.js (the public key)
+scripts/cities.py   Per-city config (datasets, field maps, residential rules)
+data/<city>/   Generated CSVs per city (edmonton/, calgary/)
+data/      The combined map (accessibility_map.html) + config.js (public key)
 docs/      Banner image + the accessibility CI workflow (copy to .github to use)
 README.md  User-facing overview and run instructions
 package.json / scripts/audit.mjs   Node tooling for the offline axe-core audit
 ```
 
-### The pipeline (run in this order)
+### Multi-city: config-driven
 
-1. `scripts/edmonton_accessibility_query.py` — query Edmonton Open Data for
-   accessibility keywords; write raw + residential + commercial CSVs (each
-   permit is classified residential vs non-residential).
-2. `scripts/merge_residential_accessibility.py [residential|commercial]` —
+`scripts/cities.py` holds a `CITIES` dict; each entry maps this pipeline's
+canonical field names to a city's real Socrata columns, plus its residential
+rule and whether permits already carry coordinates. Everything else (keyword
+list, SoQL helpers, dedup, map UI) is shared. **Adding another Socrata city is
+just a new `CITIES` entry** — no per-city code. ArcGIS-based cities (Red Deer,
+Lethbridge, Strathcona) would need a second fetch adapter and are not yet built.
+
+### The pipeline (run per city, in this order)
+
+Each script takes a `<city>` slug (`edmonton` | `calgary`). Outputs go to
+`data/<city>/`.
+
+1. `edmonton_accessibility_query.py <city>` — query Open Data for accessibility
+   keywords; write raw + residential + commercial CSVs (each permit classified
+   residential vs non-residential via the city's rule).
+2. `merge_residential_accessibility.py <city> [residential|commercial]` —
    dedupe building + development permits into one address-level master list for
-   the chosen cut (default `residential`). Run once per cut.
-3. `scripts/geocode_residential_accessibility.py [merged_csv]` — fill in
-   coordinates by matching the Parcel Addresses dataset (`ut27-nrpn`). Pass the
-   commercial merged CSV path to geocode businesses; defaults to residential.
-4. `scripts/export_unmatched_addresses.py` — export addresses still missing
+   the chosen cut (default `residential`). Run once per cut. Carries coordinates
+   from whichever permits supply them; adds a `city` column.
+3. `geocode_residential_accessibility.py <city> [cut]` — Edmonton: geocode
+   missing coords against Parcel Addresses (`ut27-nrpn`). Calgary: no-op (permits
+   already carry coords), just records `coord_source`. Guarded by
+   `cfg["geocode"]["needed"]`.
+4. `export_unmatched_addresses.py <city>` — export addresses still missing
    coordinates for manual review.
-5. `scripts/generate_accessibility_map.py` — build the Google Maps HTML view
-   (reads both the residential and commercial merged lists).
+5. `generate_accessibility_map.py` — build the **single combined** map
+   (`data/accessibility_map.html`) reading every city's merged lists. Run once
+   after all cities are processed.
 
-The pipeline scripts are parameterized by "cut": the same merge/geocode code
-serves homes and businesses. `commercial` is everything classified
-non-residential — offices, shops, restaurants, rec centres, clinics, schools,
-warehouses, parkades, etc.
+The merge/geocode scripts are also parameterized by "cut": the same code serves
+homes (`residential`) and businesses (`commercial` = everything non-residential:
+offices, shops, restaurants, rec centres, clinics, schools, warehouses,
+parkades, etc.).
 
 ## The map (`generate_accessibility_map.py`)
 
 - **Base**: Google Maps JS API + marker clustering. The API key is read at
   runtime from `data/config.js` (a public, referrer-restricted browser key) or
   an in-map button; never a private secret.
-- **Two layers**: homes + businesses on one map. `build_points()` tags each
-  point with `type` (`home` / `business`); a **Homes / Businesses / Both**
-  segmented toggle (`typeFilter`, default `home`) filters by it. The count and
-  list noun adapt to the active type.
+- **Layers + cities on one map**: `build_points(csv, ptype, city, cfg)` tags
+  each point with `type` (`home`/`business`) and `city` (slug). A **Homes /
+  Businesses / Both** toggle (`typeFilter`, default `home`) and a **City** toggle
+  (`cityFilter`, default `all`, only rendered when >1 city is present) both feed
+  the single `applyFilter()`. Count/list noun + denominator respect both.
 - **Two pins**: blue wheelchair pin when the keywords/description contain
   "wheelchair" (`p.wc`), else a grey "?" pin (wheelchair not confirmed). Pins
   differ by glyph + colour (not colour alone). Pin type is independent of the
@@ -67,12 +86,20 @@ warehouses, parkades, etc.
 
 - **Python**: standard library + `requests` only. No pandas / heavy deps. Keep
   scripts runnable with `python scripts/<name>.py` from the repo root.
-- **Data source IDs**: Building `24uj-dj8v`, Development `2ccn-pwtu`,
-  Parcel Addresses `ut27-nrpn` (all on `data.edmonton.ca`).
-- **Socrata gotchas**: `house_number` in the Parcel Addresses dataset is a
-  *numeric* column — querying a letter-suffixed value (e.g. `7606A`) throws a
-  type-mismatch 400. Parse to the numeric base. Building permits have a typo'd
-  `neighbourhood_numberr` field. Use retry/backoff; the API throttles.
+- **Data source IDs** (all in `scripts/cities.py`): Edmonton building
+  `24uj-dj8v`, development `2ccn-pwtu`, Parcel Addresses `ut27-nrpn`
+  (`data.edmonton.ca`); Calgary building `c2es-76ed`, development `6933-unw5`
+  (`data.calgary.ca`). Never hardcode dataset URLs/fields in scripts — add them
+  to `cities.py`.
+- **Per-city classification**: Edmonton uses building_type numeric codes +
+  R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
+  and `landusedistrict` R-/M- prefixes (development). Both fall back to a shared
+  dwelling-term scan of the description.
+- **Socrata gotchas**: Edmonton `house_number` in Parcel Addresses is a
+  *numeric* column — a letter-suffixed value (e.g. `7606A`) throws a
+  type-mismatch 400; parse to the numeric base. Calgary addresses use `#unit`
+  prefixes and quadrants (`SW`) and no ` - ` separator (handled in
+  `normalize_address`). Use retry/backoff; the APIs throttle.
 - **Network calls**: always page results, retry with exponential backoff, and
   fail soft (skip a batch rather than crash the run).
 
@@ -133,15 +160,18 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
-- **Coverage**: ~91% of homes are geocoded (324 of 355) and ~99% of businesses
-  (1,032 of 1,044); the unmatched homes are in
-  `data/edmonton_accessibility_unmatched_addresses.csv` for manual lookup.
+- **Coverage** (~99–100%): Edmonton homes 354/355, businesses 1,032/1,044
+  (geocoded); Calgary homes 196/196, businesses 650/650 (coords from permits).
+  Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by the Alberta Building Code, and some matches are freight
   lifts / loading ramps (warehouses, parkades), not human access. Keep the
   "worth checking" framing and the README's "Note on businesses" caveat.
-- Results reflect the City's currently published (rolling) data, so counts
-  change when the pipeline is re-run.
+- **Calgary descriptions are terser** than Edmonton's, so Calgary surfaces fewer
+  matches; same "worth checking, not proof" framing.
+- Results reflect the cities' currently published (rolling) data, so counts
+  change when the pipeline is re-run. Update the README "Results at a glance"
+  table when they do.
 
 ## When making changes
 

@@ -10,7 +10,7 @@
  *      builds the full UI (filters, year dropdowns, list view) with no network,
  *   3. runs axe-core against the resulting DOM and fails on violations.
  *
- * Usage:  node scripts/audit.mjs            # audits data/edmonton_accessibility_map.html
+ * Usage:  node scripts/audit.mjs            # audits data/accessibility_map.html
  * Exit:   non-zero if any serious/critical violations are found.
  */
 import { chromium } from 'playwright';
@@ -18,7 +18,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
-const FILE = resolve('data/edmonton_accessibility_map.html');
+const FILE = resolve('data/accessibility_map.html');
 const URL = pathToFileURL(FILE).href;
 
 // Minimal stubs so initMap() runs without the real Google Maps SDK.

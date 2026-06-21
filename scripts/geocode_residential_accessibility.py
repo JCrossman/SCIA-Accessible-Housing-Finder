@@ -1,30 +1,37 @@
 #!/usr/bin/env python3
-"""Geocode the residential accessibility addresses that lack coordinates by
-matching them against the City of Edmonton 'Parcel Addresses' open dataset
-(ut27-nrpn) -- same Socrata source, no API key, no third-party geocoder.
+"""Fill in coordinates for a city's merged accessibility address list.
 
-Reads  : data/edmonton_accessibility_residential_merged.csv
-Writes : data/edmonton_accessibility_residential_merged.csv (in place, adds a
-         'coord_source' column: development | parcel_geocode | none)
+For cities whose permits already carry latitude/longitude (e.g. Calgary), this
+is a no-op that just records a 'coord_source' column. For cities whose building
+permits lack coordinates (e.g. Edmonton), it geocodes the missing rows by
+matching them against the city's 'Parcel Addresses' open dataset -- same Socrata
+source, no API key, no third-party geocoder.
 
-Permit addresses look like '11622 - 127 AVENUE NW' or, with a suite prefix,
-'101, 2755 - 109 STREET NW'. We parse house_number + street_name and look up
-the PARCEL point in the address dataset.
+Field names, the parcel dataset and whether geocoding is needed all come from
+scripts/cities.py.
+
+Usage : python scripts/geocode_residential_accessibility.py <city> [residential|commercial]
+Reads/Writes (in place): data/<city>/accessibility_<cut>_merged.csv
+  adds a 'coord_source' column: permit | parcel_geocode | none
 """
 import csv
 import os
 import re
+import sys
 import time
 
 import requests
 
+from cities import get_city
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-MERGED_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_residential_merged.csv")
-ADDRESS_URL = "https://data.edmonton.ca/resource/ut27-nrpn.json"
 
 BATCH = 20      # address tuples per request
 TIMEOUT = 90
 SLEEP = 1.0     # politeness delay between requests to avoid throttling
+
+# Set by main() before any lookups: {"url", "house", "street", "lat", "lon"}.
+_GCFG = None
 
 
 def parse_permit_address(addr):
@@ -49,23 +56,25 @@ def soql_escape(s):
 
 def _query(pairs):
     """Run one OR-query for the given pairs. Returns (result_dict, ok)."""
+    house, street = _GCFG["house"], _GCFG["street"]
+    lat_f, lon_f = _GCFG["lat"], _GCFG["lon"]
     clauses = []
     for hn, st in pairs:
-        clauses.append("(house_number='%s' AND street_name='%s')"
-                       % (soql_escape(hn), soql_escape(st)))
+        clauses.append("(%s='%s' AND %s='%s')"
+                       % (house, soql_escape(hn), street, soql_escape(st)))
     # Match any address record (PARCEL or SUITE). Commercial / multi-tenant
     # buildings are often only registered as SUITE; their coordinates are within
     # a few metres of the parcel, which is fine for mapping. We keep the first
     # match per address.
     where = "(" + " OR ".join(clauses) + ")"
     params = {
-        "$select": "house_number,street_name,latitude,longitude",
+        "$select": "%s,%s,%s,%s" % (house, street, lat_f, lon_f),
         "$where": where,
         "$limit": 50000,
     }
     for attempt in range(4):
         try:
-            r = requests.get(ADDRESS_URL, params=params, timeout=TIMEOUT)
+            r = requests.get(_GCFG["url"], params=params, timeout=TIMEOUT)
             r.raise_for_status()
             break
         except requests.RequestException as e:
@@ -76,8 +85,8 @@ def _query(pairs):
         return {}, False
     out = {}
     for row in r.json():
-        key = (row.get("house_number", "").upper(), row.get("street_name", "").upper())
-        lat, lon = row.get("latitude"), row.get("longitude")
+        key = (row.get(house, "").upper(), row.get(street, "").upper())
+        lat, lon = row.get(lat_f), row.get(lon_f)
         if lat and lon and key not in out:
             out[key] = (lat, lon)
     return out, True
@@ -101,11 +110,47 @@ def fetch_batch(pairs):
     return out
 
 
+def _write(merged_csv, rows):
+    fieldnames = list(rows[0].keys())
+    if "coord_source" not in fieldnames:
+        fieldnames.insert(fieldnames.index("has_coords") + 1, "coord_source")
+    with open(merged_csv, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames)
+        w.writeheader()
+        w.writerows(rows)
+
+
+def _no_geocode(merged_csv, rows):
+    """Cities whose permits already carry coordinates: just label the source."""
+    for row in rows:
+        has = bool(row.get("latitude") and row.get("longitude"))
+        row["coord_source"] = "permit" if has else "none"
+    _write(merged_csv, rows)
+    total = sum(1 for r in rows if r.get("has_coords") == "yes")
+    print("No geocoding needed (permits carry coordinates).")
+    print("Total with coordinates : %d / %d (%.0f%%)"
+          % (total, len(rows), 100.0 * total / len(rows) if rows else 0))
+    print("Saved -> %s" % merged_csv)
+
+
 def main():
-    import sys
-    # Optional path to a merged CSV (defaults to the residential one).
-    merged_csv = sys.argv[1] if len(sys.argv) > 1 else MERGED_CSV
+    global _GCFG
+    city = sys.argv[1] if len(sys.argv) > 1 else "edmonton"
+    cut = sys.argv[2] if len(sys.argv) > 2 else "residential"
+    cfg = get_city(city)
+    merged_csv = os.path.join(DATA_DIR, city, "accessibility_%s_merged.csv" % cut)
     rows = list(csv.DictReader(open(merged_csv, encoding="utf-8")))
+
+    if not cfg["geocode"]["needed"]:
+        _no_geocode(merged_csv, rows)
+        return
+
+    g = cfg["geocode"]
+    _GCFG = {
+        "url": "%s/resource/%s.json" % (cfg["domain"], g["dataset"]),
+        "house": g["house_field"], "street": g["street_field"],
+        "lat": g["lat_field"], "lon": g["lon_field"],
+    }
 
     # Determine which rows need geocoding and parse their addresses.
     need = []          # list of (row, hn, st)
@@ -115,18 +160,17 @@ def main():
         prior = row.get("coord_source", "")
         if has:
             # Preserve a prior parcel_geocode label across idempotent re-runs;
-            # otherwise coords present on first load came from dev permits.
-            row["coord_source"] = prior if prior in ("development", "parcel_geocode") else "development"
+            # otherwise coords present on first load came from the permits.
+            row["coord_source"] = prior if prior in ("permit", "parcel_geocode") else "permit"
         else:
             row["coord_source"] = ""
-        if not has:
             hn, st = parse_permit_address(row.get("address", ""))
             if hn:
                 need.append((row, hn, st))
                 to_lookup.add((hn, st))
 
     print("Rows total            : %d" % len(rows))
-    print("Already have coords    : %d" % sum(1 for r in rows if r["coord_source"] == "development"))
+    print("Already have coords    : %d" % sum(1 for r in rows if r["coord_source"] == "permit"))
     print("Need geocoding         : %d (%d unique addresses)" % (len(need), len(to_lookup)))
 
     # Batched lookups.
@@ -152,14 +196,7 @@ def main():
         else:
             row["coord_source"] = "none"
 
-    # Rewrite CSV with the new column inserted after longitude.
-    fieldnames = list(rows[0].keys())
-    if "coord_source" not in fieldnames:
-        fieldnames.insert(fieldnames.index("has_coords") + 1, "coord_source")
-    with open(merged_csv, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames)
-        w.writeheader()
-        w.writerows(rows)
+    _write(merged_csv, rows)
 
     total_coords = sum(1 for r in rows if r.get("has_coords") == "yes")
     print("\nNewly geocoded         : %d" % matched)

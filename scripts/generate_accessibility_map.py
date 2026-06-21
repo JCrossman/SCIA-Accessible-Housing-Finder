@@ -9,8 +9,8 @@ accessibility permit locations for the SCI Alberta housing database.
   browser (localStorage) only -- never baked into this committed file. The
   key needs the Maps JavaScript API and Street View Static API enabled.
 
-Reads  : data/edmonton_accessibility_residential_merged.csv
-Writes : data/edmonton_accessibility_map.html
+Reads  : data/<city>/accessibility_{residential,commercial}_merged.csv (all cities)
+Writes : data/accessibility_map.html  (one combined Alberta-wide map)
 """
 import csv
 import hashlib
@@ -18,10 +18,10 @@ import html
 import json
 import os
 
+from cities import CITIES
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-MERGED_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_residential_merged.csv")
-COMMERCIAL_CSV = os.path.join(DATA_DIR, "edmonton_accessibility_commercial_merged.csv")
-OUT_HTML = os.path.join(DATA_DIR, "edmonton_accessibility_map.html")
+OUT_HTML = os.path.join(DATA_DIR, "accessibility_map.html")
 ROOT_DIR = os.path.dirname(DATA_DIR)  # repo root (one level above data/)
 INDEX_HTML = os.path.join(ROOT_DIR, "index.html")
 
@@ -109,7 +109,7 @@ def categories_for(keywords_str):
     return sorted(cats)
 
 
-def build_points(csv_path, ptype):
+def build_points(csv_path, ptype, city, cfg):
     points = []
     if not os.path.exists(csv_path):
         return points
@@ -128,7 +128,7 @@ def build_points(csv_path, ptype):
             raw_addr = r.get("address", "")
             addr_q = raw_addr.replace(" - ", " ").strip()
             if addr_q:
-                addr_q += ", Edmonton, AB, Canada"
+                addr_q += cfg["streetview_suffix"]
             d0 = r.get("earliest_permit_date", "")[:10]
             d1 = r.get("latest_permit_date", "")[:10]
 
@@ -161,6 +161,7 @@ def build_points(csv_path, ptype):
                 "y1": _yr(d1),  # latest permit year (int or None)
                 "wc": is_wheelchair,
                 "type": ptype,   # "home" or "business"
+                "city": city,    # city slug (for the city filter)
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
             })
@@ -204,12 +205,24 @@ def popup_html(p):
 
 
 def main():
-    points = build_points(MERGED_CSV, "home") + build_points(COMMERCIAL_CSV, "business")
+    # Load every configured city's homes + businesses onto one combined map.
+    points = []
+    for slug, cfg in CITIES.items():
+        cdir = os.path.join(DATA_DIR, slug)
+        points += build_points(os.path.join(cdir, "accessibility_residential_merged.csv"),
+                               "home", slug, cfg)
+        points += build_points(os.path.join(cdir, "accessibility_commercial_merged.csv"),
+                               "business", slug, cfg)
     for p in points:
         p["popup"] = popup_html(p)
         p["color"] = SOURCE_COLORS.get(p["source"], "#888")
 
     data_json = json.dumps(points)
+    # Cities that actually have mapped points, in config order -> [slug, label].
+    cities_present = {p["city"] for p in points}
+    cities_list = [[slug, CITIES[slug]["display_name"]]
+                   for slug in CITIES if slug in cities_present]
+    cities_json = json.dumps(cities_list)
     # Only offer filter categories that actually have mapped properties, so
     # there are no dead checkboxes that filter to zero results.
     present = set()
@@ -227,7 +240,7 @@ def main():
      <img> requests match an HTTP-referrer-restricted key locked to this path.
      (Default policy sends only the origin, which fails the path restriction.) -->
 <meta name="referrer" content="no-referrer-when-downgrade">
-<title>Edmonton Accessible Housing &ndash; Permit Locations</title>
+<title>Alberta Accessible Housing &ndash; Permit Locations</title>
 <!-- favicon lives at the repo root; the map is one level down in data/ -->
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="apple-touch-icon" href="../favicon.png">
@@ -247,13 +260,15 @@ def main():
   .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px}
   .btn{margin-top:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;
     background:#f5f5f5;cursor:pointer;font-size:13px;color:#1a1a1a}
-  /* Homes / Businesses / Both segmented toggle. */
-  #type-toggle{display:flex;margin-top:8px;border:1px solid #1f78b4;border-radius:6px;
-    overflow:hidden}
-  #type-toggle button{flex:1;padding:6px 4px;border:0;background:#fff;color:#1f78b4;
-    font:600 13px sans-serif;cursor:pointer;border-left:1px solid #1f78b4}
-  #type-toggle button:first-child{border-left:0}
-  #type-toggle button[aria-pressed="true"]{background:#1f78b4;color:#fff}
+  /* City + Homes/Businesses segmented toggles (shared look). */
+  #type-toggle,#city-toggle{display:flex;flex-wrap:wrap;margin-top:8px;
+    border:1px solid #1f78b4;border-radius:6px;overflow:hidden}
+  #type-toggle button,#city-toggle button{flex:1;padding:6px 4px;border:0;
+    background:#fff;color:#1f78b4;font:600 13px sans-serif;cursor:pointer;
+    border-left:1px solid #1f78b4}
+  #type-toggle button:first-child,#city-toggle button:first-child{border-left:0}
+  #type-toggle button[aria-pressed="true"],
+  #city-toggle button[aria-pressed="true"]{background:#1f78b4;color:#fff}
   /* Prominent wheelchair-only toggle button (aria-pressed = on/off). */
   #wc-only{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;
     padding:9px 12px;border:2px solid #1f78b4;border-radius:8px;background:#fff;
@@ -314,37 +329,39 @@ def main():
 </head>
 <body>
 <main id="map" role="application"
-  aria-label="Interactive map of Edmonton homes and businesses with accessibility permits. This visual map is hard to use with a keyboard or screen reader; use the 'View as list' button for an accessible text version of the same places."></main>
+  aria-label="Interactive map of Alberta homes and businesses with accessibility permits. This visual map is hard to use with a keyboard or screen reader; use the 'View as list' button for an accessible text version of the same places."></main>
 <button id="panel-toggle" aria-expanded="false" aria-controls="info-panel">&#9432; Info &amp; filter</button>
 <a id="os-badge" href="https://github.com/JCrossman/the-open-state" target="_blank"
    rel="noopener"
    title="This map is built to The Open State's accessibility and openness principles (it is not a full Civic Access Protocol implementation). Learn more.">Aligned with The Open State &#8599;</a>
 <aside id="info-panel" class="panel" aria-label="Information and filters">
   <button id="panel-close" aria-label="Close information panel">&times;</button>
-  <h1>Edmonton Accessible Housing Map</h1>
-  <div class="sub">A map of Edmonton <b>homes</b> &mdash; and now <b>businesses
+  <h1>Alberta Accessible Housing Map</h1>
+  <div class="sub">A map of Alberta <b>homes</b> &mdash; and <b>businesses
     &amp; public places</b> &mdash; whose building permits mention ramps, lifts,
-    wheelchair access, or barrier-free features. Use the Homes / Businesses
-    toggle below. Click any pin for details and a Street View photo.</div>
+    wheelchair access, or barrier-free features. Use the City and Homes /
+    Businesses toggles below. Click any pin for details and a Street View
+    photo.</div>
   <details class="about" open>
     <summary>Why this exists &amp; data source</summary>
-    <div class="body"><b>The problem:</b> there is no central list of which Edmonton
+    <div class="body"><b>The problem:</b> there is no central list of which
       homes are wheelchair-accessible or barrier-free, so finding accessible
       housing often means checking listings one at a time, with no way to search
-      for the features that matter. The City's public building &amp; development
+      for the features that matter. Cities' public building &amp; development
       permits <i>do</i> record this work &mdash; ramps, lifts, barrier-free
       bathrooms &mdash; but it is buried in large datasets not built for this
       purpose.<br><br>
       <b>How this helps:</b> this tool pulls those accessibility-related permits
-      (2009&ndash;present) and maps them &mdash; homes by default, with a toggle for
-      businesses &amp; public places &mdash; so they can be browsed and filtered. A
-      starting point for <b>Spinal Cord Injury Alberta</b> and the people it
+      and maps them &mdash; homes by default, with toggles for city and for
+      businesses &amp; public places &mdash; so they can be browsed and filtered.
+      A starting point for <b>Spinal Cord Injury Alberta</b> and the people it
       serves to find and track accessible places.<br><br>
       It is an automatically generated draft, so some entries may be false matches
       (for example, a parking-garage &ldquo;ramp&rdquo;) &mdash; check the permit
       description in each popup. Not an official listing.</div>
   </details>
   <div id="count"></div>
+  <div id="city-toggle" role="group" aria-label="Filter by city"></div>
   <div id="type-toggle" role="group" aria-label="Show homes, businesses, or both">
     <button type="button" data-type="home" aria-pressed="true">Homes</button>
     <button type="button" data-type="business" aria-pressed="false">Businesses</button>
@@ -393,6 +410,7 @@ def main():
 <script>
 var points = __DATA__;
 var CATEGORIES = __CATEGORIES__;  // [[id, label], ...] for the feature filter
+var CITIES = __CITIES__;          // [[slug, label], ...] cities present in data
 
 // localStorage can throw on file:// (e.g. Safari treats it as a unique
 // origin), so guard every access.
@@ -460,6 +478,7 @@ window.initMap = function(){
     });
     m._cats = p.cats || [];
     m._type = p.type;            // "home" or "business"
+    m._city = p.city;            // city slug (for the city filter)
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
@@ -486,6 +505,32 @@ window.initMap = function(){
   window.addEventListener('resize', function(){ syncMapSize(false); });
   window.addEventListener('orientationchange', function(){ setTimeout(function(){ syncMapSize(false); }, 350); });
   setTimeout(function(){ syncMapSize(true); }, 500);  // initial settle -> re-fit
+
+  // ---- City filter (All + one button per city), default All ----
+  // Only shown when more than one city is present, to avoid a dead control.
+  var cityFilter = 'all';
+  var cityToggle = document.getElementById('city-toggle');
+  if (CITIES.length > 1) {
+    var makeCityBtn = function(val, label, pressed){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('data-city', val);
+      b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+      b.textContent = label;
+      b.addEventListener('click', function(){
+        cityFilter = val;
+        cityToggle.querySelectorAll('button').forEach(function(x){
+          x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+        });
+        applyFilter();
+      });
+      return b;
+    };
+    cityToggle.appendChild(makeCityBtn('all', 'All cities', true));
+    CITIES.forEach(function(c){ cityToggle.appendChild(makeCityBtn(c[0], c[1], false)); });
+  } else {
+    cityToggle.style.display = 'none';
+  }
 
   // ---- Type (Homes / Businesses / Both), default Homes ----
   var typeFilter = 'home';
@@ -553,18 +598,21 @@ window.initMap = function(){
       shown.length + ' place(s) shown (matching the current filters).';
   }
 
+  function cityOk(m){ return cityFilter === 'all' || m._city === cityFilter; }
+
   function applyFilter(){
     var shown = allMarkers.filter(function(m){
+      if (!cityOk(m)) return false;
       if (typeFilter !== 'both' && m._type !== typeFilter) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
     cluster.addMarkers(shown);
-    // Denominator = everything of the selected type (ignoring other filters).
+    // Denominator = everything of the selected city + type (ignoring feature/year).
     var noun = typeFilter === 'home' ? 'homes'
              : typeFilter === 'business' ? 'businesses / public places' : 'places';
     var typeTotal = allMarkers.filter(function(m){
-      return typeFilter === 'both' || m._type === typeFilter; }).length;
+      return cityOk(m) && (typeFilter === 'both' || m._type === typeFilter); }).length;
     var n = shown.length;
     document.getElementById('count').textContent =
       (n === typeTotal) ? (typeTotal + ' ' + noun)
@@ -728,6 +776,7 @@ panelClose.onclick = function(){
                     'style="vertical-align:middle;margin-right:5px"')
     html_doc = html_doc.replace("__DATA__", data_json)
     html_doc = html_doc.replace("__CATEGORIES__", categories_json)
+    html_doc = html_doc.replace("__CITIES__", cities_json)
     html_doc = html_doc.replace("__MARKER_WC_JS__", json.dumps(marker_wheelchair(28, 40)))
     html_doc = html_doc.replace("__MARKER_UNSURE_JS__", json.dumps(marker_unsure(28, 40)))
     html_doc = html_doc.replace("__MARKER_WC_LEGEND__", marker_wheelchair(16, 23, legend_attrs))
@@ -745,7 +794,7 @@ panelClose.onclick = function(){
     # with no manual cache-clearing. The tiny launcher asks not to be cached so
     # it can always point at the newest build.
     version = hashlib.sha256(html_doc.encode("utf-8")).hexdigest()[:12]
-    map_url = "data/edmonton_accessibility_map.html?v=" + version
+    map_url = "data/accessibility_map.html?v=" + version
     index_doc = """<!DOCTYPE html>
 <html lang="en">
 <head>

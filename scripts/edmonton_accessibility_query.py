@@ -12,18 +12,25 @@ No API key required (public Socrata endpoints). Uses only the stdlib + requests.
 """
 import csv
 import os
+import re
 import sys
 import time
 from collections import Counter
 
 import requests
 
-# --- Configuration ---------------------------------------------------------
+from cities import get_city
 
-BUILDING_URL = "https://data.edmonton.ca/resource/24uj-dj8v.json"
-DEVELOPMENT_URL = "https://data.edmonton.ca/resource/2ccn-pwtu.json"
+# --- Configuration ---------------------------------------------------------
+# Per-city data sources, field names and classification rules live in cities.py.
+# Dataset URLs are built from each city's Socrata domain + dataset id at runtime.
 
 OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+
+def dataset_url(cfg, which):
+    """Socrata JSON endpoint for a city's 'building' or 'development' dataset."""
+    return "%s/resource/%s.json" % (cfg["domain"], cfg[which]["dataset"])
 
 # Accessibility keywords. Each entry is the canonical label; the list of
 # variants are the substrings actually matched (case-insensitive).
@@ -98,22 +105,63 @@ def building_code(row):
     return ""
 
 
-def is_residential_building(row):
+def _desc_says_residential(row, cfg):
+    """Shared fallback: does the permit's descriptive text name a dwelling?"""
+    desc = " ".join(str(row.get(f, "")) for f in cfg["development"]["text_fields"]).lower()
+    return any(term in desc for term in RESIDENTIAL_DESC_TERMS)
+
+
+# --- Edmonton rules --------------------------------------------------------
+def _res_building_edmonton(row, cfg):
     if building_code(row) in RESIDENTIAL_BUILDING_CODES:
         return True
     jc = (row.get("job_category") or "").strip().lower()
     return jc in RESIDENTIAL_JOB_CATEGORIES
 
 
-def is_residential_development(row):
+def _res_development_edmonton(row, cfg):
     zoning = (row.get("zoning") or "").upper()
     # zoning may be comma-separated (e.g. "BE,IM"); residential if any token
-    # starts with R but is not a non-residential R-prefixed code.
+    # starts with R (Edmonton Zoning Bylaw 20001: RS, RSF, RM, RL, RR, ...).
     for token in zoning.replace(",", " ").split():
         if token.startswith("R"):
             return True
-    desc = (row.get("description_of_development") or "").lower()
-    return any(term in desc for term in RESIDENTIAL_DESC_TERMS)
+    return _desc_says_residential(row, cfg)
+
+
+# --- Calgary rules ---------------------------------------------------------
+def _res_building_calgary(row, cfg):
+    # Calgary publishes an authoritative permitclassmapped field
+    # (Residential / Non-Residential / Unspecified). Unspecified -> commercial.
+    field = cfg["residential"]["building_class_field"]
+    return (row.get(field) or "").strip() in cfg["residential"]["building_residential_values"]
+
+
+def _calgary_district_is_residential(token):
+    t = token.strip().upper()
+    # Land Use Bylaw 1P2007: R-* are residential districts (R-1, R-C1, R-CG,
+    # R-G, RM-4, ...); M-* are Multi-Residential (M-C1, M-CG, M-G, M-H, M-X, ...).
+    return t.startswith("R") or t.startswith("M-")
+
+
+def _res_development_calgary(row, cfg):
+    district = row.get(cfg["residential"]["development_district_field"]) or ""
+    for token in re.split(r"[\s,;/]+", district):
+        if token and _calgary_district_is_residential(token):
+            return True
+    return _desc_says_residential(row, cfg)
+
+
+_RES_BUILDING = {"edmonton": _res_building_edmonton, "calgary": _res_building_calgary}
+_RES_DEVELOPMENT = {"edmonton": _res_development_edmonton, "calgary": _res_development_calgary}
+
+
+def is_residential_building(row, cfg):
+    return _RES_BUILDING[cfg["residential"]["kind"]](row, cfg)
+
+
+def is_residential_development(row, cfg):
+    return _RES_DEVELOPMENT[cfg["residential"]["kind"]](row, cfg)
 
 
 def soql_like_clause(field, variants):
@@ -217,65 +265,64 @@ def summarize(name, rows, text_fields, nbhd_field):
 
 
 def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
+    city = sys.argv[1] if len(sys.argv) > 1 else "edmonton"
+    cfg = get_city(city)
+    out_dir = os.path.join(OUT_DIR, city)
+    os.makedirs(out_dir, exist_ok=True)
+    b_cfg, d_cfg = cfg["building"], cfg["development"]
+    b_nbhd, d_nbhd = b_cfg["neighbourhood_field"], d_cfg["neighbourhood_field"]
+    b_addr, d_addr = b_cfg["address_field"], d_cfg["address_field"]
 
-    # Building permits: descriptive text in job_description + job_category.
-    b_text = ["job_description", "job_category"]
+    def path(stem):
+        return os.path.join(out_dir, stem)
+
+    # Building permits.
+    b_text = b_cfg["text_fields"]
     b_where = build_where(b_text)
-    print("Querying building permits ...")
-    building = fetch_all(BUILDING_URL, b_where)
-    b_csv = os.path.join(OUT_DIR, "edmonton_building_permits_accessibility.csv")
-    write_csv(b_csv, building)
-    print("  saved -> %s" % b_csv)
+    print("Querying %s building permits ..." % cfg["display_name"])
+    building = fetch_all(dataset_url(cfg, "building"), b_where)
+    write_csv(path("building_permits_accessibility.csv"), building)
 
-    building_res = [r for r in building if is_residential_building(r)]
-    b_res_csv = os.path.join(OUT_DIR, "edmonton_building_permits_accessibility_residential.csv")
-    write_csv(b_res_csv, building_res)
-    print("  saved -> %s (%d residential)" % (b_res_csv, len(building_res)))
+    building_res = [r for r in building if is_residential_building(r, cfg)]
+    write_csv(path("building_permits_accessibility_residential.csv"), building_res)
+    print("  building: %d total, %d residential" % (len(building), len(building_res)))
 
-    building_com = [r for r in building if not is_residential_building(r)]
-    b_com_csv = os.path.join(OUT_DIR, "edmonton_building_permits_accessibility_commercial.csv")
-    write_csv(b_com_csv, building_com)
-    print("  saved -> %s (%d non-residential)" % (b_com_csv, len(building_com)))
+    building_com = [r for r in building if not is_residential_building(r, cfg)]
+    write_csv(path("building_permits_accessibility_commercial.csv"), building_com)
+    print("  building: %d non-residential" % len(building_com))
 
-    # Development permits: descriptive text in description_of_development.
-    d_text = ["description_of_development"]
+    # Development permits.
+    d_text = d_cfg["text_fields"]
     d_where = build_where(d_text)
-    print("\nQuerying development permits ...")
-    development = fetch_all(DEVELOPMENT_URL, d_where)
-    d_csv = os.path.join(OUT_DIR, "edmonton_development_permits_accessibility.csv")
-    write_csv(d_csv, development)
-    print("  saved -> %s" % d_csv)
+    print("\nQuerying %s development permits ..." % cfg["display_name"])
+    development = fetch_all(dataset_url(cfg, "development"), d_where)
+    write_csv(path("development_permits_accessibility.csv"), development)
 
-    development_res = [r for r in development if is_residential_development(r)]
-    d_res_csv = os.path.join(OUT_DIR, "edmonton_development_permits_accessibility_residential.csv")
-    write_csv(d_res_csv, development_res)
-    print("  saved -> %s (%d residential)" % (d_res_csv, len(development_res)))
+    development_res = [r for r in development if is_residential_development(r, cfg)]
+    write_csv(path("development_permits_accessibility_residential.csv"), development_res)
+    print("  development: %d total, %d residential" % (len(development), len(development_res)))
 
-    development_com = [r for r in development if not is_residential_development(r)]
-    d_com_csv = os.path.join(OUT_DIR, "edmonton_development_permits_accessibility_commercial.csv")
-    write_csv(d_com_csv, development_com)
-    print("  saved -> %s (%d non-residential)" % (d_com_csv, len(development_com)))
+    development_com = [r for r in development if not is_residential_development(r, cfg)]
+    write_csv(path("development_permits_accessibility_commercial.csv"), development_com)
+    print("  development: %d non-residential" % len(development_com))
 
     # --- Sample output ---
-    def show_sample(name, rows, fields):
+    def show_sample(name, rows, fields, addr_f, nbhd_f):
         print("\n----- SAMPLE: %s (first 5) -----" % name)
         for row in rows[:5]:
-            addr = row.get("address", "")
-            nbhd = row.get("neighbourhood", "")
             desc = " ".join(str(row.get(f, "")) for f in fields)[:120]
-            print("  [%s | %s] %s" % (addr, nbhd, desc))
+            print("  [%s | %s] %s" % (row.get(addr_f, ""), row.get(nbhd_f, ""), desc))
 
-    show_sample("building permits", building, b_text)
-    show_sample("development permits", development, d_text)
+    show_sample("building permits", building, b_text, b_addr, b_nbhd)
+    show_sample("development permits", development, d_text, d_addr, d_nbhd)
 
     # --- Summaries ---
-    summarize("building permits (all)", building, b_text, "neighbourhood")
-    summarize("building permits (residential only)", building_res, b_text, "neighbourhood")
-    summarize("development permits (all)", development, d_text, "neighbourhood")
-    summarize("development permits (residential only)", development_res, d_text, "neighbourhood")
+    summarize("building permits (all)", building, b_text, b_nbhd)
+    summarize("building permits (residential only)", building_res, b_text, b_nbhd)
+    summarize("development permits (all)", development, d_text, d_nbhd)
+    summarize("development permits (residential only)", development_res, d_text, d_nbhd)
 
-    print("\nDone. CSVs written to %s" % OUT_DIR)
+    print("\nDone. CSVs written to %s" % out_dir)
 
 
 if __name__ == "__main__":

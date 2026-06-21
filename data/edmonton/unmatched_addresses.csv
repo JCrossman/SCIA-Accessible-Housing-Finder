@@ -1,0 +1,2 @@
+address,parsed_house_number,parsed_street_name,neighbourhood,ward,keywords,total_permits,n_building_permits,n_development_permits,building_row_ids,development_file_numbers,sample_description
+6512 - 134 AVENUE NW,6512,134 AVENUE NW,BELVEDERE,,ramp,1,1,0,0-118477073,,To demolish an existing ramp (unsafe condition) see report in docs.
