@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import time
+import zipfile
 from collections import Counter
 
 import requests
@@ -491,6 +492,124 @@ def arcgis_fetch(cfg, which, text_fields):
     return rows
 
 
+# --- Excel-download adapter (Ottawa yearly permit spreadsheets) -------------
+_XLSX_NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+
+
+def _col_index(ref):
+    """'C5' -> 2 (0-based column index) from a cell reference."""
+    letters = re.match(r"[A-Z]+", ref or "A").group()
+    n = 0
+    for ch in letters:
+        n = n * 26 + (ord(ch) - 64)
+    return n - 1
+
+
+def _read_xlsx_sheets(data):
+    """Parse every worksheet of an .xlsx into a list of grids (each a list of row
+    lists), standard-library only (honours cell column refs + shared strings)."""
+    import io
+    import xml.etree.ElementTree as ET
+    z = zipfile.ZipFile(io.BytesIO(data))
+    shared = []
+    if "xl/sharedStrings.xml" in z.namelist():
+        root = ET.fromstring(z.read("xl/sharedStrings.xml"))
+        for si in root.findall(_XLSX_NS + "si"):
+            shared.append("".join(t.text or "" for t in si.iter(_XLSX_NS + "t")))
+    grids = []
+    for sname in sorted(n for n in z.namelist()
+                        if re.match(r"xl/worksheets/sheet\d+\.xml$", n)):
+        sd = ET.fromstring(z.read(sname)).find(_XLSX_NS + "sheetData")
+        if sd is None:
+            continue
+        grid = []
+        for row in sd.findall(_XLSX_NS + "row"):
+            cells = {}
+            for c in row.findall(_XLSX_NS + "c"):
+                v = c.find(_XLSX_NS + "v")
+                if v is None:
+                    continue
+                val = shared[int(v.text)] if c.get("t") == "s" else v.text
+                cells[_col_index(c.get("r", "A1"))] = val
+            grid.append([cells.get(i, "") for i in range(max(cells) + 1 if cells else 0)])
+        grids.append(grid)
+    return grids
+
+
+def _read_xls_sheets(data):
+    import xlrd
+    book = xlrd.open_workbook(file_contents=data)
+    return [[[sh.cell_value(r, c) for c in range(sh.ncols)] for r in range(sh.nrows)]
+            for sh in book.sheets()]
+
+
+def _pick_permit_sheet(grids):
+    """Return (grid, header_row_index, header) for the largest sheet that has a
+    DESCRIPTION header (Ottawa files often have a combined sheet plus per-month
+    sheets; the combined one is the largest)."""
+    best = None
+    for grid in grids:
+        for i, r in enumerate(grid[:8]):
+            up = [str(x).strip().upper() for x in r]
+            if "DESCRIPTION" in up:
+                if best is None or len(grid) > len(best[0]):
+                    best = (grid, i, up)
+                break
+    return best
+
+
+def excel_fetch(cfg, which, text_fields):
+    """Download per-year permit spreadsheets (ArcGIS item /data), parse them, and
+    normalize to common keys. Columns are mapped by header name (robust to
+    sheet/format drift); the file's year stamps a permit_date so the year filter
+    works (the rows themselves carry no issue date)."""
+    sub = cfg[which]
+    item_url = "https://www.arcgis.com/sharing/rest/content/items/%s"
+    rows = []
+    for entry in sub["dataset"]:
+        item_id, year = entry["id"], entry.get("year", "")
+        meta = _arcgis_get(item_url % item_id, {"f": "json"})
+        name = (meta.get("name") or "").lower()
+        data = requests.get((item_url % item_id) + "/data", timeout=300).content
+        try:
+            grids = _read_xls_sheets(data) if name.endswith(".xls") else _read_xlsx_sheets(data)
+        except Exception as e:   # noqa: BLE001 - skip a bad file, keep the run
+            print("  %s: parse failed (%s); skipping" % (year, e), file=sys.stderr)
+            continue
+        picked = _pick_permit_sheet(grids)
+        if picked is None:
+            print("  %s: no DESCRIPTION header; skipping" % year, file=sys.stderr)
+            continue
+        grid, header_row, header = picked
+        idx = {h: j for j, h in enumerate(header)}
+
+        def col(*aliases):
+            for a in aliases:
+                if a in idx:
+                    return idx[a]
+            return None
+
+        c_desc = col("DESCRIPTION")
+        c_num = col("ST #", "ST#", "ST NO", "STREET NUMBER")
+        c_road = col("ROAD", "STREET", "STREET NAME")
+        c_blg = col("BLG TYPE", "BLDG TYPE", "BUILDING TYPE")
+        c_ward = col("WARD")
+        kept0 = len(rows)
+        for r in grid[header_row + 1:]:
+            def g(c):
+                return str(r[c]).strip() if c is not None and c < len(r) and r[c] is not None else ""
+            num, road = g(c_num), g(c_road)
+            rows.append({
+                "description": g(c_desc),
+                "blg_type": g(c_blg),
+                "ward": g(c_ward),
+                "address": re.sub(r"\s+", " ", ("%s %s" % (num, road)).strip()),
+                "permit_date": "%s-01-01" % year if year else "",
+            })
+        print("  %s: %d rows (running %d)" % (year, len(rows) - kept0, len(rows)))
+    return rows
+
+
 def fetch_permits(cfg, which, text_fields):
     """Fetch matching permits for a city's 'building'/'development' dataset,
     dispatching on the city's open-data platform."""
@@ -503,6 +622,8 @@ def fetch_permits(cfg, which, text_fields):
         return ckan_fetch(cfg, which, text_fields)
     if platform == "arcgis":
         return arcgis_fetch(cfg, which, text_fields)
+    if platform == "excel":
+        return excel_fetch(cfg, which, text_fields)
     raise SystemExit("Unknown platform '%s' for %s" % (platform, cfg["display_name"]))
 
 

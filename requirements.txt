@@ -1,1 +1,4 @@
 requests>=2.34.2
+# xlrd reads Ottawa's legacy .xls permit files (the .xlsx files are parsed with
+# the standard library). Only needed to refresh Ottawa data.
+xlrd>=2.0.1

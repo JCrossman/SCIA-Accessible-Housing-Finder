@@ -1,0 +1,15 @@
+address,parsed_house_number,parsed_street_name,neighbourhood,ward,keywords,total_permits,n_building_permits,n_development_permits,building_row_ids,development_file_numbers,sample_description
+1169 BORDEAU GROVE,,,Ward 1,,accessible bathroom; step-free entry,1,1,0,,,"Interior alterations in a 2 storey detached dwelling (Remove load bearing wall, restructure floor for curbless shower, plumbing)"
+121 -1 MACKAY ST,,,Ward 13,,handrail,1,1,0,,,Repair handrail on the roof top deck of a 3 storey detached dwelling
+1455 CLEMENTINE BLVD,,,Ward 17,,lift,1,1,0,,,Interior alterations to upgrade fire alarm system (for elevator-related functions) in a 17 storey apartment building
+"1683 RAVINS, PLACE DES",,,Ward 2,,lift,1,1,0,,,Interior alterations to a 2 storey detached dwelling (install accesibility lift)
+1775 -108 MARSALA CRES,,,Ward 1,,handrail,1,1,0,,,Interior alterations to the 1st and 2nd floors of a 2 storey rowhouse dwelling (handrail/guard replacement)
+19 -1 MONTCALM ST,,,Ward 17,,handrail,1,1,0,,,Exterior alterations to repair the concrete steps and handrails of a 6 unit apartment building
+2885 -55 CEDARWOOD DR,,,Ward 18,,ramp,1,1,0,,,Exterior alterations to add ramp and guardrails to the front entrance of a 2 storey rowhouse
+3 A MAPLE RIDGE CRES,,,Ward 3,,ramp,1,1,0,,,Construct a ramp at the front of a 2 storey row unit dwelling
+300 ST. DENIS ST,,,Ward 12,,ramp,1,1,0,,,Construct a ramp and a deck at the front of a 1 storey detached dwelling
+3062 SOUTHMORE DR E,,,Ward 16,,barrier-free; ramp,1,1,0,,,Construct a deck and a barrier-free ramp for a residential group home (rear yard)
+324 LAURIER AVE W,,,Ward 14,,lift,1,1,0,,,"Interior alterations on the 1st floor, parking garage elevator lobbies, and levels 6-22 of a 24 storey apartment building"
+3415 -1 UPLANDS DR,,,Ward 16,,ramp,1,1,0,,,Construct a ramp (between rowhouses)
+4450 EIGHTH LINE RD,,,Ward 20,,lift; wheelchair,1,1,0,,,"Construct a 1 storey addition/deck, and install an interior self contained wheel chair lift in a 1 storey detached dwelling"
+712 ST. LAURENT BLVD,,,Ward 13,,lift,1,1,0,,,"Convert a duplex to a detached dwelling, construct a new second storey, side (elevator lift) and rear additions, rear deck and interior alterations, with a home based business in the basement level."

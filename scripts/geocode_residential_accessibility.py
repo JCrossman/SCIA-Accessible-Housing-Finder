@@ -236,6 +236,72 @@ def _ckan_geocode(merged_csv, rows, cfg):
     print("Saved -> %s" % merged_csv)
 
 
+def _arcgis_geocode(merged_csv, rows, cfg):
+    """Geocode one-line addresses against an ArcGIS address-point layer (Ottawa's
+    Municipal Address Points): match on exact street number + full road name,
+    taking the point geometry (EPSG:4326)."""
+    g = cfg["geocode"]
+    query = g["layer"].rstrip("/") + "/query"
+    numf, roadf = g["number_field"], g["road_field"]
+    cache = {}
+
+    def parse(addr):
+        a = re.sub(r"\s+", " ", (addr or "").upper().strip())
+        m = re.match(r"(\d+)\s+(.+)", a)   # leading number, then full road name
+        return (m.group(1), m.group(2).strip()) if m else (None, None)
+
+    def lookup(num, road):
+        key = (num, road)
+        if key in cache:
+            return cache[key]
+        where = "%s=%s AND UPPER(%s)='%s'" % (numf, num, roadf, road.replace("'", "''"))
+        params = {"where": where, "outFields": numf, "returnGeometry": "true",
+                  "outSR": 4326, "resultRecordCount": 1, "f": "json"}
+        coords = None
+        for attempt in range(3):
+            try:
+                r = requests.get(query, params=params, timeout=60)
+                r.raise_for_status()
+                feats = r.json().get("features", [])
+                if feats:
+                    geom = feats[0].get("geometry") or {}
+                    if geom.get("x") is not None and geom.get("y") is not None:
+                        coords = (geom["y"], geom["x"])
+                break
+            except requests.RequestException:
+                time.sleep(2 ** attempt)
+        cache[key] = coords
+        time.sleep(0.1)
+        return coords
+
+    matched = need = 0
+    for i, row in enumerate(rows):
+        if row.get("latitude") and row.get("longitude"):
+            row["coord_source"] = "permit"
+            continue
+        need += 1
+        num, road = parse(row.get("address", ""))
+        coords = lookup(num, road) if num and road else None
+        if coords:
+            row["latitude"], row["longitude"] = coords
+            row["has_coords"] = "yes"
+            row["coord_source"] = "address_points"
+            matched += 1
+        else:
+            row["coord_source"] = "none"
+        if i % 200 == 0:
+            print("  geocoded %d/%d rows (matched %d, %d cached)"
+                  % (i, len(rows), matched, len(cache)))
+
+    _write(merged_csv, rows)
+    total = sum(1 for r in rows if r.get("has_coords") == "yes")
+    print("\nNewly geocoded         : %d" % matched)
+    print("Still missing coords   : %d" % (need - matched))
+    print("Total with coordinates : %d / %d (%.0f%%)"
+          % (total, len(rows), 100.0 * total / len(rows) if rows else 0))
+    print("Saved -> %s" % merged_csv)
+
+
 def _no_geocode(merged_csv, rows):
     """Cities whose permits already carry coordinates: just label the source."""
     for row in rows:
@@ -263,6 +329,10 @@ def main():
 
     if cfg["geocode"].get("platform") == "ckan":
         _ckan_geocode(merged_csv, rows, cfg)
+        return
+
+    if cfg["geocode"].get("platform") == "arcgis":
+        _arcgis_geocode(merged_csv, rows, cfg)
         return
 
     g = cfg["geocode"]

@@ -217,28 +217,51 @@ CITIES = {
 
     "ottawa": {
         "display_name": "Ottawa",
-        "platform": "arcgis",
-        "domain": "https://services.arcgis.com/G6F8XLCl5KtAlZ2G",
+        "platform": "excel",
+        "domain": "https://www.arcgis.com",
         "streetview_suffix": ", Ottawa, ON, Canada",
         "map_center": {"lat": 45.4215, "lon": -75.6972},  # fallback only
         "building": {
-            # Ottawa currently publishes a single year (2015) of permits as open data.
-            "dataset": "https://services.arcgis.com/G6F8XLCl5KtAlZ2G/arcgis/rest/"
-                       "services/BuildingPermits2015/FeatureServer/0",
-            "text_fields": ["DESCRIPTIO"],
-            "address_field": "Full_Addre",
-            "neighbourhood_field": "WARD",
-            "date_field": "ISSUED_DAT",
-            "id_field": "PERMIT_",
-            "lat_field": "latitude", "lon_field": "longitude",
-            "drop_fields": ["CONTRACTOR"],
+            # Ottawa publishes permits as yearly Excel files (ArcGIS item ids).
+            # The excel adapter normalizes columns to: description, blg_type,
+            # ward, address (ST# + ROAD); the file's year stamps permit_date.
+            "dataset": [
+                {"id": "89846cecb39749b7b7db7ba74fb9d31d", "year": 2011},  # Jul-Dec
+                {"id": "aba9890bf3334eeb8e31501e92f2f83c", "year": 2012},
+                {"id": "9e821ceff81d468aa68111ae9d624b87", "year": 2013},
+                {"id": "60c0f061232749e1ae7ea5263b61f25f", "year": 2014},  # .xls
+                {"id": "a2b214f0d407491793359af4af32e7ba", "year": 2015},  # .xls
+                {"id": "273b520c126f40cfbf24a7689902fb85", "year": 2016},
+                {"id": "8dcbb960cc9f452e852494fb181ea91a", "year": 2017},
+                {"id": "c42cca39b76d456e9c22e8343a55b802", "year": 2018},
+                {"id": "a457ac00a07647e0a913a28052df4d85", "year": 2019},
+                {"id": "54afabbba45a4607a420c6f9d7b88842", "year": 2020},  # .xls
+                {"id": "dc3eecea58054e0e90ed25d8988495e1", "year": 2021},  # .xls
+                {"id": "6b99841340444f83ba2595190e4e143b", "year": 2022},  # .xls
+                {"id": "0c19879709c14d008d078f2ae3007e07", "year": 2023},
+                {"id": "05046d836248455d92cbc0543ce4c022", "year": 2024},  # 2024-25
+                {"id": "429ea52d2ff040c799afde2b40b90f68", "year": 2026},
+            ],
+            "text_fields": ["description"],
+            "address_field": "address",
+            "neighbourhood_field": "ward",
+            "date_field": "permit_date",
+            "id_field": "",   # the spreadsheets carry no permit number
+            "lat_field": "latitude", "lon_field": "longitude",  # filled by geocoder
         },
         "development": None,
         "residential": {
             "kind": "textscan",
-            "residential_text_fields": ["BLG_TYPE", "DESCRIPTIO"],
+            "residential_text_fields": ["blg_type", "description"],
         },
-        "geocode": {"needed": False},
+        "geocode": {
+            "needed": True,
+            "platform": "arcgis",
+            "layer": "https://maps.ottawa.ca/arcgis/rest/services/"
+                     "Address_Information/MapServer/0",
+            "number_field": "ADDRNUM",
+            "road_field": "FULL_ROADNAME_EN",
+        },
     },
 }
 

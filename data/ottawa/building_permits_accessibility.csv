@@ -1,69 +1,478 @@
-OBJECTID,Status,Score,Match_type,Match_addr,Postal,Ref_ID,X,Y,User_fld,Addr_type,ARC_Single,Full_Addre,PC,WARD,PLAN_,LOT,BLG_TYPE,MUNICIPALI,DESCRIPTIO,D_U_,VALUE,FT2,PERMIT_,APPL__TYPE,ISSUED_DAT,M2,BLG_TYPE_F,latitude,longitude
-37,M,100,A,"155 QUEEN ST, K1P6L1",K1P6L1,287892,367453.319519,5031604.38154,___A733N,Address,155 QUEEN ST,155 QUEEN ST,K1P6L1,Ward 14,3922, ,Office,Old Ottawa,Tenant fit-up in the basement of a 14 storey office building; add 1 elevator and escalators from ground floor lobby to basement  (Winners),0,3000000,22296,1500041,Construction,2015-01-07,2071.365288,Bureau,45.421577475655276,-75.69940937984275
-104,M,100,A,"2313 CARLING AVE, K2B7G3",K2B7G3,12762,361465.963567,5025616.01464,___A59K0,Address,2313 CARLING AVE,2313 CARLING AVE,K2B7G3,Ward 7,546,4 & 5,Other,Old Ottawa,Interior alterations to a 1 storey funeral home (barrier free washroom),0,62828.19,500,1500117,Construction,2015-01-12,46.4515,Autre,45.368205446299356,-75.77659804689692
-135,M,100,A,"50 O'CONNOR ST, K1P6L2",K1P6L2,158029,367473.011676,5031523.25866,___A6Z5V,Address,50 O'CONNOR ST,50 O'CONNOR ST,K1P6L2,Ward 14,3922,9-10,Mixed,Old Ottawa,"Interior alterations to a 17 storey office building (create accessible washrooms on Floors 2,3,4,7,8,9,10,11,12,13,14, and 16)",0,480000,904.16,1500158,Construction,2015-01-14,83.99917648,Polyvalent,45.420845794726134,-75.69916809449803
-136,M,100,A,"99 BANK ST, K1P6B9",K1P6B9,96445,367405.096338,5031480.83295,___A51F1,Address,99 BANK ST,99 BANK ST,K1P6B9,Ward 14, , ,Office,Old Ottawa,"Interior alteration to create accessible washrooms (floors 2, 4, 7 & 9, in the elevator corridor)",0,160000,258.33,1500159,Construction,2015-01-14,23.999631989999997,Bureau,45.42047014160185,-75.70004122203666
-141,M,100,A,"1595 MERIVALE RD, K2G3J4",K2G3J4,318015,364902.303094,5023958.18022,__1OXJMZ,Address,1595 MERIVALE RD,1595 MERIVALE RD,K2G3J4,Ward 9, ,33,Retail,Nepean,"Interior alterations in a 1 storey retail building (Red Lobster, Accessible Washrooms)",0,68000,409,1500167,Construction,2015-01-14,37.997327,Vente au détail,45.353002252214736,-75.73293476352387
-247,M,100,A,"525 COTE ST, K1K0Z8",K1K0Z8,407524,371542.107731,5033281.52232,___A7AFJ,Address,525 COTE ST,525 COTE ST,K1K0Z8,Ward 13, ,252-261,Other,Old Ottawa,Interior alterations to a 2 storey community complex (make pool change rooms accessible),0,80636.36,4219,1500279,Construction,2015-01-23,391.957757,Autre,45.436289507407,-75.64694060191307
-248,M,100,A,"1701 WOODROFFE AVE, K2G1W2",K2G1W2,279964,364150.51519,5021052.44637,__1U8ANE,Address,1701 WOODROFFE AVE,1701 WOODROFFE AVE,K2G1W2,Ward 9, , ,Other,Nepean,Tenant fit up in a 1 storey community building (Lawnbowl Pavillion - accessibility),0,121325,270,1500280,Construction,2015-01-23,25.08381,Autre,45.32692077363969,-75.7428773190875
-298,M,100,A,"1660 CARLING AVE, K2A1C5",K2A1C5,56902,363623.199916,5026794.86169,__6X1RGV,Address,1660 CARLING AVE,1660 CARLING AVE,K2A1C5,Ward 15, , ,Retail,Old Ottawa,Tenant fitup on the ground floor (CRU-1 & CRU-4) and add a freight lift in a  2 storey retail building (Canadian Tire).,0,200000,8367.05,1500333,Construction,2015-01-28,777.32404615,Vente au détail,45.37863481931508,-75.74892044354308
-342,M,100,A,3701 CARLING AVE, ,277866,353097.089927,5023344.98013,__1U87LM,Address,3701 CARLING AVE,3701 CARLING AVE, ,Ward 7, , ,Office,Nepean,Interior alterations (replace elevator) to a 4 storey office/industrial building (David Florida Laboratory),0,418000,1184,1500382,Construction,2015-01-30,109.997152,Bureau,45.34839702950761,-75.88365124888583
-478,M,100,A,"879 HIAWATHA PARK RD, K1C2Z6",K1C2Z6,9164,379421.906946,5038581.88523,__353FNT,Address,879 HIAWATHA PARK RD,879 HIAWATHA PARK RD,K1C2Z6,Ward 1, ,5,Other,Gloucester,Interior alterations to upgrade the Elevator Shafts in  a 4 storey long-term care residency (Residence Saint-Louis),0,275000,376.74,1500550,Construction,2015-02-11,35.00027622,Autre,45.48318168766386,-75.54543409574035
-497,M,98.9,A,2287 ST. LAURENT BLVD, ,204527,374225.415436,5027798.06415,___A7MY8,Address,2287 ST. LAURENT BLVD,2287 ST. LAURENT BLVD, ,Ward 10, , ,Office,Old Ottawa,Lift existing office building to construct a slab foundation beneath it,0,10000,592,1500572,Construction,2015-02-13,54.998576,Bureau,45.38669083911913,-75.61342036093994
-642,T,100,A,1130 WELLINGTON ST W, ,396628,365246.830872,5029267.29436,__90BZR9,Address,1130 WELLINGTON ST W,1130 WELLINGTON ST W, ,Ward 15,14,2,Mixed,Old Ottawa,FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),52,16000000,84779.33,1500721,Construction,2015-02-24,7876.25409499,Polyvalent,45.40074305981421,-75.72788818154137
-643,T,100,A,10 ROSEMOUNT AVE, ,395649,365246.830872,5029267.29436,__90BZY2,Address,10 ROSEMOUNT AVE,10 ROSEMOUNT AVE, ,Ward 15,14,2,Mixed,Old Ottawa,FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),52,16000000,84779.33,1500721,Construction,2015-02-24,7876.25409499,Polyvalent,45.40074305981421,-75.72788818154137
-675,M,100,A,"2720 RICHMOND RD, K2B6S2",K2B6S2,10936,360228.031498,5024527.45634,___A668E,Address,2720 RICHMOND RD,2720 RICHMOND RD,K2B6S2,Ward 7,348,488-489,Office,Old Ottawa,"Construction of stair and elevator additions, partial demolition and interior alterations to a 3 storey assembly building (conversion of Grant School into Centre Multiservices Francophone de l'Ouest d'Ottawa)",0,3230000,21992,1500755,Construction,2015-02-26,2043.122776,Bureau,45.35850962985594,-75.79252251144193
-880,M,100,A,"370 507 DOMINION AVE, K2A3X4",K2A3X4,321252,362752.685206,5028195.33553,___A5D99,Address,370 DOMINION AVE,370 DOMINION AVE,K2A3X4,Ward 15, , ,Apartment,Old Ottawa,"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",0,426210,0,1500950,Construction,2015-03-11,0,Appartement,45.39130864188611,-75.75987021804562
-922,M,100,A,"365 LAURIER AVE W, K1A0X6",K1A0X6,336768,367331.533145,5031234.76702,___A6TJB,Address,365 LAURIER AVE W,365 LAURIER AVE W,K1A0X6,Ward 14,3922,27-30,Office,Old Ottawa,Interior alterations on the 5th to the 21st floor of a 21 storey office building (accessible washrooms),0,528000,1600,1501007,Construction,2015-03-13,148.6448,Bureau,45.41826269640893,-75.70101234157475
-1075,M,100,A,"433 NELSON ST, K1N7S6",K1N7S6,61953,369100.510103,5031812.00571,___A6ZHS,Address,433 NELSON ST,433 NELSON ST,K1N7S6,Ward 12,37221,20,Institutional,Old Ottawa,Exterior/interior alterations to a 4 storey Group Home (Install power assist door in 5 locations and upgrade entrance ramp),0,15000,344,1501178,Construction,2015-03-24,31.958632,Institutionnel,45.42329614480363,-75.67833638858416
-1082,M,100,A,"515 SUSSEX DR, K1N6Z6",K1N6Z6,83968,367887.722483,5032216.74273,___A6D9F,Address,515 SUSSEX DR,515 SUSSEX DR,K1N6Z6,Ward 12,42482,10,Institutional,Old Ottawa,Exterior alterations to replace accessibility ramp,0,67000,215.28,1501185,Construction,2015-03-24,20.00015784,Institutionnel,45.42704825716967,-75.69378063865945
-1088,M,100,A,"200 BALDWIN ST, K0A3M0",K0A3M0,190515,337314.682065,5040309.96466,__33KIUE,Address,200 BALDWIN ST,200 BALDWIN ST,K0A3M0,Ward 5,499,42,Single,West Carleton,Construct a wheel chair ramp to a 1 storey detached dwelling,0,2500,1,1501195,Construction,2015-03-24,0.092903,Unifamiliales,45.501962602453816,-76.08393455285342
-1091,M,100,A,"583 DONALD ST, K1K1L5",K1K1L5,74881,371967.718847,5032483.23178,___A5DG3,Address,583 DONALD ST,583 DONALD ST,K1K1L5,Ward 13,610,44,Single,Old Ottawa,Construct a deck and wheelchair accessible ramp at the side of a detached dwelling,0,2700,270,1501198,Construction,2015-03-24,25.08381,Unifamiliales,45.429066109164616,-75.64161017980767
-1572,M,100,A,5550 ANN ST, ,55832,368820.901146,5009703.62379,__32SNKM,Address,5550 ANN ST,5550 ANN ST, ,Ward 21, ,2,Mixed,Rideau,56tyy6Interior alterations to a 1 storey commercial building to construct a shaft and machine room for a lift for handicap access (Royal Canadian Legion - Manotick),0,60000,115,1501704,Construction,2015-04-17,10.683845,Polyvalent,45.22439499662876,-75.68476730721683
-1680,T,100,A,"2925 DUMAURIER AVE, K2B8A2",K2B8A2,318449,360004.504631,5023449.57714,___A7VAH,Address,2925 DUMAURIER AVE,2925 DUMAURIER AVE,K2B8A2,Ward 7, , ,Rowhouse,Old Ottawa,Remove and replace wheelchair ramp on a 2 storey rowhouse (front yard),0,7000,215,1501843,Construction,2015-04-23,19.974145,Maison jumelée,45.34882852294679,-75.79549572997568
-1997,M,100,A,"1815 ALTA VISTA DR, K1G3Y6",K1G3Y6,145672,370428.718104,5029341.89095,___A5YUE,Address,1815 ALTA VISTA DR,1815 ALTA VISTA DR,K1G3Y6,Ward 18, , ,Office,Old Ottawa,Exterior alterations to a 2 storey office building (Canadian Dental Association - construct accessibility ramp),0,154545.45,7534.73,1502227,Construction,2015-05-07,699.99902119,Bureau,45.40094766745435,-75.66169453520277
-2035,M,100,A,"250 CITY CENTRE AVE, K1R6K7",K1R6K7,199188,365974.978997,5030126.12971,__5VUHWH,Address,250 CITY CENTRE AVE,250 CITY CENTRE AVE,K1R6K7,Ward 14,4M-,2-7,Retail,Old Ottawa,"Exterior alterations (replace stairs, guards and add HC ramp to rear platform) to a 2 storey retail building",0,139000,0,1502276,Construction,2015-05-08,0,Vente au détail,45.40840739664142,-75.71848153590183
-2149,M,100,A,"99 BANK ST, K1P6B9",K1P6B9,96445,367405.096338,5031480.83295,___A51F1,Address,99 BANK ST,99 BANK ST,K1P6B9,Ward 14, , ,Office,Old Ottawa,Interior alterations on the 1st floor of a 15 storey office building (lobby and elevator corridor),0,1450200,4306,1502369,Construction,2015-05-12,400.040318,Bureau,45.42047014160185,-75.70004122203666
-2322,M,100,A,"3039 LINTON RD, K1V8H1",K1V8H1,210255,369897.279949,5025115.99074,___A6U3O,Address,3039 LINTON RD,3039 LINTON RD,K1V8H1,Ward 16,768,30,Single,Old Ottawa,Construct an wheelchair accessibility ramp at the front of a 2 storey detached dwelling,0,3451,98,1502591,Construction,2015-05-21,9.104494,Unifamiliales,45.362974008819684,-75.66903936252378
-2418,M,100,A,"1 SUSSEX DR, K1A0A1",K1A0A1,246960,368489.818152,5034095.87907,___A6D82,Address,1 SUSSEX DR,1 SUSSEX DR,K1A0A1,Ward 13, ,3-4,Institutional,Old Ottawa,"Interior alterations to a 4 storey  building (Rideau Hall, Replace elevator)",0,270969,1,1502713,Construction,2015-05-26,0.092903,Institutionnel,45.443901464020556,-75.68584389950021
-2535,M,100,A,"20 MCKITRICK DR, K2L1T7",K2L1T7,127063,353108.367472,5017120.77756,___0YUWI,Address,20 MCKITRICK DR,20 MCKITRICK DR,K2L1T7,Ward 23, , ,Institutional,Kanata,Interior alterations to install a elevator on the ground floor in a 2 storey institutional building (St. Martins Catholic School),0,200000,200,1502880,Construction,2015-05-29,18.5806,Institutionnel,45.29238963657396,-75.88411443355648
-2536,M,100,A,"1923 ELMRIDGE DR, K1J8G7",K1J8G7,162606,375257.069843,5034189.59608,__3W1WQX,Address,1923 ELMRIDGE DR,1923 ELMRIDGE DR,K1J8G7,Ward 11, ,18,Institutional,Gloucester,Interior alterations to install an elevator on the ground floor in a 1storey institutional building (Brother Andre Elementary),0,200000,300,1502881,Construction,2015-05-29,27.8709,Institutionnel,45.44409536641874,-75.59933369255899
-2681,M,100,A,"2777 CASSELS ST, K2B6N6",K2B6N6,108380,359398.528666,5026015.98651,___A59X2,Address,2777 CASSELS ST,2777 CASSELS ST,K2B6N6,Ward 7,40, ,Other,Old Ottawa,Install an elevator to a 2 storey recreational building (Britania yacht club),0,105000,64,1503067,Construction,2015-06-04,5.945792,Autre,45.37196848665731,-75.80294496317522
-2970,M,100,A,"625 CHARDONNAY DR, K4A4K7",K4A4K7,84844,385119.126593,5036213.81553,__3AU1A8,Address,625 CHARDONNAY DR,625 CHARDONNAY DR,K4A4K7,Ward 19,4M-1118,85,Single,Cumberland,Construct an accessible ramp (front yard),0,2300,150,1503431,Construction,2015-06-17,13.93545,Unifamiliales,45.46124385909645,-75.47295333572539
-3094,M,100,A,"64 WEDGEWOOD CRES, K1B4B4",K1B4B4,153331,378386.392547,5033347.22554,__3W134O,Address,64 WEDGEWOOD CRES,64 WEDGEWOOD CRES,K1B4B4,Ward 2,844,892,Single,Gloucester,Construct a 1 storey addition on a 2 storey detached dwelling (to create an accessible washroom),0,27795.68,187,1503552,Construction,2015-06-19,17.372861,Unifamiliales,45.43619388369806,-75.55946209234546
-3714,M,100,A,"1760 MCMASTER AVE, K1H6R8",K1H6R8,204355,371609.155318,5027755.8137,___A6WGV,Address,1760 MCMASTER AVE,1760 MCMASTER AVE,K1H6R8,Ward 18,760, ,Institutional,Old Ottawa,Construct a barrier free ramp at a school (McMaster Catholic School),0,80000,81,1504243,Construction,2015-07-14,7.525143,Institutionnel,45.386565117758046,-75.6468326656262
-3768,M,100,A,"1480 HERON RD, K1V6A5",K1V6A5,76019,371061.557988,5026905.86958,___A6N83,Address,1480 HERON RD,1480 HERON RD,K1V6A5,Ward 18,31,28,Institutional,Old Ottawa,Interior alterations to replace a lift with ramp on the main floor of a 2 storey institutional building (Heron Community Centre),0,51655,807.32,1504310,Construction,2015-07-16,75.00244996,Institutionnel,45.37896964416029,-75.65393893522352
-4057,M,100,A,7911 LAWRENCE ST, ,116730,386758.045766,5003116.06156,__3W59GK,Address,7911 LAWRENCE ST,7911 LAWRENCE ST, ,Ward 20,93, ,Single,Osgoode,Construct an accessibility ramp at the front of a 1 storey detached dwelling,0,1000,107.64,1504638,Construction,2015-07-28,10.00007892,Unifamiliales,45.16326528310056,-75.45747431298216
-4953,M,100,A,"209 OAK LEAF PRIV, K0A2Z0",K0A2Z0,312162,356585.846047,5006334.25919,__6R6AJ2,Address,209 OAK LEAF PRIV,209 OAK LEAF PRIV,K0A2Z0,Ward 21, , ,Single,Goulbourn,Construct a barrier free ramp in the garage of a 1 storey detached dwelling,0,6500,152.86,1505615,Construction,2015-08-31,14.20115258,Unifamiliales,45.19508224040849,-75.84090587410009
-4991,M,100,A,"21 103 ANTARES DR, K2E7T8",K2E7T8,328267,366863.698292,5021804.63395,__1OMNJD,Address,21 103 ANTARES DR,21 103 ANTARES DR,K2E7T8,Ward 9,329, ,Office,Nepean,"Interior alterations to a 2 storey office building (Unit 103, International Union of Elevator Constructors)",0,64500,838,1505656,Construction,2015-09-01,77.852714,Bureau,45.33345417382351,-75.70817460868352
-5009,T,100,A,"1915 BANK ST, K1V8A2",K1V8A2,191518,370445.161541,5025746.94017,___A52NA,Address,1915 BANK ST,1915 BANK ST,K1V8A2,Ward 16,M24,300,Office,Old Ottawa,Exterior alterations to remove and replace accessible ramp in a 1 storey office building,0,110000,3249,1505679,Construction,2015-09-01,301.841847,Bureau,45.368600002276615,-75.66196260685624
-5329,M,100,A,"2 BEAVERBROOK RD, K2K1L1",K2K1L1,92683,351745.867312,5021167.21593,___0YJOU,Address,2 BEAVERBROOK RD,2 BEAVERBROOK RD,K2K1L1,Ward 4,786, ,Institutional,Kanata,Construct a 2 storey addition for an elevator  (Beaverbrook Community Centre),0,193113.96,421.9,1505985,Construction,2015-09-15,39.1957757,Institutionnel,45.3288928202428,-75.90110076214506
-5468,M,100,A,"24 AYLMER AVE, K1S2W9",K1S2W9,209817,368575.079941,5028640.73071,__8OMJPX,Address,24 AYLMER AVE,24 AYLMER AVE,K1S2W9,Ward 17,36,1 AND 3,Single,Old Ottawa,Installation of an enclosed three storey elevator at the rear of a three storey single dwelling and the creation of a third level rear balcony.,0,22648.5,251.65,1506131,Construction,2015-09-21,23.37903995,Unifamiliales,45.39481016029526,-75.68546018360954
-5541,M,100,A,"400 MCARTHUR AVE, K1K1G8",K1K1G8,101817,371400.924149,5032784.48106,___A6WZB,Address,400 MCARTHUR AVE,400 MCARTHUR AVE,K1K1G8,Ward 13,772, ,Mixed,Old Ottawa,Interior alterations to install a handicap ramp in a public corridor of a 2 storey mixed use  building,0,10500,538.19,1506203,Construction,2015-09-22,49.999465570000005,Polyvalent,45.431830818011505,-75.64881217182756
-5589,T,100,A,"2025 LANTHIER DR, K4A3V3",K4A3V3,164471,383667.505721,5035773.61296,__37TRH1,Address,2025 LANTHIER DR,2025 LANTHIER DR,K4A3V3,Ward 19, , ,Office,Cumberland,Interior alterations to install an elevator in a 2 storey office building,0,165000,71,1506254,Construction,2015-09-23,6.596113,Bureau,45.45744868954639,-75.4915830560002
-5660,M,100,A,"972 BEAUDRY ST, K1K3S1",K1K3S1,175770,370807.576513,5032382.21263,___A53CG,Address,972 BEAUDRY ST,972 BEAUDRY ST,K1K3S1,Ward 13,593,3,Single,Old Ottawa,Exterior alterations to construct an access ramp at the front of a 1 storey detached dwelling,0,15000,184,1506315,Construction,2015-09-24,17.094152,Unifamiliales,45.42826763403723,-75.65644851694171
-5700,M,100,A,"9 WICK CRES, K1J7H1",K1J7H1,160804,374461.930769,5035006.72492,__3W1XWQ,Address,9 WICK CRES,9 WICK CRES,K1J7H1,Ward 11,652,187,Single,Gloucester,Interior alterations to a 1 storey detached dwelling (Install an elevator),0,60000,4,1506360,Construction,2015-09-25,0.371612,Unifamiliales,45.45152711615113,-75.60938119422052
-5831,T,100,A,"2781 LANCASTER RD, K1B1A7",K1B1A7,181559,374901.475045,5028707.35938,___A6S6H,Address,2781 LANCASTER RD,2781 LANCASTER RD,K1B1A7,Ward 18,M-121, ,Office,Old Ottawa,Inteiror alterations on the 1st floor of a 4 storey office building (Elevator lobby),0,52920,1011.81,1506510,Construction,2015-10-01,94.00018442999999,Bureau,45.3948048967276,-75.60465876777896
-5874,M,100,A,"700 503 SUSSEX DR, K1N1K4",K1N1K4,348485,367864.68329,5032083.74614,__5DM2LB,Address,700 SUSSEX DR,700 SUSSEX DR,K1N1K4,Ward 12,42482, ,Mixed,Old Ottawa,Exterior alterations on the 1st floor of a 7 storey mixed use building (Construct a barrier free ramp - Scotiabank),0,38000,250,1506558,Construction,2015-10-02,23.22575,Polyvalent,45.425853676455155,-75.694092065103
-5917,M,100,A,"1876 ROBERTSON RD, K2H5B8",K2H5B8,172153,358045.152706,5020956.43922,__86HY1U,Address,1876 ROBERTSON RD,1876 ROBERTSON RD,K2H5B8,Ward 8,35,35,Other,Nepean,Interior alterations to a 2 storey hotel (Best Western Hotel - Install an elevator),0,150000,6,1506613,Construction,2015-10-06,0.557418,Autre,45.32654660706871,-75.82076698711022
-6359,M,100,A,"123 METCALFE ST, K1P5L9",K1P5L9,17833,367798.754588,5031489.35977,___A6XYG,Address,123 METCALFE ST,123 METCALFE ST,K1P5L9,Ward 14,3922,52,Retail,Old Ottawa,"Interior alterations to a 6 storey hotel (Indigo Hotel, Remove escalators and construct an elevator)",0,150000,60,1507046,Construction,2015-10-22,5.57418,Vente au détail,45.42051152652045,-75.69501050494442
-6386,T,100,A,"1125 COLONEL BY DR, K1S5B6",K1S5B6,24147,367486.34425,5027122.24713,___A5BO9,Address,1125 COLONEL BY DR,1125 COLONEL BY DR,K1S5B6,Ward 17, ,"L,M,N",Institutional,Old Ottawa,Install a new ramp roof (steel) in a 3 level parking garage (Carleton University),0,205100,3207.65,1507075,Construction,2015-10-23,298.00030795,Institutionnel,45.38124556083802,-75.6995571333582
-6523,M,100,A,166 FRANK ST, ,207130,368460.850046,5030914.05749,___A6JQL,Address,166 FRANK ST,166 FRANK ST, ,Ward 14,49052, ,Institutional,Old Ottawa,"Exterior and interior alterations for accessibility upgrades to a 1 storey community building (St. Lukes Community Centre, Bethell Fieldhouse)",0,14454.99,0,1507173,Construction,2015-10-28,0,Institutionnel,45.41527521940315,-75.68662549139007
-7312,M,100,A,"110 MARLBOROUGH AVE, K1N8E9",K1N8E9,207909,369518.315743,5032033.28733,___A6WMZ,Address,110 MARLBOROUGH AVE,110 MARLBOROUGH AVE,K1N8E9,Ward 12,75101,26 LOT 27,Apartment,Old Ottawa,"Construct a deck and a barrier free ramp, and install a prefabricated fire escape on a residential building (rear yard, Murphy House)",0,40000,400,1507841,Construction,2015-11-27,37.1612,Appartement,45.4252486236411,-75.67296893073251
-7399,M,100,A,"111 CATHERINE ST, K2P0P4",K2P0P4,342025,368319.004965,5030497.18051,__73BX4K,Address,111 CATHERINE ST,111 CATHERINE ST,K2P0P4,Ward 14,30,6-8,Mixed,Old Ottawa,"Interior alterations on the 1st floor of an 8 storey mixed-use building (barrier free washroom and office suite fit-up, unit #107)",0,18000,52,1507938,Construction,2015-12-04,4.830956,Polyvalent,45.41153718830202,-75.68849134794208
-7787,M,100,A,"155 QUEEN ST, K1P6L1",K1P6L1,287892,367453.319519,5031604.38154,___A733N,Address,155 QUEEN ST,155 QUEEN ST,K1P6L1,Ward 14,3922, ,Office,Old Ottawa,Tenant fit-up in the basement of a 14 storey office building; add 1 elevator and escalators from ground floor lobby to basement  (Winners),0,3000000,22296,1500041,Construction,2015-01-07,2071.365288,Bureau,45.421577475655276,-75.69940937984275
-7854,M,100,A,"2313 CARLING AVE, K2B7G3",K2B7G3,12762,361465.963567,5025616.01464,___A59K0,Address,2313 CARLING AVE,2313 CARLING AVE,K2B7G3,Ward 7,546,4 & 5,Other,Old Ottawa,Interior alterations to a 1 storey funeral home (barrier free washroom),0,62828.19,500,1500117,Construction,2015-01-12,46.4515,Autre,45.368205446299356,-75.77659804689692
-7885,M,100,A,"50 O'CONNOR ST, K1P6L2",K1P6L2,158029,367473.011676,5031523.25866,___A6Z5V,Address,50 O'CONNOR ST,50 O'CONNOR ST,K1P6L2,Ward 14,3922,9-10,Mixed,Old Ottawa,"Interior alterations to a 17 storey office building (create accessible washrooms on Floors 2,3,4,7,8,9,10,11,12,13,14, and 16)",0,480000,904.16,1500158,Construction,2015-01-14,83.99917648,Polyvalent,45.420845794726134,-75.69916809449803
-7886,M,100,A,"99 BANK ST, K1P6B9",K1P6B9,96445,367405.096338,5031480.83295,___A51F1,Address,99 BANK ST,99 BANK ST,K1P6B9,Ward 14, , ,Office,Old Ottawa,"Interior alteration to create accessible washrooms (floors 2, 4, 7 & 9, in the elevator corridor)",0,160000,258.33,1500159,Construction,2015-01-14,23.999631989999997,Bureau,45.42047014160185,-75.70004122203666
-7891,M,100,A,"1595 MERIVALE RD, K2G3J4",K2G3J4,318015,364902.303094,5023958.18022,__1OXJMZ,Address,1595 MERIVALE RD,1595 MERIVALE RD,K2G3J4,Ward 9, ,33,Retail,Nepean,"Interior alterations in a 1 storey retail building (Red Lobster, Accessible Washrooms)",0,68000,409,1500167,Construction,2015-01-14,37.997327,Vente au détail,45.353002252214736,-75.73293476352387
-7997,M,100,A,"525 COTE ST, K1K0Z8",K1K0Z8,407524,371542.107731,5033281.52232,___A7AFJ,Address,525 COTE ST,525 COTE ST,K1K0Z8,Ward 13, ,252-261,Other,Old Ottawa,Interior alterations to a 2 storey community complex (make pool change rooms accessible),0,80636.36,4219,1500279,Construction,2015-01-23,391.957757,Autre,45.436289507407,-75.64694060191307
-7998,M,100,A,"1701 WOODROFFE AVE, K2G1W2",K2G1W2,279964,364150.51519,5021052.44637,__1U8ANE,Address,1701 WOODROFFE AVE,1701 WOODROFFE AVE,K2G1W2,Ward 9, , ,Other,Nepean,Tenant fit up in a 1 storey community building (Lawnbowl Pavillion - accessibility),0,121325,270,1500280,Construction,2015-01-23,25.08381,Autre,45.32692077363969,-75.7428773190875
-8048,M,100,A,"1660 CARLING AVE, K2A1C5",K2A1C5,56902,363623.199916,5026794.86169,__6X1RGV,Address,1660 CARLING AVE,1660 CARLING AVE,K2A1C5,Ward 15, , ,Retail,Old Ottawa,Tenant fitup on the ground floor (CRU-1 & CRU-4) and add a freight lift in a  2 storey retail building (Canadian Tire).,0,200000,8367.05,1500333,Construction,2015-01-28,777.32404615,Vente au détail,45.37863481931508,-75.74892044354308
-8092,M,100,A,3701 CARLING AVE, ,277866,353097.089927,5023344.98013,__1U87LM,Address,3701 CARLING AVE,3701 CARLING AVE, ,Ward 7, , ,Office,Nepean,Interior alterations (replace elevator) to a 4 storey office/industrial building (David Florida Laboratory),0,418000,1184,1500382,Construction,2015-01-30,109.997152,Bureau,45.34839702950761,-75.88365124888583
-8228,M,100,A,"879 HIAWATHA PARK RD, K1C2Z6",K1C2Z6,9164,379421.906946,5038581.88523,__353FNT,Address,879 HIAWATHA PARK RD,879 HIAWATHA PARK RD,K1C2Z6,Ward 1, ,5,Other,Gloucester,Interior alterations to upgrade the Elevator Shafts in  a 4 storey long-term care residency (Residence Saint-Louis),0,275000,376.74,1500550,Construction,2015-02-11,35.00027622,Autre,45.48318168766386,-75.54543409574035
-8247,M,98.9,A,2287 ST. LAURENT BLVD, ,204527,374225.415436,5027798.06415,___A7MY8,Address,2287 ST. LAURENT BLVD,2287 ST. LAURENT BLVD, ,Ward 10, , ,Office,Old Ottawa,Lift existing office building to construct a slab foundation beneath it,0,10000,592,1500572,Construction,2015-02-13,54.998576,Bureau,45.38669083911913,-75.61342036093994
-8392,T,100,A,1130 WELLINGTON ST W, ,396628,365246.830872,5029267.29436,__90BZR9,Address,1130 WELLINGTON ST W,1130 WELLINGTON ST W, ,Ward 15,14,2,Mixed,Old Ottawa,FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),52,16000000,84779.33,1500721,Construction,2015-02-24,7876.25409499,Polyvalent,45.40074305981421,-75.72788818154137
-8393,T,100,A,10 ROSEMOUNT AVE, ,395649,365246.830872,5029267.29436,__90BZY2,Address,10 ROSEMOUNT AVE,10 ROSEMOUNT AVE, ,Ward 15,14,2,Mixed,Old Ottawa,FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),52,16000000,84779.33,1500721,Construction,2015-02-24,7876.25409499,Polyvalent,45.40074305981421,-75.72788818154137
-8425,M,100,A,"2720 RICHMOND RD, K2B6S2",K2B6S2,10936,360228.031498,5024527.45634,___A668E,Address,2720 RICHMOND RD,2720 RICHMOND RD,K2B6S2,Ward 7,348,488-489,Office,Old Ottawa,"Construction of stair and elevator additions, partial demolition and interior alterations to a 3 storey assembly building (conversion of Grant School into Centre Multiservices Francophone de l'Ouest d'Ottawa)",0,3230000,21992,1500755,Construction,2015-02-26,2043.122776,Bureau,45.35850962985594,-75.79252251144193
-8630,M,100,A,"370 507 DOMINION AVE, K2A3X4",K2A3X4,321252,362752.685206,5028195.33553,___A5D99,Address,370 DOMINION AVE,370 DOMINION AVE,K2A3X4,Ward 15, , ,Apartment,Old Ottawa,"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",0,426210,0,1500950,Construction,2015-03-11,0,Appartement,45.39130864188611,-75.75987021804562
-8672,M,100,A,"365 LAURIER AVE W, K1A0X6",K1A0X6,336768,367331.533145,5031234.76702,___A6TJB,Address,365 LAURIER AVE W,365 LAURIER AVE W,K1A0X6,Ward 14,3922,27-30,Office,Old Ottawa,Interior alterations on the 5th to the 21st floor of a 21 storey office building (accessible washrooms),0,528000,1600,1501007,Construction,2015-03-13,148.6448,Bureau,45.41826269640893,-75.70101234157475
+description,blg_type,ward,address,permit_date
+Exterior alterations to repair ramp and landing at the front of a 12 storey apartment building,Apartment,Ward 14,151 BAY ST,2011-01-01
+Exterior alterations to the side ramp entering the underground parking garage of a 19 storey apartment builidng.,Apartment,Ward 7,1195 RICHMOND RD,2011-01-01
+Demolition of entry ramp and building facade (phase 1 of pending permit A11-003538) demolition work only on an existing 27 storey building (Delta Hotel),Retail,Ward 14,101 LYON ST N,2011-01-01
+Removal of a key operated wheel chair lift and replace with an enclosed elevator in a commercial building (AIM Medical),Office,Ward 18,550 TERMINAL AVE,2011-01-01
+"Construct a 1 storey addition/deck, and install an interior self contained wheel chair lift in a 1 storey detached dwelling",Single,Ward 20,4450 EIGHTH LINE RD,2011-01-01
+Construct an enclosed barrier free ramp in a 2 storey institutional building ( Glebe centre),Institutional,Ward 17,950 BANK ST,2011-01-01
+Repair/replace portions of slab and ramp in the underground parking garage of a 12 storey apartment building,Apartment,Ward 14,261 COOPER ST,2011-01-01
+Remove stairs and construct ramp at the front of a 1 storey detached dwelling,Single,Ward 8,8 ASHWOOD CRES,2011-01-01
+Interior alterations for structural remediation and accessibility improvements (Bernard Grandmaitre arena),Institutional,Ward 12,309 MCARTHUR AVE,2011-01-01
+Interior alterations on the 3rd and 5th floors of a 6 storey office building (elevator lobbies),Office,Ward 4,1000 INNOVATION DR,2011-01-01
+Interirior alterations/retrofit to the elevator in a 2 storey chruch (St. Augustine's),Institutional,Ward 9,1060 BASELINE RD,2011-01-01
+Interior alterations to convert to barrier free washrooms in a commercial building (Unit U3),Retail,Ward 8,2730 IRIS ST,2012-01-01
+"Interior alterations in a 2 storey institutional building to install a fire-rated door, card reader and barrier free door operator. (Ruth Dickinson Library)",Institutional,Ward 3,100 MALVERN DR,2012-01-01
+Exterior alterations to the entrance ramp to the underground garage of a 23 storey office building,Office,Ward 14,66 SLATER ST,2012-01-01
+Exterior alterations to install a handicap ramp to a 2 storey office building,Office,Ward 12,488 WILBROD ST,2012-01-01
+Construct a barrier-free washroom on the 1st floor of an office building (Public Health Agency),Office,Ward 9,100 COLONNADE RD N,2012-01-01
+PLUMBING PERMIT ONLY - Install new sump-pump/pit in  the elevator pit in a 7 storey apartment building,Apartment,Ward 7,320 CROYDON AVE,2012-01-01
+Remove and replace wheelchair ramps ar the front of a 2 storey group home,Other,Ward 7,2935 AHEARN AVE,2012-01-01
+Exterior alterations to the foundation to construct a 'walk-out' concrete stairwell with a guard and handrails for a 2 storey detached dwelling,Single,Ward 15,28 EDINA ST,2012-01-01
+TEMPORARY PERMIT: Install a temporary washroom trailer and wooden barrier-free ramp to access Lauder Hall & Cathedral.,Other,Ward 14,439 QUEEN ST,2012-01-01
+Interior alterations to install a lift in a 1 storey detached dwelling,Single,Ward 21,78 DALLAIRE CRES,2012-01-01
+Construct a ramp at the front of a 2 storey detached dwelling,Single,Ward 16,39 MARSHALL AVE,2012-01-01
+Interior alterations to install an accessible ramp on the 1st floor of a 2 storey community centre (Dempsey CC),Other,Ward 18,1816 ST. LAURENT BLVD,2012-01-01
+Construct an accessibility ramp at the rear of a 2 storey office building,Office,Ward 14,20 JAMES ST,2012-01-01
+Construct a ramp and a deck at the front of a 1 storey detached dwelling,Single,Ward 12,300 ST. DENIS ST,2012-01-01
+Construct a 2 storey addition at the rear of an existing 2 storey institutional building (barrier-free entrance and elevator for 2nd floor of Paroisse St.-Joseph d'Orléans - church),Institutional,Ward 1,2757 ST. JOSEPH BLVD,2012-01-01
+Construct a ramp at the front of a 1 storey detached dwelling,Single,Ward 9,6 CRAWLEY AVE,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,210 WOODRIDGE CRES,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,220 WOODRIDGE CRES,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,230 WOODRIDGE CRES,2012-01-01
+Interior alterations in a 1 storey commercial building. Base building work. Construction of a demising wall and a barrier-free washroom within one suite.,Retail,Ward 23,430 HAZELDEAN RD,2012-01-01
+"Interior alterations to create barrier free washrooms on the 3rd to 5th floors, 10th to 18th floors and 20th floor of a 21 storey office building",Office,Ward 14,350 ALBERT ST,2012-01-01
+"Interior alterations to create barrier free washrooms on the 3rd to 5th floors, 10th to 18th floors and 20th floor of a 21 storey office building",Office,Ward 14,360 ALBERT ST,2012-01-01
+Interior and exterior alterations to replace handrails in a 2 storey townhouse,Rowhouse,Ward 16,3205 UPLANDS DR,2012-01-01
+Construct an accessible ramp and interior alterations to a 1 storey chiropractic office building,Office,Ward 15,765 BROADVIEW AVE,2012-01-01
+"Construct a deck, ramp and stairs at the rear of a 2 storey detached dwelling",Single,Ward 5,1418 HOUSTON CRES,2012-01-01
+Interior alterations to the Y3 elevator shaft in an 8 story institutional building (Bruyere Continuing Care),Institutional,Ward 12,43 BRUYERE ST,2012-01-01
+Tenant fit-up for a D occuancy in the basement and construction of an elevator shaft.,Retail,Ward 7,2121 CARLING AVE,2013-01-01
+Interior alterations (install power door operators) on all floors in a 4 storey office building (RCMP Headquarters),Office,Ward 22,73 LEIKIN DR,2013-01-01
+Construct a 2 storey vestibule/elevator addition at the front of an existing 2 storey institutional building,Institutional,Ward 14,180 PERCY ST,2013-01-01
+Interior/exterior alterations to extend the patio and ramp in a retail building,Retail,Ward 23,430 HAZELDEAN RD,2013-01-01
+Install an elevator in a 2 storey community centre (Cyrville Comm. Centre),Institutional,Ward 11,4355 HALMONT DR,2013-01-01
+Interior/exterior alterations to add a ramp in the front of a 1 storey retail building ( Victoria Pharmacy),Retail,Ward 15,1065 WELLINGTON ST W,2013-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 19,1103 LICHEN AVE,2013-01-01
+Tenant fit-up on the 2nd floor (Medical Centre) Construction of a new exit shaft for the second floor. Construction of a new elevator shaft.,Retail,Ward 7,2121 CARLING AVE,2013-01-01
+"Alterations to upgrade HVAC, fire protection and elevators in a 9 storey office building (Confederation building)",Office,Ward 14,229 WELLINGTON ST,2013-01-01
+Interior alterations to upgrade accessibility on the shared 1st floor and floors 2-18 on both towers of an 18 storey office building,Office,Ward 14,280 SLATER ST,2013-01-01
+Interior alterations to upgrade accessibility on the shared 1st floor and floors 2-18 on both towers of an 18 storey office building,Office,Ward 14,333 LAURIER AVE W,2013-01-01
+"Construct a barrier free ramp at the front of a 3 storey, 6 unit apartment building  (OCSCC No. 894)",Apartment,Ward 13,54 RIDEAU TERR,2013-01-01
+Construct a ramp and exterior alterations to a 2 storey community Centre (Old Town Hall),Institutional,Ward 17,61 MAIN ST,2013-01-01
+Interior alterations to create an accessible washroom in a 1 storey office building,Office,Ward 18,2650 LANCASTER RD,2013-01-01
+"PARTIAL PERMIT ONLY - Footings, foundation and podium slab for Queen Elizabeth Drive (QED) entrance ramp and portion of underground garage - Lansdowne",Institutional,Ward 17,1015 BANK ST,2013-01-01
+Interior alterations and construction of a ramp in a 1 storey school (Ecole Roger Saint-Denis),Institutional,Ward 23,186 BARROW CRES,2013-01-01
+Repair handrail on the roof top deck of a 3 storey detached dwelling,Single,Ward 13,121 -1 MACKAY ST,2013-01-01
+Lift existing detached dwelling and pour new foundation wall and structural alterations to ground floor assembly,Apartment,Ward 12,458 NELSON ST,2013-01-01
+Interior alterations to a make a 1 storey arena more accessible,Institutional,Ward 11,2020 OGILVIE RD,2013-01-01
+Exterior alterations (new barrier free ramp) to a 16 storey office building (Centennial Tower),Office,Ward 14,200 KENT ST,2013-01-01
+Alterations to install a ramp in the garage of a high rise condominium,Apartment,Ward 11,915 ELMSMERE RD,2013-01-01
+Interior alterations to make facility accessible (Fred Barrett Arena),Institutional,Ward 22,3280 LEITRIM RD,2013-01-01
+Interior alterations to modify existing elevator in a 4 storey office building,Office,Ward 14,66 QUEEN ST,2013-01-01
+"Interior alterations in a 2 storey school (Les Petitte Frimousse, addition of a stair platform lift & upgrading of mechanical ventilation)",Institutional,Ward 12,307 MONTGOMERY ST,2013-01-01
+"Interior alterations - structural work for new floor at level L3 (northeast wing), numerous floor openings throughout (stairs, elevators, etc.) and general seismic upgrades to an existing 4 storey office building (West Block, Parliament Hill)",Office,Ward 14,111 WELLINGTON ST,2013-01-01
+Interior alterations to a 2 storey recreation centre (accessibility renovations to 2 washroom facilities and entrance),Institutional,Ward 17,2451 RIVERSIDE DR,2013-01-01
+Interior alterations to a 2 storey medical building including elevator and platform lift installation (Community Health Centre),Office,Ward 15,30 ROSEMOUNT AVE,2013-01-01
+Interior alterations to a 1 storey assembly building (Carleton Heights Public School) Construction of an elevator shaft.,Institutional,Ward 16,1660 PRINCE OF WALES DR,2013-01-01
+"Construct an addition to create a gymnasium in an assembly building, and addition of an elevator (Les Petits Frimousse)",Institutional,Ward 12,307 MONTGOMERY ST,2013-01-01
+Interior/exterior alterations to a 2 storey community Centre ( McNabb Community Centre - accessibility improvements),Institutional,Ward 14,180 PERCY ST,2013-01-01
+Exterior alterations on the 1st floor of an 8 storey commercial office building to replace access stairs and rear ramp (TD Bank),Office,Ward 11,1600 JAMES NAISMITH DR,2013-01-01
+Interior alterations to the elevator and lobby in a 2 storey  community centre  ( Heron Rd CC),Institutional,Ward 18,1480 HERON RD,2013-01-01
+Exterior alterations to construct a ramp and interior alterations in a 1 storey detached dwelling,Single,Ward 18,2386 HEATON AVE,2013-01-01
+Interior alterations to install a lift in a 1 storey retail building (Home Depot),Retail,Ward 11,1616 CYRVILLE RD,2013-01-01
+Demolish a portion of a school building including Gym and Elevator Shaft.,Demolition,Ward 15,12 STIRLING AVE,2013-01-01
+Exterior alterations to a parking garage ramp in a 3 storey apartment (repairs to one ramp and drain replacement in lower level),Apartment,Ward 4,960 TERON RD,2013-01-01
+Construct a covered porch and wheelchair ramp to a detached dwelling (front yard),Single,Ward 1,291 HOYLAKE CRES,2013-01-01
+Interior alterations to install a lift in a 1 storey retail building (Home Depot),Retail,Ward 8,1900 BASELINE RD,2013-01-01
+Interior alterations on the ground floor of the 2 storey High Lift Building,Industrial,Ward 15,1 RIVER ST,2013-01-01
+Interior alterations to remove barriers and make facility accessible (Alfred Taylor Recreation Centre),Commercial,Ward 21,2300 COMMUNITY WAY,2013-01-01
+Addition for an elevator in a 1 storey church (Sts. Peter & Paul Catholic Church),Other,Ward 13,1161 NORTH RIVER RD,2013-01-01
+Interior alterations to the the P2 & P1 garage levels and levels 2 through 4 of a 4 storey retail building (Rideau Centre) in preparation for future tenant fit-ups (Food Court (level 2) and Nordstrom's (levels 3 & 4)) (former Sears space) Excluding elevator lobbies on P1 and P2 of the blue garage,Retail,Ward 12,50 RIDEAU ST,2013-01-01
+Construct an accessible ramp access to the parking structure of a 12 storey apartment building,Apartment,Ward 14,210 GLOUCESTER ST,2013-01-01
+TEMPORARY PERMIT - Relocate an existing Sales Trailer (temporary) and barrier free ramp. Additional Construction for deck and barrier free washroom. - 24 MONTHS MAXIMUM,Office,Ward 23,287 MEADOWBREEZE DR,2013-01-01
+Install an elevator shaft in a 2 storey motel,Other,Ward 10,2721 BANK ST,2013-01-01
+"Interior alterations to comply with accessibility legislation (OC Transpo transitway station, Place d'Orleans)",Other,Ward 1,1231 PLACE D'ORLEANS DR,2013-01-01
+"Interior structural repairs to a 1-storey commercial building (make level the ground floor, alter staircases, and install an elevator lift).",Retail,Ward 14,391 GLADSTONE AVE,2014-01-01
+Install a barrier-free washroom on the 3rd floor of an 8 storey office building (PWGSC),Office,Ward 14,165 SPARKS ST,2014-01-01
+Interior alterations in a Church (install a stairlift from the entrance to the sanctuary),Institutional,Ward 9,1876 MERIVALE RD,2014-01-01
+"Tenant fit up to a 4 storey retail building (Rideau Centre - Nordstrom - level 3 and 4) - interior alterations to the P2 & P1 garage levels (elevator lobbies), level 2 (shipping & receiving) (see BP# 1308197 for base building work)",Retail,Ward 12,50 RIDEAU ST,2014-01-01
+PARTIAL PERMIT:  new elevator lobby addition on P1 and P2 levels of the Blue Garage (within Daly Avenue underpass),Commercial,Ward 12,50 RIDEAU ST,2014-01-01
+Interior alterations on the 1st floor of a 2 storey arena to construct barrier free ramp to spectators area (Larry Robinson Arena),Other,Ward 20,2785 8TH LINE RD,2014-01-01
+Interior alterations in the Civic Centre to retrofit washrooms to current accessibility standards,Institutional,Ward 17,1015 BANK ST,2014-01-01
+Interior alterations in a 2 storey recreation complex (Nepean Sportsplex - handrail addition),Institutional,Ward 9,1701 WOODROFFE AVE,2014-01-01
+Interior alterations in a 2 storey recreation complex (Walter Baker Sports Center - handrail addition),Institutional,Ward 3,100 MALVERN DR,2014-01-01
+"Convert a duplex to a detached dwelling, construct a new second storey, side (elevator lift) and rear additions, rear deck and interior alterations, with a home based business in the basement level.",Mixed,Ward 13,712 ST. LAURENT BLVD,2014-01-01
+Tenant fit-up in a 2 storey mixed use building (Spring Action Trampoline Centre),Industrial,Ward 11,5515 -1 CANOTEK RD,2014-01-01
+"Interior alterations to a 1 storey institutional building (Sandy Hill Community Centre, accessibility retrofit)",Institutional,Ward 12,250 SOMERSET ST E,2014-01-01
+Tenant fit-up in a 2 storey retail building (Xtreme Trampoline Park - REFER to A14-001161 for demising wall work),Institutional,Ward 23,50 FRANK NIGHBOR PL,2014-01-01
+"Interior alterations to a single storey industrial building  (Install new demising wall for a future tenancy,  Xtreme Trampoline - REFER to A14-001637 for fit-up)",Industrial,Ward 23,50 FRANK NIGHBOR PL,2014-01-01
+Install elevator and renovations in a 3 storey elementary school (St. Luke Elementary School),Institutional,Ward 18,2485 DWIGHT CRES,2014-01-01
+Construct a ramp at the front of a 2 storey row unit dwelling,Rowhouse,Ward 3,3 A MAPLE RIDGE CRES,2014-01-01
+Construct an accesibility ramp to a 2 storey detached dwelling (front yard),Single,Ward 19,1809 SUMMERLANDS CRES,2014-01-01
+Interior alterations to add a barrier free washroom on the 1st floor of an 8 storey mixed-use building,Mixed,Ward 14,464 METCALFE ST,2014-01-01
+Install a wheelchair lift in a 2 storey school (Dr. F J McDonald),Institutional,Ward 7,2860 AHEARN AVE,2014-01-01
+Interior alterations on the ground floor of a 3 storey office building (Courthouse- Washroom Accessibility),Institutional,Ward 14,161 ELGIN ST,2014-01-01
+Interior alterations to remove (decommissioned) ejection elevators and replace with new manned service elevator in a hospital (The Ottawa Hospital),Institutional,Ward 18,501 SMYTH RD,2014-01-01
+Interior alterations to a 1 storey institutional building (Barry Mullen Park Field House - accessible washrooms),Institutional,Ward 7,152 GRANDVIEW RD,2014-01-01
+Interior alterations to a 1 storey institutional building (Lisa Park Field House - accessible washrooms),Institutional,Ward 8,6 LISA AVE,2014-01-01
+Interior alterations to make washrooms & reception desk fully accessible (Foster Farm Community Centre),Institutional,Ward 7,1065 RAMSEY CRES,2014-01-01
+Interior alterations to make washrooms & change rooms fully accessible (Ruth Wildgen Park Field House),Institutional,Ward 7,1099 GRENON AVE,2014-01-01
+Interior alterations to a community building (Remove barriers for washroom accessibility),Institutional,Ward 7,100 GREENVIEW AVE,2014-01-01
+Interior alterations to remove barriers and make washroom fully accessible (Strathcona Park Fieldhouse),Institutional,Ward 12,25 RANGE RD,2014-01-01
+Construct a steel canopy over parking garage ramp on a 10 storey office building,Office,Ward 14,280 ALBERT ST,2014-01-01
+Interior alterations to install an elevator in a detached dwelling,Single,Ward 9,53 BURNBANK ST,2014-01-01
+Construct a concrete deck and wheelchair ramp at the side of a 2 storey mixed use building (Rogers),Retail,Ward 17,680 BRONSON AVE,2014-01-01
+Interior alterations to a 2 storey community building (Remove barriers for accessibility),Institutional,Ward 17,175 THIRD AVE,2014-01-01
+Interior alterations to a community building (Remove barriers for washroom accessibility - Glebe Community Centre),Institutional,Ward 17,175 THIRD AVE,2014-01-01
+Construct a 1 storey addition to a 2 storey detached dwelling (elevator & therapeutic hot tub),Single,Ward 20,6839 LAKES PARK DR,2014-01-01
+"Interior alterations to upgrade existing and install new conveying systems (elevators and lifts) in a 4 storey office building (West Block, Parliament Hill)",Office,Ward 14,111 WELLINGTON ST,2014-01-01
+"Interior alterations to a 1 storey institutional building (Bob McQuarrie Community Centre, accessibility retrofit to West entrance)",Institutional,Ward 1,1490 YOUVILLE DR,2014-01-01
+Exterior alterations to a 1 storey warhouse building (replace ramp & concrete slab),Industrial,Ward 15,856 CLYDE AVE,2014-01-01
+Construct new roof and install an access ramp; add a carport at the side of a mobile home,Single,Ward 6,6 ROWAN RD,2014-01-01
+Construct a deck and wheelchair ramp (back and side yard),Single,Ward 17,460 MAIN ST,2014-01-01
+Interior alterations on the 2nd and 3rd floor of a 5 storey institutional building (Laframboise Hall - barrier-free washrooms),Institutional,Ward 17,223 MAIN ST,2014-01-01
+Increase the male and female washroom fixture count by 1. Construct a barrier-free unisex washroom.,Institutional,Ward 16,3191 RIVERSIDE DR,2014-01-01
+Interior/Exterior alterations to a 4 storey mixed use building (Accessible entrances),Retail,Ward 14,187 BANK ST,2014-01-01
+Construct a wheel chair ramp (front entrance),Single,Ward 1,1427 SILLERY PL,2014-01-01
+Interior alterations to install an elevator in a 2 storey detached dwelling,Single,Ward 8,10 MARBLE ARCH CRES,2014-01-01
+Exterior alterations to a 2 storey retail building (modifications to handicap ramp on the east entrance),Retail,Ward 12,51 YORK ST,2014-01-01
+Interior alterations to a 4 storey office building (removal of partitions and elevator cab on all 4 floors),Office,Ward 16,1505 LAPERRIERE AVE,2014-01-01
+Interior alterations to a 1 storey community building (Margaret Rywack - accessibility),Institutional,Ward 9,68 KNOXDALE RD,2014-01-01
+Interior alterations to a 1 storey community centre (make washrooms accessible),Institutional,Ward 7,2074 BENJAMIN AVE,2014-01-01
+Install automatic door operators to doors,Office,Ward 14,280 SLATER ST,2014-01-01
+Interior alterations to add a new accessible washroom on the ground floor of a 29 storey office building (Place de Ville - Tower C),Office,Ward 14,330 SPARKS ST,2014-01-01
+Tenant fit-up in the basement of a 14 storey office building; add 1 elevator and escalators from ground floor lobby to basement  (Winners),Office,Ward 14,155 QUEEN ST,2015-01-01
+Interior alterations to a 1 storey funeral home (barrier free washroom),Other,Ward 7,2313 CARLING AVE,2015-01-01
+"Interior alterations to a 17 storey office building (create accessible washrooms on Floors 2,3,4,7,8,9,10,11,12,13,14, and 16)",Mixed,Ward 14,50 O'CONNOR ST,2015-01-01
+"Interior alteration to create accessible washrooms (floors 2, 4, 7 & 9, in the elevator corridor)",Office,Ward 14,99 BANK ST,2015-01-01
+"Interior alterations in a 1 storey retail building (Red Lobster, Accessible Washrooms)",Retail,Ward 9,1595 MERIVALE RD,2015-01-01
+Interior alterations to a 2 storey community complex (make pool change rooms accessible),Other,Ward 13,525 COTE ST,2015-01-01
+Tenant fit up in a 1 storey community building (Lawnbowl Pavillion - accessibility),Other,Ward 9,1701 WOODROFFE AVE,2015-01-01
+Tenant fitup on the ground floor (CRU-1 & CRU-4) and add a freight lift in a  2 storey retail building (Canadian Tire).,Retail,Ward 15,1660 CARLING AVE,2015-01-01
+Interior alterations (replace elevator) to a 4 storey office/industrial building (David Florida Laboratory),Office,Ward 7,3701 CARLING AVE,2015-01-01
+Interior alterations to upgrade the Elevator Shafts in  a 4 storey long-term care residency (Residence Saint-Louis),Other,Ward 1,879 HIAWATHA PARK RD,2015-01-01
+Lift existing office building to construct a slab foundation beneath it,Office,Ward 10,2287 ST. LAURENT BLVD,2015-01-01
+FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),Mixed,Ward 15,10 ROSEMOUNT AVE,2015-01-01
+FOUNDATION ONLY - Construct the foundation and parking garage for a mixed use building (This permit does not include the garage ramp),Mixed,Ward 15,1130 WELLINGTON ST W,2015-01-01
+"Construction of stair and elevator additions, partial demolition and interior alterations to a 3 storey assembly building (conversion of Grant School into Centre Multiservices Francophone de l'Ouest d'Ottawa)",Office,Ward 7,2720 RICHMOND RD,2015-01-01
+"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",Apartment,Ward 15,370 DOMINION AVE,2015-01-01
+Interior alterations on the 5th to the 21st floor of a 21 storey office building (accessible washrooms),Office,Ward 14,365 LAURIER AVE W,2015-01-01
+Exterior/interior alterations to a 4 storey Group Home (Install power assist door in 5 locations and upgrade entrance ramp),Institutional,Ward 12,433 NELSON ST,2015-01-01
+Exterior alterations to replace accessibility ramp,Institutional,Ward 12,515 SUSSEX DR,2015-01-01
+Construct a wheel chair ramp to a 1 storey detached dwelling,Single,Ward 5,200 BALDWIN ST,2015-01-01
+Construct a deck and wheelchair accessible ramp at the side of a detached dwelling,Single,Ward 13,583 DONALD ST,2015-01-01
+56tyy6Interior alterations to a 1 storey commercial building to construct a shaft and machine room for a lift for handicap access (Royal Canadian Legion - Manotick),Mixed,Ward 21,5550 ANN ST,2015-01-01
+Remove and replace wheelchair ramp on a 2 storey rowhouse (front yard),Rowhouse,Ward 7,2925 DUMAURIER AVE,2015-01-01
+Exterior alterations to a 2 storey office building (Canadian Dental Association - construct accessibility ramp),Office,Ward 18,1815 ALTA VISTA DR,2015-01-01
+"Exterior alterations (replace stairs, guards and add HC ramp to rear platform) to a 2 storey retail building",Retail,Ward 14,250 CITY CENTRE AVE,2015-01-01
+Interior alterations on the 1st floor of a 15 storey office building (lobby and elevator corridor),Office,Ward 14,99 BANK ST,2015-01-01
+Construct an wheelchair accessibility ramp at the front of a 2 storey detached dwelling,Single,Ward 16,3039 LINTON RD,2015-01-01
+"Interior alterations to a 4 storey  building (Rideau Hall, Replace elevator)",Institutional,Ward 13,1 SUSSEX DR,2015-01-01
+Interior alterations to install a elevator on the ground floor in a 2 storey institutional building (St. Martins Catholic School),Institutional,Ward 23,20 MCKITRICK DR,2015-01-01
+Interior alterations to install an elevator on the ground floor in a 1storey institutional building (Brother Andre Elementary),Institutional,Ward 11,1923 ELMRIDGE DR,2015-01-01
+Install an elevator to a 2 storey recreational building (Britania yacht club),Other,Ward 7,2777 CASSELS ST,2015-01-01
+Construct an accessible ramp (front yard),Single,Ward 19,625 CHARDONNAY DR,2015-01-01
+Construct a 1 storey addition on a 2 storey detached dwelling (to create an accessible washroom),Single,Ward 2,64 WEDGEWOOD CRES,2015-01-01
+Construct a barrier free ramp at a school (McMaster Catholic School),Institutional,Ward 18,1760 MCMASTER AVE,2015-01-01
+Interior alterations to replace a lift with ramp on the main floor of a 2 storey institutional building (Heron Community Centre),Institutional,Ward 18,1480 HERON RD,2015-01-01
+Construct an accessibility ramp at the front of a 1 storey detached dwelling,Single,Ward 20,7911 LAWRENCE ST,2015-01-01
+Construct a barrier free ramp in the garage of a 1 storey detached dwelling,Single,Ward 21,209 OAK LEAF PRIV,2015-01-01
+"Interior alterations to a 2 storey office building (Unit 103, International Union of Elevator Constructors)",Office,Ward 9,21 -103 ANTARES DR,2015-01-01
+Exterior alterations to remove and replace accessible ramp in a 1 storey office building,Office,Ward 16,1915 BANK ST,2015-01-01
+Construct a 2 storey addition for an elevator  (Beaverbrook Community Centre),Institutional,Ward 4,2 BEAVERBROOK RD,2015-01-01
+Installation of an enclosed three storey elevator at the rear of a three storey single dwelling and the creation of a third level rear balcony.,Single,Ward 17,24 AYLMER AVE,2015-01-01
+Interior alterations to install a handicap ramp in a public corridor of a 2 storey mixed use  building,Mixed,Ward 13,400 MCARTHUR AVE,2015-01-01
+Interior alterations to install an elevator in a 2 storey office building,Office,Ward 19,2025 LANTHIER DR,2015-01-01
+Exterior alterations to construct an access ramp at the front of a 1 storey detached dwelling,Single,Ward 13,972 BEAUDRY ST,2015-01-01
+Interior alterations to a 1 storey detached dwelling (Install an elevator),Single,Ward 11,9 WICK CRES,2015-01-01
+Inteiror alterations on the 1st floor of a 4 storey office building (Elevator lobby),Office,Ward 18,2781 LANCASTER RD,2015-01-01
+Exterior alterations on the 1st floor of a 7 storey mixed use building (Construct a barrier free ramp - Scotiabank),Mixed,Ward 12,700 SUSSEX DR,2015-01-01
+Interior alterations to a 2 storey hotel (Best Western Hotel - Install an elevator),Other,Ward 8,1876 ROBERTSON RD,2015-01-01
+"Interior alterations to a 6 storey hotel (Indigo Hotel, Remove escalators and construct an elevator)",Retail,Ward 14,123 METCALFE ST,2015-01-01
+Install a new ramp roof (steel) in a 3 level parking garage (Carleton University),Institutional,Ward 17,1125 COLONEL BY DR,2015-01-01
+"Exterior and interior alterations for accessibility upgrades to a 1 storey community building (St. Lukes Community Centre, Bethell Fieldhouse)",Institutional,Ward 14,166 FRANK ST,2015-01-01
+"Construct a deck and a barrier free ramp, and install a prefabricated fire escape on a residential building (rear yard, Murphy House)",Apartment,Ward 12,110 MARLBOROUGH AVE,2015-01-01
+"Interior alterations on the 1st floor of an 8 storey mixed-use building (barrier free washroom and office suite fit-up, unit #107)",Mixed,Ward 14,111 CATHERINE ST,2015-01-01
+"Repair the elevator shaft in an 8 storey institutional building (The Ottawa Hospital, Civic)",Institutional,Ward 15,1053 CARLING AVE,2016-01-01
+Interior alterations on the 16th floor of a 17 storey office building (washrooms and corridor at elevators),Office,Ward 14,50 O'CONNOR ST,2016-01-01
+Install an elevator in a 2 storey office building (War Amps),Office,Ward 16,2827 RIVERSIDE DR,2016-01-01
+Replace fire alarm panel and install smoke detectors in elevator lobby on each floor of a 12 storey apartment building - Juliana Apartments,Apartment,Ward 14,100 BRONSON AVE,2016-01-01
+Interior alterations to the 1st and 2nd floors of a 2 storey rowhouse dwelling (handrail/guard replacement),Rowhouse,Ward 1,1775 -108 MARSALA CRES,2016-01-01
+"Interior alterations in a 2 storey recreational complex (Pinecrest Recreation Complex, Accessibility renovations)",Institutional,Ward 8,2250 TORQUAY AVE,2016-01-01
+"Construct a 2 storey addition to a 2 storey office building (elevator), restore the porch (side) and interior alterations on the 1st floor (vestibule)",Office,Ward 1,1811 ST. JOSEPH BLVD,2016-01-01
+"Interior alterations to a 1 storey community building (Hawthorne Park Fieldhouse, accessibility renovations)",Institutional,Ward 18,2139 TAWNEY RD,2016-01-01
+Construct a wheelchair ramp at the front of a 1 storey church (Immaculate Heart of Mary Parish),Institutional,Ward 18,1758 ALTA VISTA DR,2016-01-01
+Interior alterations to upgrade washrooms to barrier free on all floors of a 9 storey institutional building (LOEB Building) and janitor closet upgrade on various levels.,Institutional,Ward 17,1125 COLONEL BY DR,2016-01-01
+Exterior alterations to extend the wheelchair ramp on a 1 storey detached dwelling,Institutional,Ward 13,972 BEAUDRY ST,2016-01-01
+Repair the elevator shaft on all floors of a 5 storey retail building,Retail,Ward 12,73 RIDEAU ST,2016-01-01
+Interior alterations to a 3 storey institutional building - upgrade accessibility in change rooms (Routhier Community Centre),Institutional,Ward 12,172 GUIGUES AVE,2016-01-01
+Construct a deck and a barrier-free ramp for a residential group home (rear yard),Institutional,Ward 16,3062 SOUTHMORE DR E,2016-01-01
+Exterior alterations to install a barrier free ramp at the rear of a 3 storey hostel,Other,Ward 15,306 IRENE CRES,2016-01-01
+Interior alterations on the 10th floor of a 10 storey office building (electrical upgrades for elevator),Office,Ward 14,56 SPARKS ST,2016-01-01
+Construct a 1 storey addition (daycare + classrooms) with 2 storey elevator addition and related interior renovations to a 2 storey school (George-Etienne Cartier School),Institutional,Ward 16,880 THORNDALE DR,2016-01-01
+"Interior/exterior alterations to a 3 storey apartment building (remove and replace: elevator hoistway, garbage chute and boiler chimney)",Apartment,Ward 8,4 DEERFIELD DR,2016-01-01
+Construct an accessibility ramp (front yard),Single,Ward 8,1228 AMESBROOKE DR,2016-01-01
+Interior alterations for accessibility upgrades in a 4 storey mixed use building,Office,Ward 12,445 SUSSEX DR,2016-01-01
+Interior alterations for accessibility upgrades in a 4 storey mixed use building,Office,Ward 12,449 SUSSEX DR,2016-01-01
+Interior alterations for accessibility upgrades in a 4 storey mixed use building,Office,Ward 12,457 SUSSEX DR,2016-01-01
+Interior alterations for accessibility upgrades in a 4 storey mixed use building,Office,Ward 12,465 SUSSEX DR,2016-01-01
+Construct an addition to install elevator and stairway in a 2 storey commercial building (Unit 9),Commercial,Ward 3,3050 WOODROFFE AVE,2016-01-01
+"Construct additional public washrooms, stairs and ramp in common areas of the 3rd storey of a 19 storey mixed use building",Office,Ward 12,90 GEORGE ST,2016-01-01
+Interior alterations to a 1 storey office building (unit #2 - base building work to construct a demising wall and barrier-free washroom),Office,Ward 4,1240 TERON RD,2016-01-01
+"Interior alterations to the elevator lobby, corridors, and washroom on the 4th floor of a 16 storey office building",Office,Ward 14,99 BANK ST,2016-01-01
+"Interior alterations to the elevator lobby, corridors, and washroom on the 14th floor of a 16 storey office building",Office,Ward 14,99 BANK ST,2016-01-01
+Interior alterations on the 1st floor of a 2 storey place of worship (Community Pentecostal Church - accessible bathroom),Institutional,Ward 1,1825 ST. JOSEPH BLVD,2016-01-01
+"Interior alterations to a restaurant in a 2 storey mixed use building (The Urban Pear, Reconfigure washroom to barrier-free and add vestibule & staff washroom)",Retail,Ward 17,151 C SECOND AVE,2016-01-01
+"Interior alterations to a 4 storey school (Ecole secondaire publique De La Salle, Replace elevator)",Institutional,Ward 12,501 OLD ST. PATRICK ST,2016-01-01
+"Install maglocks at the freight elevator lobbies in a 3 storey retail building (2 locations on level 1, block C and 3 locations level 2, block C)",Retail,Ward 12,50 RIDEAU ST,2016-01-01
+Exterior alterations to a 3 storey office building (Barrier free ramp at front entrance).,Office,Ward 12,30 MURRAY ST,2016-01-01
+Exterior alterations to a 1 storey detached dwelling (lift cottage and install a block foundation beneath it),Single,Ward 21,7695 DWYER HILL RD,2016-01-01
+Interior alterations in a 2 storey detached delling (elevator shaft and ensuite),Single,Ward 6,213 ALLGROVE WAY,2016-01-01
+"Interior alterations on the 8th floor of a 16 storey office building (elevator lobby, public corridor areas and construction of 2 demising walls)",Office,Ward 14,100 QUEEN ST,2016-01-01
+Exterior alterations to remove and replace accessibility ramp on a 1 storey community building (Roy G. Hobbs Community Centre),Institutional,Ward 1,109 LARCH CRES,2016-01-01
+"Interior alterations to make change rooms fully accessible in a 1 storey community building (Optimist Park, Pool Change House)",Institutional,Ward 12,43 STE. CECILE ST,2016-01-01
+"Remove and replace accessible ramp on a 2 storey rowhouse unit (front yard, unit 334)",Rowhouse,Ward 7,1085 RAMSEY CRES,2016-01-01
+Install a canopy to the underground parking garage ramp in a 16 storey residential building (CCC 500),Apartment,Ward 18,1705 PLAYFAIR DR,2016-01-01
+Construct an attached deck and ramp (front yard),Single,Ward 8,6 FLORAL PL,2016-01-01
+Interior alterations to install an elevator  to access  the lower hall in a place of worship (Our Lady of Mount Carmel),Institutional,Ward 13,400 ST. LAURENT BLVD,2016-01-01
+"Interior alterations on all floors of a 20 storey office building (relocation of elevator lobby lighting, sprinklers, and fire alarm)",Office,Ward 14,300 SLATER ST,2016-01-01
+Construct a ramp (rear yard) to a 1 storey office building,Office,Ward 13,791 MONTREAL RD,2016-01-01
+Interior alterations to a 2 storey detached dwelling including adding an elevator,Single,Ward 1,745 CLEARCREST CRES,2016-01-01
+TEMPORARY PERMIT: Construct temporary scaffolding for the start ramp of Red Bull Crashed Ice Competition (Chateau Laurier Terrace),Other,Ward 12,1 RIDEAU ST,2017-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 6,31 ELIZA CRES,2017-01-01
+Interior alterations to enlarge a bathroom for wheelchair access,Single,Ward 20,6136 KAYCOURT DR,2017-01-01
+Interior alterations to upgrade fire alarm system (for elevator-related functions) in a 17 storey apartment building,Apartment,Ward 17,1455 CLEMENTINE BLVD,2017-01-01
+Install an elevator in the garage of a 1 storey detached dwelling,Single,Ward 5,320 LASIANDRA LANE,2017-01-01
+Demolish a 1 storey industrial buidling (City of Ottawa decomissioned sewage lift station),Demolition,Ward 3,147 THARE CRES,2017-01-01
+"Remove and replace a wooden ramp on a 1 storey building (Connaught Range, front)",Institutional,Ward 7,23 SHIRLEY BLVD,2017-01-01
+TEMPORARY PERMIT: Exterior/Interior alterations to a 2 storey assembly building (interior sales centre and exterior ramp),Retail,Ward 12,135 BARRETTE ST,2017-01-01
+"Interior alterations in a 2 storey school (2nd original school :floors & ceilings, 1st flr addition: accessible washroom)",Institutional,Ward 8,1303 FELLOWS RD,2017-01-01
+Remove and replace parking garage ramp (Queen Street only - Phase 1).  Work to be done in three (3) phases,Office,Ward 14,330 SPARKS ST,2017-01-01
+Interior alterations to a 2 storey office building (install a chair lift),Office,Ward 15,1399 WELLINGTON ST W,2017-01-01
+Interior alterations on the 1st floor of a 4 storey institutional building (Carling Family Shelter ) and exterior ramp/stair alterations,Institutional,Ward 7,2980 CARLING AVE,2017-01-01
+Interior alterations to a 2 storey shopping plaza (Remove and replace elevator),Retail,Ward 10,25 TAPIOLA CRES,2017-01-01
+Exterior alterations to a 12 storey apartment building (repair parking garage ramp),Apartment,Ward 17,480 METCALFE ST,2017-01-01
+Interior alterations to add an accessibility lift to a 2 storey school (Holy Cross Catholic School),Institutional,Ward 16,2820 SPRINGLAND DR,2017-01-01
+Interior alterations to add an accesibility lift in a 2 storey institutional building (St. Daniel Catholic School),Institutional,Ward 8,1313 FIELD ST,2017-01-01
+"Interior alterations on the 1st floor of a 3 storey office building (adding new power door operator, Suite 1100, DRS Technologies Canada)",Office,Ward 23,500 PALLADIUM DR,2017-01-01
+"Interior alterations to a 1 storey fieldhouse (Bel-Air Park Fieldhouse, change room accessibility requirements)",Other,Ward 8,2149 BERWICK AVE,2017-01-01
+Interior alterations on the 6th and 14th floor of a 17 storey office building (Elevator Lobby and Washrooms),Office,Ward 14,50 O'CONNOR ST,2017-01-01
+Construct an attached deck with ramp (rear yard),Single,Ward 18,971 ELSETT DR,2017-01-01
+"Exterior alterations to a 2 storey office building (University of Ottawa, Front, Construct a deck with a platform lift)",Office,Ward 12,170 WALLER ST,2017-01-01
+Construct a deck and handicap ramp (rear yard),Single,Ward 23,161 CASTLEFRANK RD,2017-01-01
+"Exteriror/Interior alterations to the Churchill Senior Center(accessibility upgrades, BF ramp, stairs, removal of and construction of new rear deck, including heritage restoration)",Institutional,Ward 15,345 RICHMOND RD,2017-01-01
+PHASE II - Construct firewalls/handrails in the LYON station platform/concourse a temporary raised floor on the ground floor of a 4 storey office/cinema building (Place de Ville Cinema - Kontinuum Ottawa 2017),Office,Ward 14,300 SPARKS ST,2017-01-01
+PHASE II - Construct firewalls/handrails in the LYON station platform/concourse a temporary raised floor on the ground floor of a 4 storey office/cinema building (Place de Ville Cinema - Kontinuum Ottawa 2017),Office,Ward 14,315 QUEEN ST,2017-01-01
+Construct a deck for wheelchair access (front stairs),Single,Ward 11,18 DUNHAM ST,2017-01-01
+Construct a ramp and steps at the front of a 1 storey instittutional building (Rideauview Bible Chapel),Institutional,Ward 16,1249 PRINCE OF WALES DR,2017-01-01
+TEMPORARY PERMIT - Construct entrance deck and barrier free ramp for a sales office trailer (EQ Homes),Office,Ward 22,4800 BANK ST,2017-01-01
+TEMPORARY PERMIT (24 months MAX) - Construct Barrier Free access for a sales office (Phoenix Homes),Office,Ward 22,4800 BANK ST,2017-01-01
+"Construct an accessibility ramp and structural repairs to the south entrance of a 4 storey university building (University of Ottawa, Tabaret Hall)",Institutional,Ward 12,550 CUMBERLAND ST,2017-01-01
+Interior alterations to a 2 storey theatre (auditiorium upgrades and accessibility improvements) (Ottawa Little Theatre),Retail,Ward 12,400 KING EDWARD AVE,2017-01-01
+PLUMBING ONLY - Relocating plumbing for accessible washroom,Institutional,Ward 12,377 RIDEAU ST,2017-01-01
+Interior alterations to a 2 storey church (St. Stephens Church- replace accessibility lift),Institutional,Ward 7,930 WATSON ST,2017-01-01
+Repairs to an existing concrete deck and a temporary ramp to main entrance,Apartment,Ward 14,264 LISGAR ST,2017-01-01
+"Interior alterations on the 7th, 8th, 13th, & 15th floor of a 17 storey office building (renovate existing elevator lobby and corridor) & Interior alterations to all floors (renovate washrooms)",Office,Ward 14,50 O'CONNOR ST,2017-01-01
+Construct a ramp to an existing deck,Single,Ward 21,2300 RELIN WAY,2017-01-01
+"Interior alterations on the 1st floor, parking garage elevator lobbies, and levels 6-22 of a 24 storey apartment building",Apartment,Ward 14,324 LAURIER AVE W,2017-01-01
+Replace a deck (rear yard) and constuct a wheelchair accessible ramp,Single,Ward 14,224 ARLINGTON AVE,2017-01-01
+Fire alarm retrofit (power door operator between HCI and Loeb building tunnel access (Carleton University)),Institutional,Ward 17,1125 COLONEL BY DR,2017-01-01
+Interior alterations on the 2nd floor of a 2 storey rowhouse (wheelchair accessible washroom),Rowhouse,Ward 3,639 VIA CAMPANALE AVE,2017-01-01
+Interior alterations in a 2 storey recreation complex (Walter Baker Sports Center - Universal Accessible Washroom),Institutional,Ward 3,100 MALVERN DR,2017-01-01
+Exterior ramp extension on an existing landing. (Royal Canadian Legion Bells Corners),Retail,Ward 8,4026 OLD RICHMOND RD,2017-01-01
+Construct a barrier-free ramp and concrete stairs at the entrance of a group home residentail building.,Single,Ward 8,1 PALSEN ST,2017-01-01
+Construct a wheelchair ramp (front entrance),Single,Ward 2,40 BURNVIEW CRES,2017-01-01
+"Exterior alterations to a 2 storey retail building (Shopper's Drug Mart, Construct a ramp)",Retail,Ward 12,298 DALHOUSIE ST,2017-01-01
+Install an elevator in a 2 storey church hall (All Saints),Institutional,Ward 12,315 CHAPEL ST,2017-01-01
+Interior alterations to replace seating in a movie theatre (Landmark Theatres Kanata - Accessible Seating in 12 & 14),Retail,Ward 4,801 KANATA AVE,2018-01-01
+Interior alterations to a 3 storey long-term care residence to create accessible shower room  (Hope Living - Unit 204),Institutional,Ward 23,145 CASTLEFRANK RD,2018-01-01
+Interior/ exterior alterations to a 1 storey detached dwelling (renovate ground floor & lift house),Single,Ward 5,2898 WOODKILTON RD,2018-01-01
+Construct a deck complete with barrier free lift,Single,Ward 9,61 FARLANE BLVD,2018-01-01
+"Exterior alterations inclduing new cladding, deck, barrier-free ramp and patio door to a 1 storey auxiliary building",Apartment,Ward 11,897 ELMSMERE RD,2018-01-01
+Interior alterations on all floors of a 6 storey institutional building (Carleton University Prescott House - Domestic Hot Water and Elevator Upgrades)),Institutional,Ward 17,1125 COLONEL BY DR,2018-01-01
+Remove and replace existing front ramp and construct a canopy over front exterior stairs in a 1 storey group home (Ottawa-Carleton Association for Persons with Developmental Disabilities),Institutional,Ward 16,5 RATAN CRT,2018-01-01
+"Tenant fit-up in a 1 storey retail building (Group D - Plato's Closet, construct a barrier-free bathroom)",Retail,Ward 18,"1707 ST-LAURENT, BOULEVARD",2018-01-01
+Construct a wheelchair ramp (front yard),Single,Ward 8,2157 DUBLIN AVE,2018-01-01
+Interior and exterior alterations a 1 storey detached dwelling (exterior wheelchair ramp),Single,Ward 21,1231 POTTER DR,2018-01-01
+"Interior alterations on the 1st floor of a 1 storey retail building (Units 1, 3A, 4) and construct new rear exterior loading dock with ramp.",Retail,Ward 18,"1910 ST-LAURENT, BOULEVARD",2018-01-01
+"Interior alterations to 1st, 6th & 7th floors of a 12 storey office building (Washrooms, Universal Accessibility)",Office,Ward 14,40 ELGIN ST,2018-01-01
+Exterior alterations to an office building - repair deck and add BF ramp (Experimental Farm - Building 2),Office,Ward 16,930 CARLING AVE,2018-01-01
+Repairs to the garage ramp retaining wall of a 12 storey apartment building.,Apartment,Ward 13,248 BRITTANY DR,2018-01-01
+Interior alterations in a 1 storey detached dwelling (bathroom & widen doorways),Single,Ward 8,6 FLORAL PL,2018-01-01
+"Exterior alterations to a 22 storey office building (Place de Ville, Tower A, Construct ramps)",Office,Ward 14,320 QUEEN ST,2018-01-01
+"Interior/exterior alterations to a 1 storey community building (Nepean Creative Arts Centre, washrooms & front entrance - accessibility upgrades)",Retail,Ward 8,35 STAFFORD RD,2018-01-01
+Construct an accessibility ramp (Lycee Claudel Transitway Station),Industrial,Ward 17,1635 RIVERSIDE DR,2018-01-01
+Interior alterations to a 2 storey church (convert prayer room to a barrier free family washroom),Institutional,Ward 9,1475 MERIVALE RD,2018-01-01
+Interior and exterior alterations to improve accessibility at a 2 storey community centre (Glebe Community Centre),Institutional,Ward 17,175 THIRD AVE,2018-01-01
+Interior alterations to a 26 storey office building - washroom accessibility changes (PWGSC/TPGSC),Office,Ward 15,100 TUNNEY'S PASTURE DRWY,2018-01-01
+"Construct a 3 storey addition (including a basment) and interior alterations to a 3 storey office building for an elevator and 2 exit stairs (Building 2, Circle of Nations)",Office,Ward 16,930 CARLING AVE,2018-01-01
+Construct a deck and wheelchair ramp (front yard),Single,Ward 8,16 SYCAMORE DR,2018-01-01
+Repair the interior and construct a barrier free ramp in a church (St. Johns Evangelist),Institutional,Ward 14,154 SOMERSET ST W,2018-01-01
+Interior alterations to a 2 storey detached dwelling (alter for an elevator hoistway),Single,Ward 13,427 MEADOW PARK PL,2018-01-01
+Interior alterations to repair handrails in a 2 storey water purification plant (Britannia Water Treatment Plant),Industrial,Ward 7,2731 CASSELS ST,2018-01-01
+Construct an accessibility ramp (front yard),Single,Ward 18,1874 SHAREL DR,2018-01-01
+Exterior alterations to construct a barrier free ramp on a 2 storey residential building,Institutional,Ward 12,352 CRETE PL,2018-01-01
+Exterior alterations to add ramp and guardrails to the front entrance of a 2 storey rowhouse,Rowhouse,Ward 18,2885 -55 CEDARWOOD DR,2018-01-01
+Interior alterations to installing an elevator in a detached dwelling,Single,Ward 22,201 HELEN RAPP WAY,2018-01-01
+Interior alterations (install power door operators) on all floors of an 8 storey office buiding,Office,Ward 8,2 CONSTELLATION DR,2018-01-01
+Construct a 1 storey mudroom addition (side yard) and porch with ramp (front yard),Single,Ward 18,1964 HAIG DR,2019-01-01
+"Interior alterations to a 2 storey recreational building  (Nepean Sportsplex, elevator and accesibility)",Institutional,Ward 9,1701 WOODROFFE AVE,2019-01-01
+Interior alterations to install a limited use/limited access elevator in a 3 storey long-term care residence,Institutional,Ward 23,145 CASTLEFRANK RD,2019-01-01
+Interior alterations on the first floor of a 2 storey detached dwelling. Convert half bath into barrier free washroom.,Single,Ward 3,103 GRENADIER WAY,2019-01-01
+Interior alterations to a 22 storey office building (modification to 13 elevators and associated fire alarms),Office,Ward 14,320 QUEEN ST,2019-01-01
+Tenant fit up in a 2 storey office/warehouse building (Laws of Motion Trampoline),Office,Ward 18,2215 GLADWIN CRES,2019-01-01
+Interior alterations to the elevators (P1 & P3) and elevator lobbies in a 4 storey institutional building (University of Ottawa),Institutional,Ward 18,451 SMYTH RD,2019-01-01
+"Interior alterations to the ground floor of a 2 storey institutional building (Pinecrest Elementary School)(Renovating existing storage and washroom to a new universal washroom, replacing dooors and maintenance of existing lift)",Institutional,Ward 8,1281 MCWATTERS RD,2019-01-01
+Interior/exterior alterations to install a dock ramp on the ground floor of a 1 storey office/warehouse building. (PWGSC),Office,Ward 10,2905 SWANSEA CRES,2019-01-01
+Construct a deck for wheelchair lift (front yard),Single,Ward 1,825 WILLOW AVE,2019-01-01
+Interior alterations to a 8 storey office building (electrical upgrades for elevator),Office,Ward 8,2 CONSTELLATION DR,2019-01-01
+Construct a 3 storey front addition to a 3 storey office building (new elevator and accessible lobby entrance),Office,Ward 17,72 CHAMBERLAIN AVE,2019-01-01
+Construct an accessible ramp to a 2 storey detached dwelling,Single,Ward 11,1496 MEADOWBROOK RD,2019-01-01
+Interior alterations in a 2 storey retail building (add barrier-free lift),Retail,Ward 14,280 CATHERINE ST,2019-01-01
+Interior alterations to a 1 storey commercial building (new universal washroom to replace exisiting barrier-free washroom),Office,Ward 9,177 COLONNADE RD S,2019-01-01
+Exterior alterations to repair 1 ramp for pedestians only (St.Laurent Shopping Centre),Retail,Ward 13,"1200 ST-LAURENT, BOULEVARD",2019-01-01
+Construct a deck with ramp to a 1 storey detached dwelling (front yard) and replace exterior stairs (side yard),Single,Ward 8,1131 FIELD ST,2019-01-01
+"Modifications to the 2nd and 9th floors' core area (elevator lobby, public corridor and, washrooms) of a 17 storey, mixed use building. (Bentall Kennedy)",Office,Ward 14,50 O'CONNOR ST,2019-01-01
+Base building work to install 2 universal washrooms and an elevator.,Retail,Ward 17,841 BANK ST,2019-01-01
+Demolish a deck and wheelchair ramp,Demolition,Ward 19,2541 OLD MONTREAL RD,2019-01-01
+Interior alterations in a 2 storey detached dwelling (install an elevator),Single,Ward 5,129 CORKERY WOODS DR,2019-01-01
+Exterior alterations to construct an accessible ramp to an 11 storey apartment building,Apartment,Ward 15,50 EMMERSON AVE,2019-01-01
+Interior alterations in a 16 storey office building (elevator modernization),Office,Ward 14,60 QUEEN ST,2019-01-01
+"Interior alterations to a 1 storey barn (Barrier free bathrooms,new entry and wet bar)",Farm,Ward 5,106 CONSTANCE CREEK DR,2019-01-01
+Exterior alterations to repair the concrete steps and handrails of a 6 unit apartment building,Apartment,Ward 17,19 -1 MONTCALM ST,2019-01-01
+Interior alterations to update washroom accessibility in a Library (Manotick Public Library),Institutional,Ward 21,5499 SOUTH RIVER DR,2020-01-01
+Alterations to lift and replace existing foundation on a 1 storey detached dwelling,Single,Ward 5,934 BAYVIEW DR,2020-01-01
+Interior alterations in a 1 storey institutional building (Roger-Saint-Denis School- install a vertical wheelchair lift),Institutional,Ward 23,186 BARROW CRES,2020-01-01
+"Interior alterations in a 2 storey detached dwelling (Remove load bearing wall, restructure floor for curbless shower, plumbing)",Single,Ward 1,1169 BORDEAU GROVE,2020-01-01
+"Interior alterations on the 18, 19 & 20 storey in a 23 storey office building (demo interior partitions & reconstruct washrooms & elevator lobbies)",Office,Ward 14,66 SLATER ST,2020-01-01
+Alterations to lift existing 1 storey dwelling and raise foundation,Single,Ward 5,656 BAYVIEW DR,2020-01-01
+Interior alterations in a 12 storey office building (fire alarm main panel - elevator),Office,Ward 14,233 GILMOUR ST,2020-01-01
+Interior alterations in a 1 storey detached dwelling (accessible bathroom),Single,Ward 16,1084 FISHER AVE,2020-01-01
+Construct a front step and ramp in a 2 storey detached dwelling,Single,Ward 6,660 CONTINENTAL AVE,2020-01-01
+Exterior alterations to a 1 storey arena - replace front entrance ramp (J.A Dulude Arena),Other,Ward 16,941 CLYDE AVE N,2020-01-01
+"Install an automatic door actuator bollard & Repair/Replace of entrance structure, canopy, existing doors, and windows in a 2 storey institutional building (St Pius X Catholic High School)",Institutional,Ward 16,1481 FISHER AVE,2020-01-01
+Tenant fit-up on the ground floor of a 1 storey mixed use building (GCOM Support - Suite E) and interior alterations to install barrier-free washrooms in Suites B-F,Retail,Ward 1,"3735 ST-JOSEPH, BOULEVARD",2020-01-01
+Renovate ensuite bathroom with curbless shower,Single,Ward 1,939 COMO CRES,2020-01-01
+Exterior alterations to a 2 storey semi-detached dwelling (alter entrance stairs and add ramp),Semi - Detached,Ward 18,677 SMYTH RD,2020-01-01
+Interior alterations in a 2 storey detached dwelling (Accessible Washroom),Single,Ward 3,84 BURNETT'S GROVE CIR,2020-01-01
+Construct barrier free washroom in a 1 storey industrial building (Canadian Bank Note),Office,Ward 15,975 GLADSTONE AVE,2020-01-01
+Interior alterations to add an elevator in a 2 storey detached dwelling,Single,Ward 17,71 BROADWAY AVE,2020-01-01
+Construct a deck and ramp at the principle entrance (front yard),Single,Ward 20,6332 HERBERTS CORNERS RD,2020-01-01
+Interior alerations to renew elevator in a 6 storey institutional building,Institutional,Ward 12,145 JEAN-JACQUES LUSSIER PRIV,2020-01-01
+Interior alterations on all floors of a 2 storey detached dwelling (Add elevator and washroom),Single,Ward 19,700 PENSACOLA CRT,2020-01-01
+construct a detached garage (with hoist lift),Detached Garage/Shed,Ward 21,5860 AKINS RD,2020-01-01
+"Interior alterations to a 23 storey office building (23rd floor, partions, washrooms and elevator lobby)",Office,Ward 14,66 SLATER ST,2020-01-01
+Construct a deck and ramp to a 1-storey detached dwelling (front yard),Single,Ward 15,832 REX AVE,2020-01-01
+"Lift existing 1 storey dwelling,  construct new foundation and add main floor to create 2 storey dwelling",Single,Ward 5,719 BAYVIEW DR,2020-01-01
+"Interior and exterior alterations to a 1 storey office building (ramp canopy, and universal washroom)",Office,Ward 12,39 MCARTHUR AVE,2020-01-01
+Alterations to make recreation centre accessible. (Kanata Recreation Complex),Institutional,Ward 6,100 CHARLIE ROGERS PL,2020-01-01
+Construct new barrier-free washroom on the 8th floor of an 8 storey office building,Office,Ward 18,395 TERMINAL AVE,2020-01-01
+Construct a dormer addition (side yard) for vacuum elevator in a 2 storey detached dwelling,Single,Ward 17,179 CAMERON AVE,2020-01-01
+"Construct an upper deck, pergola and ramp to a 1 storey detached dwelling (rear yard)",Single,Ward 19,1670 DEVINE RD,2021-01-01
+Interior alterations on all floors of a 9 storey office building (Elevator repairs),Office,Ward 14,229 WELLINGTON ST,2021-01-01
+Construct a 2 storey addition to accomodate an elevator shaft in the garage 2 storey detached dwelling,Single,Ward 23,159 MCCURDY DR,2021-01-01
+"Interior/exterior alterations to a 2 storey elementary school (Bayshore Public School , elevator install/addition)",Institutional,Ward 7,145 WOODRIDGE CRES,2021-01-01
+Construct an elevator shaft on the exterior of a 3 storey office building,Office,Ward 17,786 BRONSON AVE,2021-01-01
+Interior alterations in a 2 storey detached dwelling (create accessible bathroom),Single,Ward 1,762 BEAUREGARD CRES,2021-01-01
+"Interior alterations on the ground floor of a 2 storey mixed use building (restaurant, add barrier free washroom)",Mixed,Ward 14,60 A LEBRETON ST N,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 15,138 COWLEY AVE,2021-01-01
+Interior alterations to create an accessible entry in the garage of a 2 storey rowhouse,Rowhouse,Ward 3,77 FLANDERS ST,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 15,526 COLE AVE,2021-01-01
+Interior alterations to a 4 storey Institutional building (Leblanc Residence) to modernize elevator.,Institutional,Ward 12,45 LOUIS PASTEUR PRIV,2021-01-01
+Construct a pedestrian ramp (Replace existing),Apartment,Ward 18,1245 WALKLEY RD,2021-01-01
+Replace the front porch and construct a barrier free ramp to an existing 2 storey building (A2 assembly occupancy),Office,Ward 12,510 RIDEAU ST,2021-01-01
+Exterior alterations to construct an accessible ramp (Billings Bridge Transit Station),Other,Ward 17,1360 BANK ST,2021-01-01
+"Interior alterations to a 1 storey elementary school (conversion of change room and shower into storage, universal washroom and barrier-free washroom)",Institutional,Ward 6,4 BAYWOOD DR,2021-01-01
+"Interior alterations to a 13 storey office building (Elevator Lobby door, floor 13)",Office,Ward 14,131 QUEEN ST,2021-01-01
+Remove and replace front porch and rear deck with ramp,Single,Ward 14,224 ARLINGTON AVE,2021-01-01
+"Interior alterations to improve barrier free washrooms (Rooms WC405, WC406 and WC541)",Institutional,Ward 8,1385 WOODROFFE AVE,2021-01-01
+"Interior alterations to improve barrier free washrooms in a 3 storey institutional building (Algonquin College, Building B - WB141, WB160, WB341, WB360, WB441, WB460)",Institutional,Ward 8,1385 WOODROFFE AVE,2021-01-01
+Interior alterations in a 2 storey detached dwelling (accessible bathroom),Single,Ward 15,526 COLE AVE,2021-01-01
+"Exterior alterations to a 2 storey recreational building (foundation repairs, demolish and construct new accessible ramp)",Institutional,Ward 4,2530 CAMPEAU DR,2021-01-01
+"Interior alterations to upgrade existing handrails in a 3 storey institutional building (Algonquin College, Buildings A-D)",Institutional,Ward 8,1385 WOODROFFE AVE,2021-01-01
+"Interior and exterior alterations to a 1 storey institutional building (Crystal Bay Centre for Special Education - new barrier free door operators, hardware and 1 exterior door and sidelight)",Institutional,Ward 7,31 MOODIE DR,2021-01-01
+"Exterior alterations to a 1 storey detached (lifting house, pouring new foundation)",Single,Ward 5,110 ALLBIRCH RD,2021-01-01
+Exterior alterations to construct an exit ramp in a 1 storey community centre (Centre Pauline-Charron),Institutional,Ward 12,164 JEANNE MANCE ST,2021-01-01
+Interior alterations to a 1 storey detached dwelling (roll-in shower for accessibility and install wider pocket door),Single,Ward 11,2395 OGILVIE RD,2021-01-01
+Interior alterations to a 2 storey detached dwelling (remove wall and widen door),Single,Ward 2,6791 BARSONA PL,2021-01-01
+Interior alterations to the 1st floor of an 11 storey office building (replace 2 sets of revolving doors with automatic doors),Office,Ward 14,333 PRESTON ST,2021-01-01
+Interior alterations to a 2 storey apartment building (add elevator),Apartment,Ward 6,1 CARLETON CATHCART ST,2021-01-01
+Interior alterations to a 2 storey warehouse (install service/equipment elevator to access 2nd floor),Industrial,Ward 16,924 MCBRIDE ST,2021-01-01
+Demolish a 3 storey industrial building for highway 417 ramp improvement,Demolition,Ward 14,458 CATHERINE ST,2021-01-01
+Interior/Exterior alterations to a 22 storey office building (add gas boilers for parking ramp snow melting),Office,Ward 14,300 SPARKS ST,2021-01-01
+Construct a wheelchair ramp at the side of a 1 storey semi-detached dwelling,Semi - Detached,Ward 9,51 TIVERTON DR,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 4,9 HOLGATE CRT,2021-01-01
+Interior alterations to a 2 storey transitway bus station elevators (Blair Station),Industrial,Ward 11,1200 BLAIR RD,2021-01-01
+Construct a wheelchair access ramp & covered deck,Single,Ward 21,2408 POLLOCK RD,2021-01-01
+Interior/exterior alterations to a 22 storey office building (add gas boilers for parking ramp snow melting),Office,Ward 14,320 QUEEN ST,2021-01-01
+Exterior alterations to a 2 storey accessory building (stairs/ramp leading to second storey),Detached Garage/Shed,Ward 19,6157 RUSSELL RD,2021-01-01
+"Interior alterations to 3 storey rowhouse (renovate bathroom for accessibility - Units 401, 501, 701, 208, 308)",Stacked Rowhouse,Ward 13,30 PROVENDER AVE,2021-01-01
+Install a vertical platform lift for a wheelchair in a 2 storey detached dwelling (rear yard),Single,Ward 12,115 RUSSELL AVE,2021-01-01
+Construct a ramp (between rowhouses),Rowhouse,Ward 16,3415 -1 UPLANDS DR,2021-01-01
+Interior alterations in a 14 storey office building (fire alarm upgrades related to elevator modification),Office,Ward 14,250 ALBERT ST,2022-01-01
+Interior alterations to a 21 storey office building (fire alarm upgrades relating to elevator modifications),Office,Ward 14,350 ALBERT ST,2022-01-01
+Alterations to a 1 storey fieldhouse (accessibility improvements),Other,Ward 19,5715 ROCKDALE RD,2022-01-01
+Interior/exterior alterations in a 1 storey place of worship (Emmanuel United Church - door replacements & barrier-free ramp),Institutional,Ward 18,691 SMYTH RD,2022-01-01
+Exterior/interior alterations to a 6 storey institutional building (vestibule roof and elevator lobby),Institutional,Ward 12,"75 BRUYERE, RUE",2022-01-01
+Construct a barrier free ramp (front yard),Single,Ward 23,137 OLD COLONY RD,2022-01-01
+Interior alterations in a 1 storey institutional building (Queenswood Elementary school - accessible washroom reno & new unisex washroom),Institutional,Ward 1,1445 DUFORD DR,2022-01-01
+Exterior alterations to a 3 storey institutional building (Fisher Park Public School - ramp installation),Institutional,Ward 15,250 HOLLAND AVE,2022-01-01
+"Tenant fit up to 1st floor of a 7 storey hospital building (The Ottawa Hospital, accessible washroom)",Institutional,Ward 15,1053 CARLING AVE,2022-01-01
+"Exterior alterations to a 6 storey medical building (loading ramp, National Defense Medical Centre Hospital)",Institutional,Ward 18,1745 ALTA VISTA DR,2022-01-01
+"Construct a secondary dwelling unit (basement), deck and ramp (rear yard) to a 2 storey detached dwelling",Single,Ward 19,2935 QUILLIVAN LANE,2022-01-01
+Interior alterations to a 2 storey assembly building to upgrade the washroom to a barrier-free washroom,Other,Ward 21,4075 TWIN ELM RD,2022-01-01
+Construct an accessibility ramp on a 2 storey detached dwelling (front yard),Single,Ward 3,18 SETTLER'S RIDGE WAY,2022-01-01
+Exterior alterations to a 2 storey semi-detached (install wheelchair lift),Single,Ward 15,840 BROADVIEW AVE,2022-01-01
+"Interior alterations to a 2 storey detached dwelling (install elevator, bathroom reno)",Single,Ward 17,12 ROSLYN AVE,2022-01-01
+"Install a handicap lift with concrete pad footing, landing platform and 4 foot tall retaining walls along the driveway of a 2 storey detached dwelling",Single,Ward 12,453 DALY AVE,2022-01-01
+Construct a steel roof over a parking garage ramp of a 18 storey residential building,Apartment,Ward 18,1525 ALTA VISTA DR,2023-01-01
+Construct a steel roof over a parking garage ramp of a 18 storey residential building,Apartment,Ward 18,1545 ALTA VISTA DR,2023-01-01
+Interior alterations on the 1st floor of a 17 storey office building (Install maglocks on freight elevator),Office,Ward 14,100 QUEEN ST,2023-01-01
+"Interior alterations to a 1 storey industrial building (Unit 901 - Forklift service, rentals, sales)",Industrial,Ward 18,1275 HUMBER PL,2023-01-01
+Construct an entrance ramp to a 1 storey retail building (Scotiabank),Retail,Ward 17,1145 BANK ST,2023-01-01
+Interior alterations to a 6 storey institutional building (renovate washroom to add barrier free),Institutional,Ward 12,800 KING EDWARD AVE,2023-01-01
+Interior alterations in a 1 storey detached dwelling (removing existing elevator),Single,Ward 23,123 BANNING RD,2023-01-01
+Exterior alterations to rebuild an accessibility ramp (Ottawa Inuit Children's Centre),Institutional,Ward 12,224 MCARTHUR AVE,2023-01-01
+Exterior/Interior alterations to an 11 storey apartment building (Remove Bell Mobility),Apartment,Ward 18,1909 RUSSELL RD,2023-01-01
+Interior alterations in a 2 storey semi-detached dwelling (install personal lift),Semi - Detached,Ward 7,844 MAITLAND AVE,2023-01-01
+Exterior alterations to a 2 storey office building (replace front steps and ramp),Office,Ward 12,"233 MONTREAL, CH DE",2023-01-01
+Exterior alterations to a 2 storey office building (replace front steps and ramp),Office,Ward 12,"235 MONTREAL, CH DE",2023-01-01
+Exterior alterations to a 2 storey office building (replace front steps and ramp),Office,Ward 12,"237 MONTREAL, CH DE",2023-01-01
+Interior alterations in a 2 storey detached dwelling (accessibility changes),Single,Ward 4,45 MARICONA WAY,2023-01-01
+"Interior alterations to an institutional building (demolish part of stairs, add exterior ramp - Adult High School)",Institutional,Ward 14,300 ROCHESTER ST,2023-01-01
+Interior alterations and add a ramp (rear yard) to a 1 storey institutional building (Ecole elementaire catholiques des Voyageurs),Institutional,Ward 2,6030 VOYAGEUR DR,2023-01-01
+Interior alterations in a 1 storey detached dwelling (enlarge elevator shaft),Single,Ward 21,16 WALLACE CRT,2023-01-01
+Interior alterations to an institutional building (modernization of elevator 4),Institutional,Ward 2,879 HIAWATHA PARK RD,2023-01-01
+"Exterior/interior alterations to the ground floor of a 1 storey detached dwelling (adding accessible lift side yard, new deck and entry door)",Single,Ward 8,2001 NAVAHO DR,2023-01-01
+Exterior alterations to a 7 storey apartment building (Covered roof over garage ramp),Apartment,Ward 7,370 FOREST ST,2023-01-01
+Interior alterations on the 2nd floor of a 6 storey institutional building (CHEO - barrier free water closet stalls),Institutional,Ward 18,401 SMYTH RD,2023-01-01
+"Construct a 3 storey addition on a 3 storey duplex dwelling (elevator service, side entrance renovation)",Duplex,Ward 17,169 POWELL AVE,2023-01-01
+Construct a front porch accessibility ramp on a 2 storey semi-detached dwelling,Semi - Detached,Ward 11,1094 ELMLEA DR,2023-01-01
+"Construct a front porch with 2nd storey balcony, ramp and doorway to balcony, on a 3 storey dwelling (attached to commercial building at the rear)",Single,Ward 14,167 GILMOUR ST,2023-01-01
+Interior alterations to a 2 storey detached dwelling (install accesibility lift),Single,Ward 2,"1683 RAVINS, PLACE DES",2023-01-01
+Interior alterations in a 2 storey semi-detached dwelling (install personal lift),Single,Ward 16,13 LYNHURST AVE,2023-01-01
+Construct an addition on a 2 storey detached dwelling (service elevator),Single,Ward 3,691 FENWICK WAY,2023-01-01
+Exterior addition to a 2 storey commercial building (rear entrance barrier free vestibule and accessibility ramp - Wabano Centre for Aboriginal Health),Commercial,Ward 12,"295 MONTREAL, CH DE",2023-01-01
+PLUMBING ONLY:  Replace bathtub with a zero threshold shower (Unit 1607),Apartment,Ward 14,245 KENT ST,2023-01-01
+"Interior alterations in a 3 storey university building (University of Ottawa, elevator alterations)",Institutional,Ward 12,"85 UNIVERSITE, PRIVE",2023-01-01
+Construct a deck and ramp at rear of 1 storey detached dwelling,Institutional,Ward 16,5 RATAN CRT,2024-01-01
+PLUMBING ONLY: Install a premise isolation backflow prevention device on the domestic cold water supply in a 1 storey industrial building (Lemieux Island High Lift Pipe Vault),Industrial,Ward 15,1 ONIGAM ST,2024-01-01
+"PLUMBING ONLY: Install a premise isolation backflow prevention device on the domestic cold water supply in a 1 storey industrial building (Lemieux Island Low Lift Pumping Station, washrooms)",Industrial,Ward 15,1 ONIGAM ST,2024-01-01
+Interior alterations in a 2 storey mixed use building (convert office space to accessible units) Total of 5 units in building.,Mixed,Ward 21,6610 -GRND FOURTH LINE RD,2024-01-01
+Exterior alterations to a 3 storey institutional building (Richelieu-Vanier Community Centre - accessibility ramp),Institutional,Ward 12,"300 PERES-BLANCS, AV DES",2024-01-01
+TEMPORARY PERMIT - Create a temporary link between two garages and add a barrier free washroom in the garage of Lot 62,Single,Ward 6,807 POETRY CIR,2024-01-01
+TEMPORARY PERMIT - Create a temporary link between two garages and add a barrier free washroom in the garage of Lot 62,Single,Ward 6,809 POETRY CIR,2024-01-01
+Interior alterations to install a wheel chair platform lift in a 1 storey detached dwelling,Single,Ward 7,205 ANCASTER AVE,2024-01-01
+Construct a deck and ramp at rear of 2 storey detached dwelling,Institutional,Ward 24,27 FOREST GATE WAY,2024-01-01
+Exterior Alterations to 2 storey office building (Addtion of Doorway and ramp),Office,Ward 4,1145 INNOVATION DR,2024-01-01
+"Interior alterations to a 6 storey office building-Ottawa Court House (elevator upgrade, new elevator acess on 4th floor, fire alarm upgrading)",Institutional,Ward 14,161 ELGIN ST,2024-01-01
+Interior alterations in a 12 storey apartment building (install automatic door openers),Apartment,Ward 7,1025 GRENON AVE,2024-01-01
+Install a pneumatic vacuum elevator in a 3 storey semi-detached dwelling,Semi - Detached,Ward 15,105 WEST VILLAGE PRIV,2024-01-01
+PLUMBING ONLY: New sanitary lift station and modifications to sanitary forcemains and sewers,Other,Ward 13,246 ROCKCLIFFE RD,2024-01-01
+PLUMBING ONLY: New sanitary lift station and modifications to sanitary forcemains and sewers,Other,Ward 13,1500 LISGAR RD,2024-01-01
+"Construct a vestibule addition and interior alterations to a 2 storey institutional building (OCDSB - Hillcrest High School, construct accessibility lift at entrance and library, universal washroom on ground floor, and barrier free washroom on second floor)",Institutional,Ward 18,1900 DAUPHIN RD,2024-01-01
+"Interior/exterior alterations to a 1 storey institutional building (OCSB - St. Bernard School, construct exterior ramp into gym, barrier free washroom in classroom 114, and remove load bearing wall to combine classroom 114 & 115)",Institutional,Ward 10,1722 ST. BERNARD ST,2024-01-01
+"Interior alterations in a 7 storey institutional building (Renovation to fire alarm and HVAC systems for elevators 17, 22, 35, 36, 37 - Civic Hospital)",Institutional,Ward 15,1053 CARLING AVE,2024-01-01
+Interior Alterations to a 2 storey detached dwelling (Main floor Kitchen move sink and widen window and widen door),Single,Ward 1,1382 TALCY CRES,2024-01-01
+Exterior alterations to a 2 storey office building (New front porch platform lift),Office,Ward 14,334 MACLAREN ST,2024-01-01
+Alterations for the addition of outdoor patio and ramp on a 1 storey retail building (Markies Montreal Smoked Meat),Retail,Ward 2,3905 INNES RD,2024-01-01
+"Exterior alterations to a block of 3 storey rowhouse dwellings (replacement and repair of exterior concrete stairs, ramp and railings)",Stacked Rowhouse,Ward 15,217 FORWARD AVE,2024-01-01
+"Interior Alterations to a 1 storey institutional building (Accessibility Upgrades, Building S)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior Alterations to a 3 storey institutional building (Accessibility Improvements, Building C)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior Alterations to a 5 storey institutional building (Accessibility Upgragdes, Building R1-R3)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior Alterations to a 1 storey institutional building (Accessibility Upgrades, Building Z)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+Interior Alterations to a 1 storey institutional building (Accessibility Improvements - Building K),Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior Alterations to a 3 storey institutional building (Accessibility Upgrades, Building A)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior alterations to a 1 storey institutional building (Accessibility Improvements, Building D)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+"Interior Alterations to a 2 storey institutional building (Accessibility Upgrades, Building H)",Institutional,Ward 8,1385 WOODROFFE AVE,2024-01-01
+Construct a deck with ramp,Single,Ward 20,8872 LYNWOOD PARK PRIV,2024-01-01

@@ -8,11 +8,12 @@ with **accessibility-related building work** — ramps, lifts/elevators, wheelch
 access, barrier-free features, and similar — to support
 [Spinal Cord Injury Alberta](https://sci-ab.ca/)'s accessible housing work.
 
-All data comes from each city's **free public Open Data**, spanning four
-platforms: **Socrata** (Edmonton, Calgary), **OpenDataSoft** (Vancouver),
-**CKAN** (Toronto), and **Esri ArcGIS** (Mississauga, Markham, Ottawa). No API
-key is required to gather the data; each city is a config entry, and the pipeline
-has a small fetch adapter per open-data platform.
+All data comes from each city's **free public Open Data**: **Socrata** (Edmonton,
+Calgary), **OpenDataSoft** (Vancouver), **CKAN** (Toronto), **Esri ArcGIS REST**
+(Mississauga, Markham), and **downloadable spreadsheets** (Ottawa's yearly Excel
+permit files, geocoded against Ottawa's ArcGIS address points). No API key is
+required to gather the data; each city is a config entry, and the pipeline has a
+small fetch adapter per source type.
 
 ## The problem
 
@@ -105,8 +106,8 @@ accessibility work done, permit history, and a Street View photo.
 | **Toronto** | 801 (667 mapped, 83%) | 2,843 (2,423 mapped, 85%) |
 | **Mississauga** | 143 (143 mapped, 100%) | 167 (167 mapped, 100%) |
 | **Markham** | 211 (200 mapped, 95%) | 147 (111 mapped, 76%) |
-| **Ottawa** (2015 only) | 12 (12 mapped, 100%) | 39 (39 mapped, 100%) |
-| **Total on the map** | **2,092 homes** | **5,160 businesses** — **~7,252 places** total |
+| **Ottawa** (2011–2024) | 128 (114 mapped, 89%) | 289 (243 mapped, 84%) |
+| **Total on the map** | **2,194 homes** | **5,364 businesses** — **~7,558 places** total |
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
@@ -138,15 +139,16 @@ points (~85% located; the rest are listed for manual lookup).
 | Toronto | Address Points (Municipal) | `0b3756af-…` (CKAN) | Address → latitude/longitude (geocoding) |
 | Mississauga | Issued Building Permits | `Issued_Building_Permits` (ArcGIS) | Construction/renovation records (coords included) |
 | Markham | Building Permits | `Building_Permits` (ArcGIS) | Construction/renovation records (coords included) |
-| Ottawa | Building Permits 2015 | `BuildingPermits2015` (ArcGIS) | Construction/renovation records, 2015 only (coords included) |
+| Ottawa | Construction/Demolition/Pool Permits (yearly Excel, 2011–2024) | ArcGIS item ids | Permit records (geocoded) |
+| Ottawa | Municipal Address Points | `Address_Information` (ArcGIS) | Address → latitude/longitude (geocoding) |
 
 Per-city sources, field names, platform, and classification rules live in
-[`scripts/cities.py`](scripts/cities.py). Calgary, Vancouver, and the ArcGIS
-cities (Mississauga, Markham, Ottawa) already carry coordinates; Edmonton and
-Toronto are geocoded (Edmonton against Parcel Addresses, Toronto against Address
-Points). The portals span four platforms — Socrata, OpenDataSoft, CKAN, and Esri
-ArcGIS — and the query step has a fetch adapter per platform. All cities except
-Edmonton and Calgary publish building permits only (no separate development set).
+[`scripts/cities.py`](scripts/cities.py). Calgary, Vancouver, Mississauga, and
+Markham already carry coordinates; Edmonton, Toronto, and Ottawa are geocoded
+(Edmonton against Parcel Addresses, Toronto against Address Points, Ottawa
+against Municipal Address Points). The query step has a fetch adapter per source
+type. All cities except Edmonton and Calgary publish building permits only (no
+separate development set).
 
 ## Data files
 
@@ -301,15 +303,14 @@ apply here.
 - **Keyword false positives.** Substring matches like "ramp" / "lift" can catch
   parking-garage ramps or freight lifts. Full permit text is kept in every
   record so a human can judge.
-- **Location coverage varies by city.** Calgary, Vancouver, and the ArcGIS
-  cities (Mississauga, Markham, Ottawa) carry coordinates (~100%); almost all
-  Edmonton addresses geocode; Toronto permits carry no coordinates and are
-  matched against the City's address points (~85%). Any remainder are listed in
-  each city's `data/<city>/unmatched_addresses.csv` for manual lookup.
+- **Location coverage varies by city.** Calgary, Vancouver, Mississauga, and
+  Markham carry coordinates (~100%); almost all Edmonton addresses geocode;
+  Toronto and Ottawa permits carry no coordinates and are matched against each
+  city's address points (~84-89%). Any remainder are listed in each city's
+  `data/<city>/unmatched_addresses.csv` for manual lookup.
 - **The newer cities are lighter layers.** Their permit descriptions are terser
   than Edmonton's, so they surface fewer matches, and the same "worth checking,
-  not proof" framing applies. **Ottawa publishes only 2015** as open data, so its
-  coverage is a single year. Server-side keyword filters are re-checked against
+  not proof" framing applies. Server-side keyword filters are re-checked against
   the keyword list before a record is kept (some portals over-match).
 
 ### The genuine Civic Access Protocol piece is the next layer

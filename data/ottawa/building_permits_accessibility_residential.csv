@@ -1,14 +1,131 @@
-OBJECTID,Status,Score,Match_type,Match_addr,Postal,Ref_ID,X,Y,User_fld,Addr_type,ARC_Single,Full_Addre,PC,WARD,PLAN_,LOT,BLG_TYPE,MUNICIPALI,DESCRIPTIO,D_U_,VALUE,FT2,PERMIT_,APPL__TYPE,ISSUED_DAT,M2,BLG_TYPE_F,latitude,longitude
-880,M,100,A,"370 507 DOMINION AVE, K2A3X4",K2A3X4,321252,362752.685206,5028195.33553,___A5D99,Address,370 DOMINION AVE,370 DOMINION AVE,K2A3X4,Ward 15, , ,Apartment,Old Ottawa,"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",0,426210,0,1500950,Construction,2015-03-11,0,Appartement,45.39130864188611,-75.75987021804562
-1088,M,100,A,"200 BALDWIN ST, K0A3M0",K0A3M0,190515,337314.682065,5040309.96466,__33KIUE,Address,200 BALDWIN ST,200 BALDWIN ST,K0A3M0,Ward 5,499,42,Single,West Carleton,Construct a wheel chair ramp to a 1 storey detached dwelling,0,2500,1,1501195,Construction,2015-03-24,0.092903,Unifamiliales,45.501962602453816,-76.08393455285342
-1091,M,100,A,"583 DONALD ST, K1K1L5",K1K1L5,74881,371967.718847,5032483.23178,___A5DG3,Address,583 DONALD ST,583 DONALD ST,K1K1L5,Ward 13,610,44,Single,Old Ottawa,Construct a deck and wheelchair accessible ramp at the side of a detached dwelling,0,2700,270,1501198,Construction,2015-03-24,25.08381,Unifamiliales,45.429066109164616,-75.64161017980767
-1680,T,100,A,"2925 DUMAURIER AVE, K2B8A2",K2B8A2,318449,360004.504631,5023449.57714,___A7VAH,Address,2925 DUMAURIER AVE,2925 DUMAURIER AVE,K2B8A2,Ward 7, , ,Rowhouse,Old Ottawa,Remove and replace wheelchair ramp on a 2 storey rowhouse (front yard),0,7000,215,1501843,Construction,2015-04-23,19.974145,Maison jumelée,45.34882852294679,-75.79549572997568
-2322,M,100,A,"3039 LINTON RD, K1V8H1",K1V8H1,210255,369897.279949,5025115.99074,___A6U3O,Address,3039 LINTON RD,3039 LINTON RD,K1V8H1,Ward 16,768,30,Single,Old Ottawa,Construct an wheelchair accessibility ramp at the front of a 2 storey detached dwelling,0,3451,98,1502591,Construction,2015-05-21,9.104494,Unifamiliales,45.362974008819684,-75.66903936252378
-3094,M,100,A,"64 WEDGEWOOD CRES, K1B4B4",K1B4B4,153331,378386.392547,5033347.22554,__3W134O,Address,64 WEDGEWOOD CRES,64 WEDGEWOOD CRES,K1B4B4,Ward 2,844,892,Single,Gloucester,Construct a 1 storey addition on a 2 storey detached dwelling (to create an accessible washroom),0,27795.68,187,1503552,Construction,2015-06-19,17.372861,Unifamiliales,45.43619388369806,-75.55946209234546
-4057,M,100,A,7911 LAWRENCE ST, ,116730,386758.045766,5003116.06156,__3W59GK,Address,7911 LAWRENCE ST,7911 LAWRENCE ST, ,Ward 20,93, ,Single,Osgoode,Construct an accessibility ramp at the front of a 1 storey detached dwelling,0,1000,107.64,1504638,Construction,2015-07-28,10.00007892,Unifamiliales,45.16326528310056,-75.45747431298216
-4953,M,100,A,"209 OAK LEAF PRIV, K0A2Z0",K0A2Z0,312162,356585.846047,5006334.25919,__6R6AJ2,Address,209 OAK LEAF PRIV,209 OAK LEAF PRIV,K0A2Z0,Ward 21, , ,Single,Goulbourn,Construct a barrier free ramp in the garage of a 1 storey detached dwelling,0,6500,152.86,1505615,Construction,2015-08-31,14.20115258,Unifamiliales,45.19508224040849,-75.84090587410009
-5468,M,100,A,"24 AYLMER AVE, K1S2W9",K1S2W9,209817,368575.079941,5028640.73071,__8OMJPX,Address,24 AYLMER AVE,24 AYLMER AVE,K1S2W9,Ward 17,36,1 AND 3,Single,Old Ottawa,Installation of an enclosed three storey elevator at the rear of a three storey single dwelling and the creation of a third level rear balcony.,0,22648.5,251.65,1506131,Construction,2015-09-21,23.37903995,Unifamiliales,45.39481016029526,-75.68546018360954
-5660,M,100,A,"972 BEAUDRY ST, K1K3S1",K1K3S1,175770,370807.576513,5032382.21263,___A53CG,Address,972 BEAUDRY ST,972 BEAUDRY ST,K1K3S1,Ward 13,593,3,Single,Old Ottawa,Exterior alterations to construct an access ramp at the front of a 1 storey detached dwelling,0,15000,184,1506315,Construction,2015-09-24,17.094152,Unifamiliales,45.42826763403723,-75.65644851694171
-5700,M,100,A,"9 WICK CRES, K1J7H1",K1J7H1,160804,374461.930769,5035006.72492,__3W1XWQ,Address,9 WICK CRES,9 WICK CRES,K1J7H1,Ward 11,652,187,Single,Gloucester,Interior alterations to a 1 storey detached dwelling (Install an elevator),0,60000,4,1506360,Construction,2015-09-25,0.371612,Unifamiliales,45.45152711615113,-75.60938119422052
-7312,M,100,A,"110 MARLBOROUGH AVE, K1N8E9",K1N8E9,207909,369518.315743,5032033.28733,___A6WMZ,Address,110 MARLBOROUGH AVE,110 MARLBOROUGH AVE,K1N8E9,Ward 12,75101,26 LOT 27,Apartment,Old Ottawa,"Construct a deck and a barrier free ramp, and install a prefabricated fire escape on a residential building (rear yard, Murphy House)",0,40000,400,1507841,Construction,2015-11-27,37.1612,Appartement,45.4252486236411,-75.67296893073251
-8630,M,100,A,"370 507 DOMINION AVE, K2A3X4",K2A3X4,321252,362752.685206,5028195.33553,___A5D99,Address,370 DOMINION AVE,370 DOMINION AVE,K2A3X4,Ward 15, , ,Apartment,Old Ottawa,"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",0,426210,0,1500950,Construction,2015-03-11,0,Appartement,45.39130864188611,-75.75987021804562
+description,blg_type,ward,address,permit_date
+Exterior alterations to repair ramp and landing at the front of a 12 storey apartment building,Apartment,Ward 14,151 BAY ST,2011-01-01
+Exterior alterations to the side ramp entering the underground parking garage of a 19 storey apartment builidng.,Apartment,Ward 7,1195 RICHMOND RD,2011-01-01
+"Construct a 1 storey addition/deck, and install an interior self contained wheel chair lift in a 1 storey detached dwelling",Single,Ward 20,4450 EIGHTH LINE RD,2011-01-01
+Repair/replace portions of slab and ramp in the underground parking garage of a 12 storey apartment building,Apartment,Ward 14,261 COOPER ST,2011-01-01
+Remove stairs and construct ramp at the front of a 1 storey detached dwelling,Single,Ward 8,8 ASHWOOD CRES,2011-01-01
+PLUMBING PERMIT ONLY - Install new sump-pump/pit in  the elevator pit in a 7 storey apartment building,Apartment,Ward 7,320 CROYDON AVE,2012-01-01
+Exterior alterations to the foundation to construct a 'walk-out' concrete stairwell with a guard and handrails for a 2 storey detached dwelling,Single,Ward 15,28 EDINA ST,2012-01-01
+Interior alterations to install a lift in a 1 storey detached dwelling,Single,Ward 21,78 DALLAIRE CRES,2012-01-01
+Construct a ramp at the front of a 2 storey detached dwelling,Single,Ward 16,39 MARSHALL AVE,2012-01-01
+Construct a ramp and a deck at the front of a 1 storey detached dwelling,Single,Ward 12,300 ST. DENIS ST,2012-01-01
+Construct a ramp at the front of a 1 storey detached dwelling,Single,Ward 9,6 CRAWLEY AVE,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,210 WOODRIDGE CRES,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,220 WOODRIDGE CRES,2012-01-01
+Interior alterations to repair the entrance ramp to a 3 storey parking garage,Apartment,Ward 7,230 WOODRIDGE CRES,2012-01-01
+Interior and exterior alterations to replace handrails in a 2 storey townhouse,Rowhouse,Ward 16,3205 UPLANDS DR,2012-01-01
+"Construct a deck, ramp and stairs at the rear of a 2 storey detached dwelling",Single,Ward 5,1418 HOUSTON CRES,2012-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 19,1103 LICHEN AVE,2013-01-01
+"Construct a barrier free ramp at the front of a 3 storey, 6 unit apartment building  (OCSCC No. 894)",Apartment,Ward 13,54 RIDEAU TERR,2013-01-01
+Repair handrail on the roof top deck of a 3 storey detached dwelling,Single,Ward 13,121 -1 MACKAY ST,2013-01-01
+Lift existing detached dwelling and pour new foundation wall and structural alterations to ground floor assembly,Apartment,Ward 12,458 NELSON ST,2013-01-01
+Alterations to install a ramp in the garage of a high rise condominium,Apartment,Ward 11,915 ELMSMERE RD,2013-01-01
+Exterior alterations to construct a ramp and interior alterations in a 1 storey detached dwelling,Single,Ward 18,2386 HEATON AVE,2013-01-01
+Exterior alterations to a parking garage ramp in a 3 storey apartment (repairs to one ramp and drain replacement in lower level),Apartment,Ward 4,960 TERON RD,2013-01-01
+Construct a covered porch and wheelchair ramp to a detached dwelling (front yard),Single,Ward 1,291 HOYLAKE CRES,2013-01-01
+Construct an accessible ramp access to the parking structure of a 12 storey apartment building,Apartment,Ward 14,210 GLOUCESTER ST,2013-01-01
+"Convert a duplex to a detached dwelling, construct a new second storey, side (elevator lift) and rear additions, rear deck and interior alterations, with a home based business in the basement level.",Mixed,Ward 13,712 ST. LAURENT BLVD,2014-01-01
+Construct a ramp at the front of a 2 storey row unit dwelling,Rowhouse,Ward 3,3 A MAPLE RIDGE CRES,2014-01-01
+Construct an accesibility ramp to a 2 storey detached dwelling (front yard),Single,Ward 19,1809 SUMMERLANDS CRES,2014-01-01
+Interior alterations to install an elevator in a detached dwelling,Single,Ward 9,53 BURNBANK ST,2014-01-01
+Construct a 1 storey addition to a 2 storey detached dwelling (elevator & therapeutic hot tub),Single,Ward 20,6839 LAKES PARK DR,2014-01-01
+Interior alterations to install an elevator in a 2 storey detached dwelling,Single,Ward 8,10 MARBLE ARCH CRES,2014-01-01
+"Repair to the parking garage, ramp and laneway in a 14 storey apartment building",Apartment,Ward 15,370 DOMINION AVE,2015-01-01
+Construct a wheel chair ramp to a 1 storey detached dwelling,Single,Ward 5,200 BALDWIN ST,2015-01-01
+Construct a deck and wheelchair accessible ramp at the side of a detached dwelling,Single,Ward 13,583 DONALD ST,2015-01-01
+Remove and replace wheelchair ramp on a 2 storey rowhouse (front yard),Rowhouse,Ward 7,2925 DUMAURIER AVE,2015-01-01
+Construct an wheelchair accessibility ramp at the front of a 2 storey detached dwelling,Single,Ward 16,3039 LINTON RD,2015-01-01
+Construct a 1 storey addition on a 2 storey detached dwelling (to create an accessible washroom),Single,Ward 2,64 WEDGEWOOD CRES,2015-01-01
+Construct an accessibility ramp at the front of a 1 storey detached dwelling,Single,Ward 20,7911 LAWRENCE ST,2015-01-01
+Construct a barrier free ramp in the garage of a 1 storey detached dwelling,Single,Ward 21,209 OAK LEAF PRIV,2015-01-01
+Installation of an enclosed three storey elevator at the rear of a three storey single dwelling and the creation of a third level rear balcony.,Single,Ward 17,24 AYLMER AVE,2015-01-01
+Exterior alterations to construct an access ramp at the front of a 1 storey detached dwelling,Single,Ward 13,972 BEAUDRY ST,2015-01-01
+Interior alterations to a 1 storey detached dwelling (Install an elevator),Single,Ward 11,9 WICK CRES,2015-01-01
+"Construct a deck and a barrier free ramp, and install a prefabricated fire escape on a residential building (rear yard, Murphy House)",Apartment,Ward 12,110 MARLBOROUGH AVE,2015-01-01
+Replace fire alarm panel and install smoke detectors in elevator lobby on each floor of a 12 storey apartment building - Juliana Apartments,Apartment,Ward 14,100 BRONSON AVE,2016-01-01
+Interior alterations to the 1st and 2nd floors of a 2 storey rowhouse dwelling (handrail/guard replacement),Rowhouse,Ward 1,1775 -108 MARSALA CRES,2016-01-01
+Exterior alterations to extend the wheelchair ramp on a 1 storey detached dwelling,Institutional,Ward 13,972 BEAUDRY ST,2016-01-01
+Construct a deck and a barrier-free ramp for a residential group home (rear yard),Institutional,Ward 16,3062 SOUTHMORE DR E,2016-01-01
+"Interior/exterior alterations to a 3 storey apartment building (remove and replace: elevator hoistway, garbage chute and boiler chimney)",Apartment,Ward 8,4 DEERFIELD DR,2016-01-01
+Exterior alterations to a 1 storey detached dwelling (lift cottage and install a block foundation beneath it),Single,Ward 21,7695 DWYER HILL RD,2016-01-01
+"Remove and replace accessible ramp on a 2 storey rowhouse unit (front yard, unit 334)",Rowhouse,Ward 7,1085 RAMSEY CRES,2016-01-01
+Install a canopy to the underground parking garage ramp in a 16 storey residential building (CCC 500),Apartment,Ward 18,1705 PLAYFAIR DR,2016-01-01
+Interior alterations to a 2 storey detached dwelling including adding an elevator,Single,Ward 1,745 CLEARCREST CRES,2016-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 6,31 ELIZA CRES,2017-01-01
+Interior alterations to upgrade fire alarm system (for elevator-related functions) in a 17 storey apartment building,Apartment,Ward 17,1455 CLEMENTINE BLVD,2017-01-01
+Install an elevator in the garage of a 1 storey detached dwelling,Single,Ward 5,320 LASIANDRA LANE,2017-01-01
+Exterior alterations to a 12 storey apartment building (repair parking garage ramp),Apartment,Ward 17,480 METCALFE ST,2017-01-01
+Repairs to an existing concrete deck and a temporary ramp to main entrance,Apartment,Ward 14,264 LISGAR ST,2017-01-01
+"Interior alterations on the 1st floor, parking garage elevator lobbies, and levels 6-22 of a 24 storey apartment building",Apartment,Ward 14,324 LAURIER AVE W,2017-01-01
+Interior alterations on the 2nd floor of a 2 storey rowhouse (wheelchair accessible washroom),Rowhouse,Ward 3,639 VIA CAMPANALE AVE,2017-01-01
+Interior/ exterior alterations to a 1 storey detached dwelling (renovate ground floor & lift house),Single,Ward 5,2898 WOODKILTON RD,2018-01-01
+"Exterior alterations inclduing new cladding, deck, barrier-free ramp and patio door to a 1 storey auxiliary building",Apartment,Ward 11,897 ELMSMERE RD,2018-01-01
+Interior and exterior alterations a 1 storey detached dwelling (exterior wheelchair ramp),Single,Ward 21,1231 POTTER DR,2018-01-01
+Repairs to the garage ramp retaining wall of a 12 storey apartment building.,Apartment,Ward 13,248 BRITTANY DR,2018-01-01
+Interior alterations in a 1 storey detached dwelling (bathroom & widen doorways),Single,Ward 8,6 FLORAL PL,2018-01-01
+Interior alterations to a 2 storey detached dwelling (alter for an elevator hoistway),Single,Ward 13,427 MEADOW PARK PL,2018-01-01
+Exterior alterations to construct a barrier free ramp on a 2 storey residential building,Institutional,Ward 12,352 CRETE PL,2018-01-01
+Exterior alterations to add ramp and guardrails to the front entrance of a 2 storey rowhouse,Rowhouse,Ward 18,2885 -55 CEDARWOOD DR,2018-01-01
+Interior alterations to installing an elevator in a detached dwelling,Single,Ward 22,201 HELEN RAPP WAY,2018-01-01
+Interior alterations on the first floor of a 2 storey detached dwelling. Convert half bath into barrier free washroom.,Single,Ward 3,103 GRENADIER WAY,2019-01-01
+Construct an accessible ramp to a 2 storey detached dwelling,Single,Ward 11,1496 MEADOWBROOK RD,2019-01-01
+Construct a deck with ramp to a 1 storey detached dwelling (front yard) and replace exterior stairs (side yard),Single,Ward 8,1131 FIELD ST,2019-01-01
+Interior alterations in a 2 storey detached dwelling (install an elevator),Single,Ward 5,129 CORKERY WOODS DR,2019-01-01
+Exterior alterations to construct an accessible ramp to an 11 storey apartment building,Apartment,Ward 15,50 EMMERSON AVE,2019-01-01
+Exterior alterations to repair the concrete steps and handrails of a 6 unit apartment building,Apartment,Ward 17,19 -1 MONTCALM ST,2019-01-01
+Alterations to lift and replace existing foundation on a 1 storey detached dwelling,Single,Ward 5,934 BAYVIEW DR,2020-01-01
+"Interior alterations in a 2 storey detached dwelling (Remove load bearing wall, restructure floor for curbless shower, plumbing)",Single,Ward 1,1169 BORDEAU GROVE,2020-01-01
+Alterations to lift existing 1 storey dwelling and raise foundation,Single,Ward 5,656 BAYVIEW DR,2020-01-01
+Interior alterations in a 1 storey detached dwelling (accessible bathroom),Single,Ward 16,1084 FISHER AVE,2020-01-01
+Construct a front step and ramp in a 2 storey detached dwelling,Single,Ward 6,660 CONTINENTAL AVE,2020-01-01
+Exterior alterations to a 2 storey semi-detached dwelling (alter entrance stairs and add ramp),Semi - Detached,Ward 18,677 SMYTH RD,2020-01-01
+Interior alterations in a 2 storey detached dwelling (Accessible Washroom),Single,Ward 3,84 BURNETT'S GROVE CIR,2020-01-01
+Interior alterations to add an elevator in a 2 storey detached dwelling,Single,Ward 17,71 BROADWAY AVE,2020-01-01
+Interior alterations on all floors of a 2 storey detached dwelling (Add elevator and washroom),Single,Ward 19,700 PENSACOLA CRT,2020-01-01
+Construct a deck and ramp to a 1-storey detached dwelling (front yard),Single,Ward 15,832 REX AVE,2020-01-01
+"Lift existing 1 storey dwelling,  construct new foundation and add main floor to create 2 storey dwelling",Single,Ward 5,719 BAYVIEW DR,2020-01-01
+Construct a dormer addition (side yard) for vacuum elevator in a 2 storey detached dwelling,Single,Ward 17,179 CAMERON AVE,2020-01-01
+"Construct an upper deck, pergola and ramp to a 1 storey detached dwelling (rear yard)",Single,Ward 19,1670 DEVINE RD,2021-01-01
+Construct a 2 storey addition to accomodate an elevator shaft in the garage 2 storey detached dwelling,Single,Ward 23,159 MCCURDY DR,2021-01-01
+Interior alterations in a 2 storey detached dwelling (create accessible bathroom),Single,Ward 1,762 BEAUREGARD CRES,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 15,138 COWLEY AVE,2021-01-01
+Interior alterations to create an accessible entry in the garage of a 2 storey rowhouse,Rowhouse,Ward 3,77 FLANDERS ST,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 15,526 COLE AVE,2021-01-01
+Construct a pedestrian ramp (Replace existing),Apartment,Ward 18,1245 WALKLEY RD,2021-01-01
+Interior alterations in a 2 storey detached dwelling (accessible bathroom),Single,Ward 15,526 COLE AVE,2021-01-01
+Interior alterations to a 1 storey detached dwelling (roll-in shower for accessibility and install wider pocket door),Single,Ward 11,2395 OGILVIE RD,2021-01-01
+Interior alterations to a 2 storey detached dwelling (remove wall and widen door),Single,Ward 2,6791 BARSONA PL,2021-01-01
+Interior alterations to a 2 storey apartment building (add elevator),Apartment,Ward 6,1 CARLETON CATHCART ST,2021-01-01
+Construct a wheelchair ramp at the side of a 1 storey semi-detached dwelling,Semi - Detached,Ward 9,51 TIVERTON DR,2021-01-01
+Install an elevator in a 2 storey detached dwelling,Single,Ward 4,9 HOLGATE CRT,2021-01-01
+"Interior alterations to 3 storey rowhouse (renovate bathroom for accessibility - Units 401, 501, 701, 208, 308)",Stacked Rowhouse,Ward 13,30 PROVENDER AVE,2021-01-01
+Install a vertical platform lift for a wheelchair in a 2 storey detached dwelling (rear yard),Single,Ward 12,115 RUSSELL AVE,2021-01-01
+Construct a ramp (between rowhouses),Rowhouse,Ward 16,3415 -1 UPLANDS DR,2021-01-01
+"Construct a secondary dwelling unit (basement), deck and ramp (rear yard) to a 2 storey detached dwelling",Single,Ward 19,2935 QUILLIVAN LANE,2022-01-01
+Construct an accessibility ramp on a 2 storey detached dwelling (front yard),Single,Ward 3,18 SETTLER'S RIDGE WAY,2022-01-01
+Exterior alterations to a 2 storey semi-detached (install wheelchair lift),Single,Ward 15,840 BROADVIEW AVE,2022-01-01
+"Interior alterations to a 2 storey detached dwelling (install elevator, bathroom reno)",Single,Ward 17,12 ROSLYN AVE,2022-01-01
+"Install a handicap lift with concrete pad footing, landing platform and 4 foot tall retaining walls along the driveway of a 2 storey detached dwelling",Single,Ward 12,453 DALY AVE,2022-01-01
+Construct a steel roof over a parking garage ramp of a 18 storey residential building,Apartment,Ward 18,1525 ALTA VISTA DR,2023-01-01
+Construct a steel roof over a parking garage ramp of a 18 storey residential building,Apartment,Ward 18,1545 ALTA VISTA DR,2023-01-01
+Interior alterations in a 1 storey detached dwelling (removing existing elevator),Single,Ward 23,123 BANNING RD,2023-01-01
+Exterior/Interior alterations to an 11 storey apartment building (Remove Bell Mobility),Apartment,Ward 18,1909 RUSSELL RD,2023-01-01
+Interior alterations in a 2 storey semi-detached dwelling (install personal lift),Semi - Detached,Ward 7,844 MAITLAND AVE,2023-01-01
+Interior alterations in a 2 storey detached dwelling (accessibility changes),Single,Ward 4,45 MARICONA WAY,2023-01-01
+Interior alterations in a 1 storey detached dwelling (enlarge elevator shaft),Single,Ward 21,16 WALLACE CRT,2023-01-01
+"Exterior/interior alterations to the ground floor of a 1 storey detached dwelling (adding accessible lift side yard, new deck and entry door)",Single,Ward 8,2001 NAVAHO DR,2023-01-01
+Exterior alterations to a 7 storey apartment building (Covered roof over garage ramp),Apartment,Ward 7,370 FOREST ST,2023-01-01
+"Construct a 3 storey addition on a 3 storey duplex dwelling (elevator service, side entrance renovation)",Duplex,Ward 17,169 POWELL AVE,2023-01-01
+Construct a front porch accessibility ramp on a 2 storey semi-detached dwelling,Semi - Detached,Ward 11,1094 ELMLEA DR,2023-01-01
+"Construct a front porch with 2nd storey balcony, ramp and doorway to balcony, on a 3 storey dwelling (attached to commercial building at the rear)",Single,Ward 14,167 GILMOUR ST,2023-01-01
+Interior alterations to a 2 storey detached dwelling (install accesibility lift),Single,Ward 2,"1683 RAVINS, PLACE DES",2023-01-01
+Interior alterations in a 2 storey semi-detached dwelling (install personal lift),Single,Ward 16,13 LYNHURST AVE,2023-01-01
+Construct an addition on a 2 storey detached dwelling (service elevator),Single,Ward 3,691 FENWICK WAY,2023-01-01
+PLUMBING ONLY:  Replace bathtub with a zero threshold shower (Unit 1607),Apartment,Ward 14,245 KENT ST,2023-01-01
+Construct a deck and ramp at rear of 1 storey detached dwelling,Institutional,Ward 16,5 RATAN CRT,2024-01-01
+Interior alterations to install a wheel chair platform lift in a 1 storey detached dwelling,Single,Ward 7,205 ANCASTER AVE,2024-01-01
+Construct a deck and ramp at rear of 2 storey detached dwelling,Institutional,Ward 24,27 FOREST GATE WAY,2024-01-01
+Interior alterations in a 12 storey apartment building (install automatic door openers),Apartment,Ward 7,1025 GRENON AVE,2024-01-01
+Install a pneumatic vacuum elevator in a 3 storey semi-detached dwelling,Semi - Detached,Ward 15,105 WEST VILLAGE PRIV,2024-01-01
+Interior Alterations to a 2 storey detached dwelling (Main floor Kitchen move sink and widen window and widen door),Single,Ward 1,1382 TALCY CRES,2024-01-01
+"Exterior alterations to a block of 3 storey rowhouse dwellings (replacement and repair of exterior concrete stairs, ramp and railings)",Stacked Rowhouse,Ward 15,217 FORWARD AVE,2024-01-01
