@@ -5,13 +5,13 @@ Guidance for Claude Code (and other AI assistants) working in this repository.
 ## What this project is
 
 A data pipeline + interactive map that identifies Canadian properties
-(**Edmonton, Calgary, Vancouver, Toronto**) with **accessibility-related
-building work** (ramps, lifts/elevators, wheelchair access, barrier-free
-features, etc.), built for Spinal Cord Injury Alberta's accessible housing
-efforts. Source data is from the cities' **Open Data portals** across three
-platforms: Socrata (`data.edmonton.ca`, `data.calgary.ca`), OpenDataSoft
-(`opendata.vancouver.ca`), and CKAN (Toronto, `ckan0.cf.opendata.inter.prod-toronto.ca`).
-No API key is needed to gather data.
+(**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa**) with
+**accessibility-related building work** (ramps, lifts/elevators, wheelchair
+access, barrier-free features, etc.), built for Spinal Cord Injury Alberta's
+accessible housing efforts. Source data is from the cities' **Open Data portals**
+across four platforms: Socrata (`data.edmonton.ca`, `data.calgary.ca`),
+OpenDataSoft (`opendata.vancouver.ca`), CKAN (Toronto), and Esri ArcGIS REST
+(Mississauga, Markham, Ottawa). No API key is needed to gather data.
 
 ## Repository layout
 
@@ -35,10 +35,17 @@ carry coordinates. Everything else (keyword list, dedup, map UI) is shared.
 - **Fetch is dispatched by platform** in `fetch_permits()` (query script):
   Socrata uses SoQL `build_where` + `fetch_all`; OpenDataSoft uses `ods_fetch`
   (ODSQL `like` + records API + `geo_point_2d`→lat/lon); CKAN uses `ckan_fetch`
-  (per-keyword `datastore_search?q=`, union by `_id`, synthesize one `address`
-  from STREET_NUM/NAME/TYPE/DIRECTION). **Adding a city on an existing platform
-  is just a `CITIES` entry**; a new platform (e.g. ArcGIS for Red
-  Deer/Lethbridge/Ottawa) needs one new adapter.
+  (per-keyword `datastore_search?q=`, union, synthesize one `address`); ArcGIS
+  uses `arcgis_fetch` (SQL `where` POSTed to the FeatureServer/MapServer `/query`,
+  OBJECTID-keyset paging, geometry in EPSG:4326 → lat/lon, epoch-ms dates → ISO,
+  optional `address_compose`). **Adding a city on an existing platform is just a
+  `CITIES` entry**; only a brand-new platform needs a new adapter.
+- **ArcGIS gotchas**: POST the `where` (it's long — GET 404s on URL length);
+  `objectIdField`/`maxRecordCount` come from the layer metadata; verify the
+  description field is genuinely free-text, not a coded value that merely *looks*
+  like text (Maple Ridge's `WorkDescription` was coded "New"/"Demolition" → 0
+  matches; Surrey same). Confirm with a `UPPER(field) LIKE '%RAMP%'`
+  `returnCountOnly` before adding a city.
 - **Geocoding is also platform-aware** (`geocode_residential_accessibility.py`):
   Edmonton matches Parcel Addresses (Socrata); Toronto matches Address Points
   (CKAN: filter by exact street number, match `LINEAR_NAME` in Python, read
@@ -54,7 +61,7 @@ carry coordinates. Everything else (keyword list, dedup, map UI) is shared.
 ### The pipeline (run per city, in this order)
 
 Each script takes a `<city>` slug (`edmonton` | `calgary` | `vancouver` |
-`toronto`). Outputs go to `data/<city>/`.
+`toronto` | `mississauga` | `markham` | `ottawa`). Outputs go to `data/<city>/`.
 
 1. `edmonton_accessibility_query.py <city>` — query Open Data for accessibility
    keywords; write raw + residential + commercial CSVs (each permit classified
@@ -116,14 +123,17 @@ parkades, etc.).
   (CKAN). `building.dataset` may be a *list* mixing datastore ids (string,
   `q`-fetched) and `{"id":…, "download": True}` flat-CSV resources (streamed +
   filtered locally); ckan_fetch unions them, deduped by PERMIT_NUM. Never
-  hardcode dataset URLs/fields in scripts — add them to `cities.py`.
+  hardcode dataset URLs/fields in scripts — add them to `cities.py`. ArcGIS
+  cities store a full REST layer URL (Mississauga `Issued_Building_Permits`,
+  Markham `Building_Permits`, Ottawa `BuildingPermits2015` — 2015 only).
 - **Per-city classification**: Edmonton uses building_type numeric codes +
   R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
   and `landusedistrict` R-/M- prefixes (development); Vancouver uses
   `propertyuse in {"Dwelling Uses", ...}` (the generic field-match rule shared
   with Calgary's building rule); Toronto uses `RESIDENTIAL` sq-m > 0 with a
-  CURRENT_USE/PROPOSED_USE dwelling-term fallback. All fall back to a shared
-  dwelling-term scan.
+  CURRENT_USE/PROPOSED_USE dwelling-term fallback; the ArcGIS cities use the
+  generic `textscan` kind (scan configured use/desc fields for dwelling terms).
+  All fall back to a shared dwelling-term scan.
 - **Platform gotchas**: Edmonton `house_number` in Parcel Addresses is a
   *numeric* column — a letter-suffixed value (e.g. `7606A`) throws a
   type-mismatch 400; parse to the numeric base. Calgary addresses use `#unit`
@@ -199,8 +209,9 @@ complying — cite the article.
   Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
   permits); Toronto 667/801 + 2,423/2,843 (~84%, geocoded against Address
   Points; queries Active + Cleared-since-2017 datastores AND the pre-2017 Cleared
-  flat CSV via download). Any unmatched rows are in
-  `data/<city>/unmatched_addresses.csv`.
+  flat CSV via download). ArcGIS cities carry geometry coords: Mississauga
+  143/167, Markham 200/111, Ottawa 12/39 (Ottawa = 2015 only). Any unmatched
+  rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /
   loading ramps (warehouses, parkades), not human access. Keep the "worth

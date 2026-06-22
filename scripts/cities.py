@@ -163,6 +163,83 @@ CITIES = {
             "name_field": "LINEAR_NAME_FULL",
         },
     },
+
+    # --- ArcGIS REST cities (building permits with free-text descriptions and
+    # geometry; coords come from the layer, so no geocoding). ---
+
+    "mississauga": {
+        "display_name": "Mississauga",
+        "platform": "arcgis",
+        "domain": "https://services6.arcgis.com/hM5ymMLbxIyWTjn2",
+        "streetview_suffix": ", Mississauga, ON, Canada",
+        "map_center": {"lat": 43.589, "lon": -79.644},  # fallback only
+        "building": {
+            "dataset": "https://services6.arcgis.com/hM5ymMLbxIyWTjn2/arcgis/rest/"
+                       "services/Issued_Building_Permits/FeatureServer/0",
+            "text_fields": ["DESCRIPTION"],
+            "address_field": "ADDRESS",
+            "neighbourhood_field": "",   # no neighbourhood name field
+            "date_field": "ISSUE_DATE",
+            "id_field": "BP_NO",
+            "lat_field": "latitude", "lon_field": "longitude",  # from geometry
+        },
+        "development": None,
+        "residential": {
+            "kind": "textscan",
+            "residential_text_fields": ["FILE_TYPE", "BLDG_TYPE", "DESCRIPTION"],
+        },
+        "geocode": {"needed": False},
+    },
+
+    "markham": {
+        "display_name": "Markham",
+        "platform": "arcgis",
+        "domain": "https://services5.arcgis.com/QJebCdoMf4PF8fJP",
+        "streetview_suffix": ", Markham, ON, Canada",
+        "map_center": {"lat": 43.857, "lon": -79.337},  # fallback only
+        "building": {
+            "dataset": "https://services5.arcgis.com/QJebCdoMf4PF8fJP/arcgis/rest/"
+                       "services/Building_Permits/FeatureServer/0",
+            "text_fields": ["FOLDERDESCRIPTION"],
+            "address_field": "FOLDERNAME",   # e.g. "3308 Lakeshore Road W"
+            "neighbourhood_field": "",
+            "date_field": "ISSUEDATE",
+            "id_field": "CUSTOMFOLDERNUMBER",
+            "lat_field": "latitude", "lon_field": "longitude",
+        },
+        "development": None,
+        "residential": {
+            "kind": "textscan",
+            "residential_text_fields": ["Subtype", "FOLDERDESCRIPTION"],
+        },
+        "geocode": {"needed": False},
+    },
+
+    "ottawa": {
+        "display_name": "Ottawa",
+        "platform": "arcgis",
+        "domain": "https://services.arcgis.com/G6F8XLCl5KtAlZ2G",
+        "streetview_suffix": ", Ottawa, ON, Canada",
+        "map_center": {"lat": 45.4215, "lon": -75.6972},  # fallback only
+        "building": {
+            # Ottawa currently publishes a single year (2015) of permits as open data.
+            "dataset": "https://services.arcgis.com/G6F8XLCl5KtAlZ2G/arcgis/rest/"
+                       "services/BuildingPermits2015/FeatureServer/0",
+            "text_fields": ["DESCRIPTIO"],
+            "address_field": "Full_Addre",
+            "neighbourhood_field": "WARD",
+            "date_field": "ISSUED_DAT",
+            "id_field": "PERMIT_",
+            "lat_field": "latitude", "lon_field": "longitude",
+            "drop_fields": ["CONTRACTOR"],
+        },
+        "development": None,
+        "residential": {
+            "kind": "textscan",
+            "residential_text_fields": ["BLG_TYPE", "DESCRIPTIO"],
+        },
+        "geocode": {"needed": False},
+    },
 }
 
 

@@ -11,6 +11,7 @@ Outputs two CSVs (one per dataset) and prints summary statistics:
 No API key required (public Socrata endpoints). Uses only the stdlib + requests.
 """
 import csv
+import datetime
 import os
 import re
 import sys
@@ -172,17 +173,29 @@ def _res_building_toronto(row, cfg):
     return any(term in use for term in RESIDENTIAL_DESC_TERMS)
 
 
+def _res_building_textscan(row, cfg):
+    # Generic: a permit is residential if any configured field names a dwelling.
+    # Used by ArcGIS cities whose use/type fields are free-ish text
+    # (Maple Ridge SubDescription, Mississauga BLDG_TYPE, Markham
+    # FOLDERDESCRIPTION, Ottawa BLG_TYPE_F, etc.).
+    fields = cfg["residential"]["residential_text_fields"]
+    blob = " ".join(str(row.get(f, "")) for f in fields).lower()
+    return any(term in blob for term in RESIDENTIAL_DESC_TERMS)
+
+
 _RES_BUILDING = {
     "edmonton": _res_building_edmonton,
     "calgary": _res_building_fieldmatch,
     "vancouver": _res_building_fieldmatch,
     "toronto": _res_building_toronto,
+    "textscan": _res_building_textscan,
 }
 _RES_DEVELOPMENT = {
     "edmonton": _res_development_edmonton,
     "calgary": _res_development_calgary,
     "vancouver": _desc_says_residential,  # no dev dataset; never invoked
     "toronto": _desc_says_residential,    # no dev dataset; never invoked
+    "textscan": _desc_says_residential,   # ArcGIS cities are building-only
 }
 
 
@@ -394,6 +407,90 @@ def ckan_fetch(cfg, which, text_fields):
     return list(merged.values())
 
 
+# --- ArcGIS REST fetch adapter (Maple Ridge, Mississauga, Markham, Ottawa) --
+def arcgis_where(text_fields):
+    """SQL-92 LIKE clause OR-ing every keyword variant across each text field
+    (case-insensitive via UPPER). ArcGIS supports standard SQL in `where`."""
+    clauses = []
+    for field in text_fields:
+        for variants in KEYWORDS.values():
+            for kw in variants:
+                k = kw.upper().replace("'", "''")
+                clauses.append("UPPER(%s) LIKE '%%%s%%'" % (field, k))
+    return "(" + " OR ".join(clauses) + ")"
+
+
+def _arcgis_get(url, params, post=False):
+    # The keyword `where` clause is long, so POST the query to avoid URL-length
+    # limits (some servers 404/414 on very long GET query strings).
+    for attempt in range(4):
+        try:
+            if post:
+                r = requests.post(url, data=params, timeout=120)
+            else:
+                r = requests.get(url, params=params, timeout=120)
+            r.raise_for_status()
+            return r.json()
+        except requests.RequestException as e:
+            wait = 2 ** (attempt + 1)
+            print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
+            time.sleep(wait)
+    raise RuntimeError("Failed to fetch after retries: %s" % url)
+
+
+def arcgis_fetch(cfg, which, text_fields):
+    """Query an ArcGIS REST FeatureServer/MapServer layer, paging by OBJECTID
+    keyset (works on all server versions). Normalizes point geometry (in
+    EPSG:4326) into latitude/longitude and optionally composes a one-line
+    address from several columns."""
+    sub = cfg[which]
+    layer = sub["dataset"].rstrip("/")           # full URL ending in /<layerId>
+    query = layer + "/query"
+    meta = _arcgis_get(layer, {"f": "json"})
+    oid_field = meta.get("objectIdField") or "OBJECTID"
+    page = min(meta.get("maxRecordCount") or 1000, 2000)
+    where = arcgis_where(text_fields)
+    compose = sub.get("address_compose")
+    date_field = sub.get("date_field")
+
+    def iso_date(v):
+        # ArcGIS returns dates as epoch milliseconds; convert to YYYY-MM-DD.
+        try:
+            return datetime.datetime.utcfromtimestamp(v / 1000).strftime("%Y-%m-%d")
+        except (TypeError, ValueError, OverflowError, OSError):
+            return v
+
+    rows = []
+    last_oid = -1
+    while True:
+        params = {
+            "where": "(%s) AND %s > %d" % (where, oid_field, last_oid),
+            "outFields": "*", "returnGeometry": "true", "outSR": 4326,
+            "orderByFields": oid_field, "resultRecordCount": page, "f": "json",
+        }
+        data = _arcgis_get(query, params, post=True)
+        feats = data.get("features", [])
+        for ft in feats:
+            attr = dict(ft.get("attributes", {}))
+            geom = ft.get("geometry") or {}
+            if geom.get("x") is not None and geom.get("y") is not None:
+                attr["latitude"], attr["longitude"] = geom["y"], geom["x"]
+            if compose:
+                attr["address"] = re.sub(
+                    r"\s+", " ", " ".join(str(attr.get(k) or "").strip() for k in compose)).strip()
+            if date_field and isinstance(attr.get(date_field), (int, float)):
+                attr[date_field] = iso_date(attr[date_field])
+            oid = attr.get(oid_field)
+            if isinstance(oid, (int, float)):
+                last_oid = max(last_oid, int(oid))
+            rows.append(attr)
+        print("  fetched %d (total %d)" % (len(feats), len(rows)))
+        if len(feats) < page:
+            break
+        time.sleep(0.2)
+    return rows
+
+
 def fetch_permits(cfg, which, text_fields):
     """Fetch matching permits for a city's 'building'/'development' dataset,
     dispatching on the city's open-data platform."""
@@ -404,6 +501,8 @@ def fetch_permits(cfg, which, text_fields):
         return ods_fetch(cfg, which, text_fields)
     if platform == "ckan":
         return ckan_fetch(cfg, which, text_fields)
+    if platform == "arcgis":
+        return arcgis_fetch(cfg, which, text_fields)
     raise SystemExit("Unknown platform '%s' for %s" % (platform, cfg["display_name"]))
 
 
