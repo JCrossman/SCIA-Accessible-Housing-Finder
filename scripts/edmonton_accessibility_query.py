@@ -107,7 +107,8 @@ def building_code(row):
 
 def _desc_says_residential(row, cfg):
     """Shared fallback: does the permit's descriptive text name a dwelling?"""
-    desc = " ".join(str(row.get(f, "")) for f in cfg["development"]["text_fields"]).lower()
+    sub = cfg.get("development") or cfg["building"]
+    desc = " ".join(str(row.get(f, "")) for f in sub["text_fields"]).lower()
     return any(term in desc for term in RESIDENTIAL_DESC_TERMS)
 
 
@@ -129,12 +130,16 @@ def _res_development_edmonton(row, cfg):
     return _desc_says_residential(row, cfg)
 
 
-# --- Calgary rules ---------------------------------------------------------
-def _res_building_calgary(row, cfg):
-    # Calgary publishes an authoritative permitclassmapped field
-    # (Residential / Non-Residential / Unspecified). Unspecified -> commercial.
-    field = cfg["residential"]["building_class_field"]
-    return (row.get(field) or "").strip() in cfg["residential"]["building_residential_values"]
+# --- Generic field-match rule (Calgary, Vancouver) -------------------------
+def _res_building_fieldmatch(row, cfg):
+    # Match one authoritative classification column against a set of residential
+    # values. Calgary: permitclassmapped in {"Residential"}. Vancouver:
+    # propertyuse in {"Dwelling Uses", ...}. Anything else -> commercial.
+    # The column may be a string (Socrata) or a list (OpenDataSoft multi-value).
+    val = row.get(cfg["residential"]["building_class_field"])
+    values = val if isinstance(val, list) else [val]
+    res = cfg["residential"]["building_residential_values"]
+    return any(str(v).strip() in res for v in values if v is not None)
 
 
 def _calgary_district_is_residential(token):
@@ -152,8 +157,16 @@ def _res_development_calgary(row, cfg):
     return _desc_says_residential(row, cfg)
 
 
-_RES_BUILDING = {"edmonton": _res_building_edmonton, "calgary": _res_building_calgary}
-_RES_DEVELOPMENT = {"edmonton": _res_development_edmonton, "calgary": _res_development_calgary}
+_RES_BUILDING = {
+    "edmonton": _res_building_edmonton,
+    "calgary": _res_building_fieldmatch,
+    "vancouver": _res_building_fieldmatch,
+}
+_RES_DEVELOPMENT = {
+    "edmonton": _res_development_edmonton,
+    "calgary": _res_development_calgary,
+    "vancouver": _desc_says_residential,  # no dev dataset; never invoked
+}
 
 
 def is_residential_building(row, cfg):
@@ -206,6 +219,82 @@ def fetch_all(url, where):
             break
         offset += PAGE
     return rows
+
+
+# --- OpenDataSoft fetch adapter (Vancouver) --------------------------------
+ODS_PAGE = 100        # OpenDataSoft records API max page size
+ODS_MAX_OFFSET = 10000  # records API caps offset+limit at 10000
+
+
+def ods_build_where(text_fields):
+    """ODSQL 'where' OR-ing every keyword variant across every text field.
+
+    ODSQL uses double-quoted patterns with * wildcards (not SoQL's LIKE), e.g.
+    projectdescription like "*ramp*". Matching is case-insensitive; the Python
+    classify_keywords pass re-confirms, so this only needs to be a superset.
+    """
+    all_variants = [v for variants in KEYWORDS.values() for v in variants]
+    clauses = []
+    for field in text_fields:
+        for kw in all_variants:
+            k = kw.replace("\\", "\\\\").replace('"', '\\"')
+            clauses.append('%s like "*%s*"' % (field, k))
+    return "(" + " OR ".join(clauses) + ")"
+
+
+def ods_fetch(cfg, which, text_fields):
+    """Page an OpenDataSoft Explore v2.1 dataset, normalizing geo_point_2d into
+    latitude/longitude so downstream code sees the same canonical fields."""
+    dataset = cfg[which]["dataset"]
+    base = "%s/api/explore/v2.1/catalog/datasets/%s/records" % (cfg["domain"], dataset)
+    where = ods_build_where(text_fields)
+    rows = []
+    offset = 0
+    while True:
+        params = {"where": where, "limit": ODS_PAGE, "offset": offset}
+        for attempt in range(4):
+            try:
+                r = requests.get(base, params=params, timeout=120)
+                r.raise_for_status()
+                break
+            except requests.RequestException as e:
+                wait = 2 ** (attempt + 1)
+                print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
+                time.sleep(wait)
+        else:
+            raise RuntimeError("Failed to fetch after retries: %s" % base)
+        data = r.json()
+        batch = data.get("results", [])
+        for rec in batch:
+            gp = rec.get("geo_point_2d")
+            if isinstance(gp, dict):
+                rec["latitude"], rec["longitude"] = gp.get("lat"), gp.get("lon")
+            elif isinstance(gp, (list, tuple)) and len(gp) == 2:
+                rec["latitude"], rec["longitude"] = gp[0], gp[1]
+            rows.append(rec)
+        total = data.get("total_count")
+        print("  fetched %d (total %d / %s)" % (len(batch), len(rows), total))
+        offset += ODS_PAGE
+        if len(batch) < ODS_PAGE:
+            break
+        if offset >= ODS_MAX_OFFSET:
+            print("  WARNING: hit OpenDataSoft %d-record window; some matches "
+                  "may be omitted (switch to the exports API)" % ODS_MAX_OFFSET,
+                  file=sys.stderr)
+            break
+        time.sleep(0.3)
+    return rows
+
+
+def fetch_permits(cfg, which, text_fields):
+    """Fetch matching permits for a city's 'building'/'development' dataset,
+    dispatching on the city's open-data platform."""
+    platform = cfg.get("platform", "socrata")
+    if platform == "socrata":
+        return fetch_all(dataset_url(cfg, which), build_where(text_fields))
+    if platform == "opendatasoft":
+        return ods_fetch(cfg, which, text_fields)
+    raise SystemExit("Unknown platform '%s' for %s" % (platform, cfg["display_name"]))
 
 
 def classify_keywords(row, text_fields):
@@ -276,18 +365,21 @@ def main():
     cfg = get_city(city)
     out_dir = os.path.join(OUT_DIR, city)
     os.makedirs(out_dir, exist_ok=True)
-    b_cfg, d_cfg = cfg["building"], cfg["development"]
-    b_nbhd, d_nbhd = b_cfg["neighbourhood_field"], d_cfg["neighbourhood_field"]
-    b_addr, d_addr = b_cfg["address_field"], d_cfg["address_field"]
+    b_cfg = cfg["building"]
+    d_cfg = cfg.get("development")   # None for building-only cities (Vancouver)
+    b_nbhd, b_addr = b_cfg["neighbourhood_field"], b_cfg["address_field"]
 
     def path(stem):
         return os.path.join(out_dir, stem)
 
     # Building permits.
     b_text = b_cfg["text_fields"]
-    b_where = build_where(b_text)
     print("Querying %s building permits ..." % cfg["display_name"])
-    building = fetch_all(dataset_url(cfg, "building"), b_where)
+    building = fetch_permits(cfg, "building", b_text)
+    # Confirm each row really contains a keyword. The server filter is a coarse
+    # prefilter; SoQL 'like' is exact substring (no change), but OpenDataSoft's
+    # text analyzer over-matches, so this drops those false positives.
+    building = [r for r in building if classify_keywords(r, b_text)]
     strip_fields(building, b_cfg.get("drop_fields", []))  # drop unused name cols
     write_csv(path("building_permits_accessibility.csv"), building)
 
@@ -299,21 +391,31 @@ def main():
     write_csv(path("building_permits_accessibility_commercial.csv"), building_com)
     print("  building: %d non-residential" % len(building_com))
 
-    # Development permits.
-    d_text = d_cfg["text_fields"]
-    d_where = build_where(d_text)
-    print("\nQuerying %s development permits ..." % cfg["display_name"])
-    development = fetch_all(dataset_url(cfg, "development"), d_where)
-    strip_fields(development, d_cfg.get("drop_fields", []))  # drop unused name cols
-    write_csv(path("development_permits_accessibility.csv"), development)
+    # Development permits (skipped for building-only cities, with empty CSVs
+    # written so the downstream merge step stays uniform).
+    development = development_res = []
+    if d_cfg:
+        d_text = d_cfg["text_fields"]
+        d_nbhd, d_addr = d_cfg["neighbourhood_field"], d_cfg["address_field"]
+        print("\nQuerying %s development permits ..." % cfg["display_name"])
+        development = fetch_permits(cfg, "development", d_text)
+        development = [r for r in development if classify_keywords(r, d_text)]
+        strip_fields(development, d_cfg.get("drop_fields", []))
+        write_csv(path("development_permits_accessibility.csv"), development)
 
-    development_res = [r for r in development if is_residential_development(r, cfg)]
-    write_csv(path("development_permits_accessibility_residential.csv"), development_res)
-    print("  development: %d total, %d residential" % (len(development), len(development_res)))
+        development_res = [r for r in development if is_residential_development(r, cfg)]
+        write_csv(path("development_permits_accessibility_residential.csv"), development_res)
+        print("  development: %d total, %d residential" % (len(development), len(development_res)))
 
-    development_com = [r for r in development if not is_residential_development(r, cfg)]
-    write_csv(path("development_permits_accessibility_commercial.csv"), development_com)
-    print("  development: %d non-residential" % len(development_com))
+        development_com = [r for r in development if not is_residential_development(r, cfg)]
+        write_csv(path("development_permits_accessibility_commercial.csv"), development_com)
+        print("  development: %d non-residential" % len(development_com))
+    else:
+        for stem in ("development_permits_accessibility.csv",
+                     "development_permits_accessibility_residential.csv",
+                     "development_permits_accessibility_commercial.csv"):
+            write_csv(path(stem), [])
+        print("\n(%s has no development-permit dataset; skipped)" % cfg["display_name"])
 
     # --- Sample output ---
     def show_sample(name, rows, fields, addr_f, nbhd_f):
@@ -323,13 +425,14 @@ def main():
             print("  [%s | %s] %s" % (row.get(addr_f, ""), row.get(nbhd_f, ""), desc))
 
     show_sample("building permits", building, b_text, b_addr, b_nbhd)
-    show_sample("development permits", development, d_text, d_addr, d_nbhd)
 
     # --- Summaries ---
     summarize("building permits (all)", building, b_text, b_nbhd)
     summarize("building permits (residential only)", building_res, b_text, b_nbhd)
-    summarize("development permits (all)", development, d_text, d_nbhd)
-    summarize("development permits (residential only)", development_res, d_text, d_nbhd)
+    if d_cfg:
+        show_sample("development permits", development, d_text, d_addr, d_nbhd)
+        summarize("development permits (all)", development, d_text, d_nbhd)
+        summarize("development permits (residential only)", development_res, d_text, d_nbhd)
 
     print("\nDone. CSVs written to %s" % out_dir)
 

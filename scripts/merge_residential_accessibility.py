@@ -56,7 +56,8 @@ def main():
     # "residential" (default) or "commercial" — picks input + output filenames.
     cut = sys.argv[2] if len(sys.argv) > 2 else "residential"
     cfg = get_city(city)
-    b_cfg, d_cfg = cfg["building"], cfg["development"]
+    b_cfg = cfg["building"]
+    d_cfg = cfg.get("development") or {}   # {} for building-only cities (Vancouver)
     data_city = os.path.join(DATA_DIR, city)
     b_csv = os.path.join(data_city, "building_permits_accessibility_%s.csv" % cut)
     d_csv = os.path.join(data_city, "development_permits_accessibility_%s.csv" % cut)
@@ -93,7 +94,8 @@ def main():
             rec["latitude"] = row[lat_f]
             rec["longitude"] = row[lon_f]
 
-    b_text, d_text = b_cfg["text_fields"], d_cfg["text_fields"]
+    b_text = b_cfg["text_fields"]
+    d_text = d_cfg.get("text_fields") or []   # empty for building-only cities
 
     for r in building:
         addr = r.get(b_cfg["address_field"], "")
