@@ -141,6 +141,7 @@ CITIES = {
             ],
             "text_fields": ["DESCRIPTION"],   # free-text work description
             "address_field": "address",       # synthesized by the CKAN adapter
+            "address_compose": ["STREET_NUM", "STREET_NAME", "STREET_TYPE", "STREET_DIRECTION"],
             "neighbourhood_field": "neighbourhood",  # absent -> blank (no nbhd field)
             "date_field": "ISSUED_DATE",
             "id_field": "PERMIT_NUM",
@@ -262,6 +263,32 @@ CITIES = {
             "number_field": "ADDRNUM",
             "road_field": "FULL_ROADNAME_EN",
         },
+    },
+
+    "montreal": {
+        "display_name": "Montréal",
+        "platform": "ckan",
+        "domain": "https://donnees.montreal.ca",
+        "streetview_suffix": ", Montréal, QC, Canada",
+        "map_center": {"lat": 45.5089, "lon": -73.5617},  # fallback only
+        "building": {
+            # CKAN datastore resource: "Permis de construction, transformation
+            # et démolition". Free-text French nature_travaux + coords.
+            "dataset": "5232a72d-235a-48eb-ae20-bb9d501300ad",
+            "text_fields": ["nature_travaux"],   # free-text French description
+            "address_field": "emplacement",       # single field; no compose
+            "neighbourhood_field": "arrondissement",
+            "date_field": "date_emission",
+            "id_field": "id_permis",
+            "lat_field": "latitude", "lon_field": "longitude",  # present in records
+        },
+        "development": None,
+        "residential": {
+            "kind": "textscan",
+            "residential_text_fields": ["description_categorie_batiment",
+                                        "description_type_batiment", "nature_travaux"],
+        },
+        "geocode": {"needed": False},  # coordinates included in the permits
     },
 }
 

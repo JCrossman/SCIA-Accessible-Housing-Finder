@@ -35,17 +35,25 @@ def dataset_url(cfg, which):
     return "%s/resource/%s.json" % (cfg["domain"], cfg[which]["dataset"])
 
 # Accessibility keywords. Each entry is the canonical label; the list of
-# variants are the substrings actually matched (case-insensitive).
+# variants are the substrings actually matched (case-insensitive). French
+# variants (for Montreal) are accessibility-specific on purpose -- generic words
+# like porte/escalier/acces are deliberately excluded (measured as noise). Note
+# also that bare "rampe" (= balcony/stair RAILING in Quebecois French) and "main
+# courante" (= stair handrail) are NOT used: in Montreal data they overwhelmingly
+# describe railings, not wheelchair ramps, so we match only "rampe d'acces".
 KEYWORDS = {
-    "ramp": ["ramp"],
-    "wheelchair": ["wheelchair", "wheel chair"],
-    "accessible": ["accessible", "accessibility"],
-    "barrier-free": ["barrier-free", "barrier free"],
-    "grab bar": ["grab bar"],
-    "lift": ["lift", "elevator"],
-    "mobility": ["mobility"],
-    "handicap": ["handicap"],
-    "universal design": ["universal design"],
+    "ramp": ["ramp", "rampe d'accès", "rampe d'acces"],
+    "wheelchair": ["wheelchair", "wheel chair", "fauteuil roulant"],
+    "accessible": ["accessible", "accessibility",
+                   "accessibilité", "accessibilite"],
+    "barrier-free": ["barrier-free", "barrier free", "sans obstacle"],
+    "grab bar": ["grab bar", "barre d'appui", "barre d appui"],
+    "lift": ["lift", "elevator", "ascenseur", "élévateur", "elevateur",
+             "plate-forme élévatrice", "plateforme elevatrice"],
+    "mobility": ["mobility", "mobilité réduite", "mobilite reduite"],
+    "handicap": ["handicap", "handicapé", "handicape"],
+    "universal design": ["universal design", "design universel",
+                         "conception universelle"],
     "ada": ["ada compliant", "ada-compliant"],
     # High-value additions, especially for older years (2009-2015) that used
     # plainer construction wording rather than "barrier-free"/"accessible".
@@ -57,13 +65,40 @@ KEYWORDS = {
                             "walk in tub", "curbless shower"],
     "wider doorway": ["widen door", "door widening", "wider door",
                       "widened door", "doorway widening"],
-    "adaptable/visitable": ["adaptable", "visitable", "visitability"],
+    "adaptable/visitable": ["adaptable", "visitable", "visitability",
+                            "logement adaptable"],
     "aging in place": ["aging in place", "age in place"],
     "automatic door": ["automatic door", "power door operator",
-                       "powered door", "auto door operator"],
+                       "powered door", "auto door operator",
+                       "porte automatique", "ouvre-porte"],
 }
 
+# Matching is plain case-insensitive substring, EXCEPT for a few short English
+# tokens that collide with foreign words as substrings. The English token "ramp"
+# is a substring of French "rampe" (= a balcony/stair RAILING), which would flood
+# Montreal with thousands of railing permits. For those tokens we use a regex
+# instead; every other token stays a fast substring test, so English-city results
+# are unchanged. (French wheelchair ramps are still caught by the explicit
+# "rampe d'acces" variants below.)
+_KEYWORD_REGEX = {
+    # ramp / ramps / wheelchair ramp, but NOT French "rampe" (railing).
+    "ramp": re.compile(r"ramp(?!e)"),
+}
+
+
+def _variant_matches(variant, blob):
+    """True if `variant` is present in `blob` (already lowercased)."""
+    rx = _KEYWORD_REGEX.get(variant)
+    if rx is not None:
+        return rx.search(blob) is not None
+    return variant in blob
+
+
 PAGE = 50000  # Socrata max rows per request
+
+# Some open-data portals (e.g. donnees.montreal.ca) reject the default
+# python-requests user-agent with HTTP 403; send a browser-like one.
+HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; SCIA-Accessible-Housing-Finder)"}
 
 # --- Residential classification -------------------------------------------
 # Building permits carry a building_type with a numeric code in parentheses.
@@ -96,6 +131,9 @@ RESIDENTIAL_DESC_TERMS = [
     "row house", "rowhouse", "town house", "townhouse", "apartment",
     "dwelling", "garden suite", "backyard house", "secondary suite",
     "garage suite", "multi-unit", "multi unit", "residential",
+    # French dwelling terms (Montreal / future francophone cities).
+    "logement", "habitation", "résidentiel", "residentiel", "unifamilial",
+    "triplex", "plex", "résidence", "residence", "maison", "condo",
 ]
 
 
@@ -318,22 +356,20 @@ def ods_fetch(cfg, which, text_fields):
 
 
 # --- CKAN fetch adapter (Toronto) ------------------------------------------
-def ckan_compose_address(rec):
-    """Toronto splits the address across four columns; join into one string."""
-    parts = [str(rec.get(k) or "").strip()
-             for k in ("STREET_NUM", "STREET_NAME", "STREET_TYPE", "STREET_DIRECTION")]
-    return re.sub(r"\s+", " ", " ".join(parts)).strip()
-
-
-def _ckan_add(merged, rec, resource, text_fields):
-    """Dedupe by PERMIT_NUM (per-resource key fallback), synthesize address."""
+def _ckan_add(merged, rec, resource, compose):
+    """Dedupe by PERMIT_NUM (per-resource key fallback). If `compose` is given
+    (e.g. Toronto's STREET_NUM/NAME/TYPE/DIRECTION), join those into one
+    `address`; otherwise leave the raw single address field (e.g. Montreal's
+    `emplacement`) for the merge step to read via address_field."""
     key = rec.get("PERMIT_NUM") or ("%s:%s" % (resource, rec.get("_id") or id(rec)))
     if key not in merged:
-        rec["address"] = ckan_compose_address(rec)
+        if compose:
+            rec["address"] = re.sub(
+                r"\s+", " ", " ".join(str(rec.get(k) or "").strip() for k in compose)).strip()
         merged[key] = rec
 
 
-def _ckan_datastore_query(base, resource, variants, merged, text_fields):
+def _ckan_datastore_query(base, resource, variants, merged, compose):
     """Per-keyword full-text `q` paging of a datastore-active CKAN resource."""
     for kw in variants:
         offset = 0
@@ -341,7 +377,7 @@ def _ckan_datastore_query(base, resource, variants, merged, text_fields):
             params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
             for attempt in range(4):
                 try:
-                    r = requests.get(base, params=params, timeout=120)
+                    r = requests.get(base, params=params, headers=HTTP_HEADERS, timeout=120)
                     r.raise_for_status()
                     break
                 except requests.RequestException as e:
@@ -353,31 +389,31 @@ def _ckan_datastore_query(base, resource, variants, merged, text_fields):
             result = r.json().get("result", {})
             recs = result.get("records", [])
             for rec in recs:
-                _ckan_add(merged, rec, resource, text_fields)
+                _ckan_add(merged, rec, resource, compose)
             offset += len(recs)
             if not recs or offset >= result.get("total", 0):
                 break
             time.sleep(0.2)
 
 
-def ckan_download_filter(cfg, resource_id, text_fields, merged):
+def ckan_download_filter(cfg, resource_id, text_fields, merged, compose):
     """Stream a non-datastore CKAN CSV resource and keep only rows that match an
     accessibility keyword (used for Toronto's large pre-2017 Cleared CSV, which
     the datastore `q` API cannot reach)."""
     show = "%s/api/3/action/resource_show" % cfg["domain"]
-    r = requests.get(show, params={"id": resource_id}, timeout=60)
+    r = requests.get(show, params={"id": resource_id}, headers=HTTP_HEADERS, timeout=60)
     r.raise_for_status()
     url = r.json()["result"]["url"]
     print("  downloading flat CSV %s ..." % url.rsplit("/", 1)[-1])
     kept = 0
-    with requests.get(url, stream=True, timeout=900) as resp:
+    with requests.get(url, stream=True, headers=HTTP_HEADERS, timeout=900) as resp:
         resp.raise_for_status()
         resp.encoding = resp.encoding or "utf-8"
         reader = csv.DictReader(resp.iter_lines(decode_unicode=True))
         for rec in reader:
             if classify_keywords(rec, text_fields):
                 before = len(merged)
-                _ckan_add(merged, rec, resource_id, text_fields)
+                _ckan_add(merged, rec, resource_id, compose)
                 kept += len(merged) - before
     print("  download %s: kept %d (unique total %d)" % (resource_id[:8], kept, len(merged)))
 
@@ -397,13 +433,14 @@ def ckan_fetch(cfg, which, text_fields):
             if v not in seen:
                 seen.add(v)
                 variants.append(v)
+    compose = cfg[which].get("address_compose")
     merged = {}
     for resource in resources:
         if isinstance(resource, dict) and resource.get("download"):
-            ckan_download_filter(cfg, resource["id"], text_fields, merged)
+            ckan_download_filter(cfg, resource["id"], text_fields, merged, compose)
         else:
             rid = resource["id"] if isinstance(resource, dict) else resource
-            _ckan_datastore_query(base, rid, variants, merged, text_fields)
+            _ckan_datastore_query(base, rid, variants, merged, compose)
             print("  resource %s: unique so far %d" % (rid[:8], len(merged)))
     return list(merged.values())
 
@@ -632,7 +669,7 @@ def classify_keywords(row, text_fields):
     blob = " ".join(str(row.get(f, "")) for f in text_fields).lower()
     hits = set()
     for label, variants in KEYWORDS.items():
-        if any(v in blob for v in variants):
+        if any(_variant_matches(v, blob) for v in variants):
             hits.add(label)
     return hits
 

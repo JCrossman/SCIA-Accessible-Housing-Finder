@@ -5,15 +5,18 @@ Guidance for Claude Code (and other AI assistants) working in this repository.
 ## What this project is
 
 A data pipeline + interactive map that identifies Canadian properties
-(**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa**) with
-**accessibility-related building work** (ramps, lifts/elevators, wheelchair
-access, barrier-free features, etc.), built for Spinal Cord Injury Alberta's
-accessible housing efforts. Source data is from the cities' **Open Data portals**
-across source types: Socrata (`data.edmonton.ca`, `data.calgary.ca`),
-OpenDataSoft (`opendata.vancouver.ca`), CKAN (Toronto), Esri ArcGIS REST
-(Mississauga, Markham), and downloadable Excel spreadsheets (Ottawa's yearly
-permit files, geocoded against Ottawa's ArcGIS address points). No API key is
-needed to gather data.
+(**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa,
+Montréal**) with **accessibility-related building work** (ramps,
+lifts/elevators, wheelchair access, barrier-free features, etc.), built for
+Spinal Cord Injury Alberta's accessible housing efforts. Source data is from the
+cities' **Open Data portals** across source types: Socrata (`data.edmonton.ca`,
+`data.calgary.ca`), OpenDataSoft (`opendata.vancouver.ca`), CKAN (Toronto,
+Montréal via `donnees.montreal.ca`), Esri ArcGIS REST (Mississauga, Markham),
+and downloadable Excel spreadsheets (Ottawa's yearly permit files, geocoded
+against Ottawa's ArcGIS address points). Montréal's permit text is **French**, so
+`KEYWORDS` carries French accessibility variants. No API key is needed to gather
+data. (Quebec City was researched but skipped — its `RAISON` field is a
+controlled vocabulary with no free-text work narrative, so keywords never match.)
 
 ## Repository layout
 
@@ -135,6 +138,9 @@ parkades, etc.).
   cities store a full REST layer URL (Mississauga `Issued_Building_Permits`,
   Markham `Building_Permits`); Ottawa stores a list of yearly ArcGIS Excel item
   ids (2011–2024) + geocodes against `Address_Information` (maps.ottawa.ca).
+  Montréal building `5232a72d-…` (`donnees.montreal.ca`, CKAN; French text in
+  `nature_travaux`, coords in permits → no geocode; sends a browser User-Agent
+  via `HTTP_HEADERS` because the portal 403s the default requests UA).
 - **Per-city classification**: Edmonton uses building_type numeric codes +
   R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
   and `landusedistrict` R-/M- prefixes (development); Vancouver uses
@@ -214,13 +220,24 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
+- **Cross-language substring collisions** (`_KEYWORD_REGEX` in the query
+  script): matching is plain case-insensitive substring EXCEPT for a few short
+  English tokens that are substrings of unrelated foreign words. English "ramp"
+  ⊂ French "rampe" (a balcony/stair **railing**), which floods Montréal with
+  ~thousands of railing permits, so "ramp" matches via the regex `ramp(?!e)`
+  (catches ramp/ramps, not *rampe*); French wheelchair ramps are caught by the
+  explicit `rampe d'accès`/`rampe d'acces` variants. This leaves every English
+  city byte-for-byte unchanged (only the false positive "Karampelas" drops). If
+  you add another non-English city, check new collisions the same way — verify
+  with counts + a quoted sample before trusting a keyword.
 - **Coverage**: Edmonton homes 354/355, businesses 1,032/1,044 (geocoded);
   Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
   permits); Toronto 667/801 + 2,423/2,843 (~84%, geocoded against Address
   Points; queries Active + Cleared-since-2017 datastores AND the pre-2017 Cleared
   flat CSV via download). Mississauga 143/167 and Markham 200/111 carry geometry
   coords; Ottawa 114/243 (yearly Excel 2011–2024, geocoded ~84-89% against
-  Municipal Address Points). Any unmatched rows are in
+  Municipal Address Points); Montréal 2,734/2,786 homes + 1,105/1,140 businesses
+  (~98%/97%, coords from permits). Any unmatched rows are in
   `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /

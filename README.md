@@ -3,15 +3,19 @@
 ![Accessible Housing Finder — mapping Edmonton and Calgary homes with accessibility features. Built for Spinal Cord Injury Alberta using City of Edmonton and City of Calgary open data.](docs/social-preview.png)
 
 A tool that builds a database and interactive map of Canadian properties
-(**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, and Ottawa**)
-with **accessibility-related building work** — ramps, lifts/elevators, wheelchair
-access, barrier-free features, and similar — to support
-[Spinal Cord Injury Alberta](https://sci-ab.ca/)'s accessible housing work.
+(**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa, and
+Montréal**) with **accessibility-related building work** — ramps,
+lifts/elevators, wheelchair access, barrier-free features, and similar — to
+support [Spinal Cord Injury Alberta](https://sci-ab.ca/)'s accessible housing
+work.
 
 All data comes from each city's **free public Open Data**: **Socrata** (Edmonton,
-Calgary), **OpenDataSoft** (Vancouver), **CKAN** (Toronto), **Esri ArcGIS REST**
-(Mississauga, Markham), and **downloadable spreadsheets** (Ottawa's yearly Excel
-permit files, geocoded against Ottawa's ArcGIS address points). No API key is
+Calgary), **OpenDataSoft** (Vancouver), **CKAN** (Toronto, Montréal), **Esri
+ArcGIS REST** (Mississauga, Markham), and **downloadable spreadsheets** (Ottawa's
+yearly Excel permit files, geocoded against Ottawa's ArcGIS address points).
+Montréal's permit descriptions are in **French**, so the keyword list includes
+French accessibility terms (e.g. *rampe d'accès*, *fauteuil roulant*,
+*ascenseur*, *mobilité réduite*). No API key is
 required to gather the data; each city is a config entry, and the pipeline has a
 small fetch adapter per source type.
 
@@ -69,8 +73,9 @@ accessibility work done, permit history, and a Street View photo.
 
 **Controls:**
 
-- **City** toggle — *All cities* by default; narrow to Edmonton, Calgary,
-  Vancouver, or Toronto.
+- **City** toggle — *All cities* by default; narrow to any single city
+  (Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa, or
+  Montréal).
 - **Homes / Businesses / Both** toggle — homes by default; switch to commercial
   & public places (offices, shops, restaurants, rec centres, clinics, schools,
   etc.) or show both.
@@ -107,7 +112,8 @@ accessibility work done, permit history, and a Street View photo.
 | **Mississauga** | 143 (143 mapped, 100%) | 167 (167 mapped, 100%) |
 | **Markham** | 211 (200 mapped, 95%) | 147 (111 mapped, 76%) |
 | **Ottawa** (2011–2024) | 128 (114 mapped, 89%) | 289 (243 mapped, 84%) |
-| **Total on the map** | **2,194 homes** | **5,364 businesses** — **~7,558 places** total |
+| **Montréal** | 2,786 (2,734 mapped, 98%) | 1,140 (1,105 mapped, 97%) |
+| **Total on the map** | **4,928 homes** | **6,469 businesses** — **~11,397 places** total |
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
@@ -123,7 +129,9 @@ points (~85% located; the rest are listed for manual lookup).
 
 > **Caveat — keyword false positives.** A word like "ramp" sometimes refers to a
 > *parking-garage* ramp rather than a wheelchair ramp. Each record keeps its full
-> permit description so these can be reviewed and filtered.
+> permit description so these can be reviewed and filtered. (In Montréal's French
+> data the bare word *rampe* usually means a balcony or stair **railing**, so the
+> matcher requires *rampe d'accès* there rather than counting every *rampe*.)
 
 ## Data sources (city Open Data portals)
 
@@ -141,6 +149,12 @@ points (~85% located; the rest are listed for manual lookup).
 | Markham | Building Permits | `Building_Permits` (ArcGIS) | Construction/renovation records (coords included) |
 | Ottawa | Construction/Demolition/Pool Permits (yearly Excel, 2011–2024) | ArcGIS item ids | Permit records (geocoded) |
 | Ottawa | Municipal Address Points | `Address_Information` (ArcGIS) | Address → latitude/longitude (geocoding) |
+| Montréal | Permis de construction, transformation et démolition | `5232a72d-…` (CKAN) | French permit records (coords included) |
+
+> **Quebec City — researched, not viable.** Its open permit dataset describes
+> work through a controlled-vocabulary `RAISON` field (~66 templated phrases) with
+> no free-text narrative, so accessibility keywords never appear. It will be added
+> only if the city begins publishing a free-text work description.
 
 Per-city sources, field names, platform, and classification rules live in
 [`scripts/cities.py`](scripts/cities.py). Calgary, Vancouver, Mississauga, and
