@@ -312,46 +312,52 @@ def ckan_compose_address(rec):
 
 
 def ckan_fetch(cfg, which, text_fields):
-    """Query a CKAN datastore one keyword at a time (full-text `q`), union the
-    results (deduped by row `_id`), and synthesize a single `address` field.
-    The keyword `q` is a coarse prefilter; classify_keywords confirms later."""
+    """Query one or more CKAN datastore resources, one keyword at a time
+    (full-text `q`), union the results, and synthesize a single `address` field.
+    Toronto splits permits across Active + Cleared resources, so `dataset` may be
+    a list; rows are deduped by PERMIT_NUM (falling back to a per-resource key)
+    so a permit returned by several keywords or in both files counts once. The
+    keyword `q` is a coarse prefilter; classify_keywords confirms later."""
     base = "%s/api/3/action/datastore_search" % cfg["domain"]
-    resource = cfg[which]["dataset"]
+    resources = cfg[which]["dataset"]
+    if isinstance(resources, str):
+        resources = [resources]
     variants, seen = [], set()
     for vs in KEYWORDS.values():
         for v in vs:
             if v not in seen:
                 seen.add(v)
                 variants.append(v)
-    by_id = {}
-    for kw in variants:
-        offset = 0
-        while True:
-            params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
-            for attempt in range(4):
-                try:
-                    r = requests.get(base, params=params, timeout=120)
-                    r.raise_for_status()
+    merged = {}
+    for resource in resources:
+        for kw in variants:
+            offset = 0
+            while True:
+                params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
+                for attempt in range(4):
+                    try:
+                        r = requests.get(base, params=params, timeout=120)
+                        r.raise_for_status()
+                        break
+                    except requests.RequestException as e:
+                        wait = 2 ** (attempt + 1)
+                        print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
+                        time.sleep(wait)
+                else:
+                    raise RuntimeError("Failed to fetch after retries: %s" % base)
+                result = r.json().get("result", {})
+                recs = result.get("records", [])
+                for rec in recs:
+                    key = rec.get("PERMIT_NUM") or ("%s:%s" % (resource, rec.get("_id")))
+                    if key not in merged:
+                        rec["address"] = ckan_compose_address(rec)
+                        merged[key] = rec
+                offset += len(recs)
+                if not recs or offset >= result.get("total", 0):
                     break
-                except requests.RequestException as e:
-                    wait = 2 ** (attempt + 1)
-                    print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
-                    time.sleep(wait)
-            else:
-                raise RuntimeError("Failed to fetch after retries: %s" % base)
-            result = r.json().get("result", {})
-            recs = result.get("records", [])
-            for rec in recs:
-                rid = rec.get("_id")
-                if rid not in by_id:
-                    rec["address"] = ckan_compose_address(rec)
-                    by_id[rid] = rec
-            offset += len(recs)
-            if not recs or offset >= result.get("total", 0):
-                break
-            time.sleep(0.2)
-        print("  q=%-22s unique so far: %d" % (kw, len(by_id)))
-    return list(by_id.values())
+                time.sleep(0.2)
+        print("  resource %s: unique so far %d" % (resource[:8], len(merged)))
+    return list(merged.values())
 
 
 def fetch_permits(cfg, which, text_fields):

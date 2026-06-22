@@ -110,8 +110,10 @@ parkades, etc.).
   `24uj-dj8v`, development `2ccn-pwtu`, Parcel Addresses `ut27-nrpn`
   (`data.edmonton.ca`); Calgary building `c2es-76ed`, development `6933-unw5`
   (`data.calgary.ca`); Vancouver `issued-building-permits`
-  (`opendata.vancouver.ca`, OpenDataSoft); Toronto building permits resource
-  `6d0229af-…` + Address Points `0b3756af-…` (CKAN). Never hardcode dataset
+  (`opendata.vancouver.ca`, OpenDataSoft); Toronto building permits resources
+  `6d0229af-…` (Active) + `a96c0ba4-…` (Cleared since 2017) + Address Points
+  `0b3756af-…` (CKAN). `building.dataset` may be a *list* of CKAN resources
+  (ckan_fetch unions them, deduped by PERMIT_NUM). Never hardcode dataset
   URLs/fields in scripts — add them to `cities.py`.
 - **Per-city classification**: Edmonton uses building_type numeric codes +
   R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
@@ -193,8 +195,9 @@ complying — cite the article.
   prune matches without surfacing the tradeoff.
 - **Coverage**: Edmonton homes 354/355, businesses 1,032/1,044 (geocoded);
   Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
-  permits); Toronto 249/292 + 746/874 (~85%, geocoded against Address Points).
-  Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
+  permits); Toronto 456/539 + 1,420/1,652 (~85%, geocoded against Address
+  Points; queries BOTH the Active and Cleared-since-2017 permit resources). Any
+  unmatched rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /
   loading ramps (warehouses, parkades), not human access. Keep the "worth

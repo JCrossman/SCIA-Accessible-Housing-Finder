@@ -104,8 +104,8 @@ accessibility work done, permit history, and a Street View photo.
 | **Edmonton** | 355 (354 mapped, 100%) | 1,044 (1,032 mapped, 99%) |
 | **Calgary** | 196 (196 mapped, 100%) | 650 (650 mapped, 100%) |
 | **Vancouver** | 522 (520 mapped, 100%) | 741 (738 mapped, 100%) |
-| **Toronto** | 292 (249 mapped, 85%) | 874 (746 mapped, 85%) |
-| **Total on the map** | **1,319 homes** | **3,166 businesses** — **~4,485 places** total |
+| **Toronto** | 539 (456 mapped, 85%) | 1,652 (1,420 mapped, 86%) |
+| **Total on the map** | **1,526 homes** | **3,840 businesses** — **~5,366 places** total |
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
@@ -133,7 +133,7 @@ points (~85% located; the rest are listed for manual lookup).
 | Calgary | Building Permits | `c2es-76ed` | Construction/renovation records (coords included) |
 | Calgary | Development Permits | `6933-unw5` | Land-use/development approvals (coords included) |
 | Vancouver | Issued Building Permits | `issued-building-permits` | Construction/renovation records (coords included) |
-| Toronto | Building Permits – Active Permits | `6d0229af-…` (CKAN) | Construction/renovation records (geocoded) |
+| Toronto | Building Permits – Active + Cleared | `6d0229af-…`, `a96c0ba4-…` (CKAN) | Open + completed permits (geocoded) |
 | Toronto | Address Points (Municipal) | `0b3756af-…` (CKAN) | Address → latitude/longitude (geocoding) |
 
 Per-city sources, field names, platform, and classification rules live in

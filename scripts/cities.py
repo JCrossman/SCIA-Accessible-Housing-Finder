@@ -129,9 +129,12 @@ CITIES = {
         "streetview_suffix": ", Toronto, ON, Canada",
         "map_center": {"lat": 43.6532, "lon": -79.3832},  # fallback only
         "building": {
-            # CKAN uses opaque resource ids (the datastore-active CSV of
-            # "Building Permits - Active Permits").
-            "dataset": "6d0229af-bc54-46de-9c2b-26759b01dd05",
+            # CKAN resource ids. Active = open/in-progress permits; Cleared =
+            # completed permits (they move out of Active once closed). Query both.
+            "dataset": [
+                "6d0229af-bc54-46de-9c2b-26759b01dd05",  # Active Permits
+                "a96c0ba4-3026-402b-b09d-5b1268b8f810",  # Cleared Permits (since 2017)
+            ],
             "text_fields": ["DESCRIPTION"],   # free-text work description
             "address_field": "address",       # synthesized by the CKAN adapter
             "neighbourhood_field": "neighbourhood",  # absent -> blank (no nbhd field)
