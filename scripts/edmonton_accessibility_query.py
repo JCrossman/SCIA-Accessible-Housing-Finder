@@ -311,16 +311,71 @@ def ckan_compose_address(rec):
     return re.sub(r"\s+", " ", " ".join(parts)).strip()
 
 
+def _ckan_add(merged, rec, resource, text_fields):
+    """Dedupe by PERMIT_NUM (per-resource key fallback), synthesize address."""
+    key = rec.get("PERMIT_NUM") or ("%s:%s" % (resource, rec.get("_id") or id(rec)))
+    if key not in merged:
+        rec["address"] = ckan_compose_address(rec)
+        merged[key] = rec
+
+
+def _ckan_datastore_query(base, resource, variants, merged, text_fields):
+    """Per-keyword full-text `q` paging of a datastore-active CKAN resource."""
+    for kw in variants:
+        offset = 0
+        while True:
+            params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
+            for attempt in range(4):
+                try:
+                    r = requests.get(base, params=params, timeout=120)
+                    r.raise_for_status()
+                    break
+                except requests.RequestException as e:
+                    wait = 2 ** (attempt + 1)
+                    print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
+                    time.sleep(wait)
+            else:
+                raise RuntimeError("Failed to fetch after retries: %s" % base)
+            result = r.json().get("result", {})
+            recs = result.get("records", [])
+            for rec in recs:
+                _ckan_add(merged, rec, resource, text_fields)
+            offset += len(recs)
+            if not recs or offset >= result.get("total", 0):
+                break
+            time.sleep(0.2)
+
+
+def ckan_download_filter(cfg, resource_id, text_fields, merged):
+    """Stream a non-datastore CKAN CSV resource and keep only rows that match an
+    accessibility keyword (used for Toronto's large pre-2017 Cleared CSV, which
+    the datastore `q` API cannot reach)."""
+    show = "%s/api/3/action/resource_show" % cfg["domain"]
+    r = requests.get(show, params={"id": resource_id}, timeout=60)
+    r.raise_for_status()
+    url = r.json()["result"]["url"]
+    print("  downloading flat CSV %s ..." % url.rsplit("/", 1)[-1])
+    kept = 0
+    with requests.get(url, stream=True, timeout=900) as resp:
+        resp.raise_for_status()
+        resp.encoding = resp.encoding or "utf-8"
+        reader = csv.DictReader(resp.iter_lines(decode_unicode=True))
+        for rec in reader:
+            if classify_keywords(rec, text_fields):
+                before = len(merged)
+                _ckan_add(merged, rec, resource_id, text_fields)
+                kept += len(merged) - before
+    print("  download %s: kept %d (unique total %d)" % (resource_id[:8], kept, len(merged)))
+
+
 def ckan_fetch(cfg, which, text_fields):
-    """Query one or more CKAN datastore resources, one keyword at a time
-    (full-text `q`), union the results, and synthesize a single `address` field.
-    Toronto splits permits across Active + Cleared resources, so `dataset` may be
-    a list; rows are deduped by PERMIT_NUM (falling back to a per-resource key)
-    so a permit returned by several keywords or in both files counts once. The
-    keyword `q` is a coarse prefilter; classify_keywords confirms later."""
+    """Fetch matching permits from one or more CKAN resources and synthesize a
+    single `address` field. `dataset` may be a list mixing datastore resource ids
+    (queried by full-text `q`) and `{"id":…, "download": True}` flat-CSV resources
+    (downloaded and filtered locally). Rows are deduped by PERMIT_NUM."""
     base = "%s/api/3/action/datastore_search" % cfg["domain"]
     resources = cfg[which]["dataset"]
-    if isinstance(resources, str):
+    if isinstance(resources, (str, dict)):
         resources = [resources]
     variants, seen = [], set()
     for vs in KEYWORDS.values():
@@ -330,33 +385,12 @@ def ckan_fetch(cfg, which, text_fields):
                 variants.append(v)
     merged = {}
     for resource in resources:
-        for kw in variants:
-            offset = 0
-            while True:
-                params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
-                for attempt in range(4):
-                    try:
-                        r = requests.get(base, params=params, timeout=120)
-                        r.raise_for_status()
-                        break
-                    except requests.RequestException as e:
-                        wait = 2 ** (attempt + 1)
-                        print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
-                        time.sleep(wait)
-                else:
-                    raise RuntimeError("Failed to fetch after retries: %s" % base)
-                result = r.json().get("result", {})
-                recs = result.get("records", [])
-                for rec in recs:
-                    key = rec.get("PERMIT_NUM") or ("%s:%s" % (resource, rec.get("_id")))
-                    if key not in merged:
-                        rec["address"] = ckan_compose_address(rec)
-                        merged[key] = rec
-                offset += len(recs)
-                if not recs or offset >= result.get("total", 0):
-                    break
-                time.sleep(0.2)
-        print("  resource %s: unique so far %d" % (resource[:8], len(merged)))
+        if isinstance(resource, dict) and resource.get("download"):
+            ckan_download_filter(cfg, resource["id"], text_fields, merged)
+        else:
+            rid = resource["id"] if isinstance(resource, dict) else resource
+            _ckan_datastore_query(base, rid, variants, merged, text_fields)
+            print("  resource %s: unique so far %d" % (rid[:8], len(merged)))
     return list(merged.values())
 
 

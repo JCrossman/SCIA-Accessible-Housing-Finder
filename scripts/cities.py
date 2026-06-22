@@ -130,10 +130,14 @@ CITIES = {
         "map_center": {"lat": 43.6532, "lon": -79.3832},  # fallback only
         "building": {
             # CKAN resource ids. Active = open/in-progress permits; Cleared =
-            # completed permits (they move out of Active once closed). Query both.
+            # completed permits (they move out of Active once closed). Query both
+            # datastore resources via `q`, plus the pre-2017 flat CSV (not
+            # datastore-active) via download-and-filter.
             "dataset": [
                 "6d0229af-bc54-46de-9c2b-26759b01dd05",  # Active Permits
                 "a96c0ba4-3026-402b-b09d-5b1268b8f810",  # Cleared Permits (since 2017)
+                {"id": "c647bdae-0127-425e-86e6-2d88ff0e2adf",  # Cleared 2000-2016
+                 "download": True},
             ],
             "text_fields": ["DESCRIPTION"],   # free-text work description
             "address_field": "address",       # synthesized by the CKAN adapter
