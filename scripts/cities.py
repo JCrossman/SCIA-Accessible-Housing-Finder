@@ -120,6 +120,42 @@ CITIES = {
         },
         "geocode": {"needed": False},  # coords included in the permits
     },
+
+    "toronto": {
+        "display_name": "Toronto",
+        "platform": "ckan",
+        # CKAN API host (the open.toronto.ca portal is a front end for this).
+        "domain": "https://ckan0.cf.opendata.inter.prod-toronto.ca",
+        "streetview_suffix": ", Toronto, ON, Canada",
+        "map_center": {"lat": 43.6532, "lon": -79.3832},  # fallback only
+        "building": {
+            # CKAN uses opaque resource ids (the datastore-active CSV of
+            # "Building Permits - Active Permits").
+            "dataset": "6d0229af-bc54-46de-9c2b-26759b01dd05",
+            "text_fields": ["DESCRIPTION"],   # free-text work description
+            "address_field": "address",       # synthesized by the CKAN adapter
+            "neighbourhood_field": "neighbourhood",  # absent -> blank (no nbhd field)
+            "date_field": "ISSUED_DATE",
+            "id_field": "PERMIT_NUM",
+            "lat_field": None, "lon_field": None,   # no coords -> needs geocoding
+            "drop_fields": ["BUILDER_NAME"],        # unused name -> minimization
+        },
+        "development": None,   # Toronto building permits only
+        "residential": {
+            # RESIDENTIAL is square-metres of residential occupancy; > 0 -> home.
+            "kind": "toronto",
+            "building_residential_numeric_field": "RESIDENTIAL",
+        },
+        "geocode": {
+            "needed": True,
+            "platform": "ckan",
+            "domain": "https://ckan0.cf.opendata.inter.prod-toronto.ca",
+            # Address Points (Municipal) - Toronto One Address Repository.
+            "dataset": "0b3756af-9caf-4f0f-ac28-9c6617adede4",
+            "number_field": "ADDRESS_NUMBER",
+            "name_field": "LINEAR_NAME_FULL",
+        },
+    },
 }
 
 

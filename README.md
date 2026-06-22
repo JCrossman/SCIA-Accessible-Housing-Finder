@@ -3,17 +3,18 @@
 ![Accessible Housing Finder — mapping Edmonton and Calgary homes with accessibility features. Built for Spinal Cord Injury Alberta using City of Edmonton and City of Calgary open data.](docs/social-preview.png)
 
 A tool that builds a database and interactive map of Canadian properties
-(**Edmonton, Calgary, and Vancouver**) with **accessibility-related building
-work** — ramps, lifts/elevators, wheelchair access, barrier-free features, and
-similar — to support [Spinal Cord Injury Alberta](https://sci-ab.ca/)'s
+(**Edmonton, Calgary, Vancouver, and Toronto**) with **accessibility-related
+building work** — ramps, lifts/elevators, wheelchair access, barrier-free
+features, and similar — to support [Spinal Cord Injury Alberta](https://sci-ab.ca/)'s
 accessible housing work.
 
 All data comes from each city's **free public Open Data** — the
 [City of Edmonton](https://data.edmonton.ca/) and
-[City of Calgary](https://data.calgary.ca/) (Socrata) and
-[City of Vancouver](https://opendata.vancouver.ca/) (OpenDataSoft) portals. No
-API key is required to gather the data; each city is a config entry, and the
-pipeline has a small fetch adapter per open-data platform.
+[City of Calgary](https://data.calgary.ca/) (Socrata),
+[City of Vancouver](https://opendata.vancouver.ca/) (OpenDataSoft), and
+[City of Toronto](https://open.toronto.ca/) (CKAN) portals. No API key is
+required to gather the data; each city is a config entry, and the pipeline has a
+small fetch adapter per open-data platform.
 
 ## The problem
 
@@ -69,8 +70,8 @@ accessibility work done, permit history, and a Street View photo.
 
 **Controls:**
 
-- **City** toggle — *All cities* by default; narrow to Edmonton, Calgary, or
-  Vancouver.
+- **City** toggle — *All cities* by default; narrow to Edmonton, Calgary,
+  Vancouver, or Toronto.
 - **Homes / Businesses / Both** toggle — homes by default; switch to commercial
   & public places (offices, shops, restaurants, rec centres, clinics, schools,
   etc.) or show both.
@@ -103,19 +104,20 @@ accessibility work done, permit history, and a Street View photo.
 | **Edmonton** | 355 (354 mapped, 100%) | 1,044 (1,032 mapped, 99%) |
 | **Calgary** | 196 (196 mapped, 100%) | 650 (650 mapped, 100%) |
 | **Vancouver** | 522 (520 mapped, 100%) | 741 (738 mapped, 100%) |
-| **Total on the map** | **1,073 homes** | **2,435 businesses** — **~3,490 places** total |
+| **Toronto** | 292 (249 mapped, 85%) | 874 (746 mapped, 85%) |
+| **Total on the map** | **1,319 homes** | **3,166 businesses** — **~4,485 places** total |
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
 accessibility upgrades don't use these keywords.
 
-**Data coverage:** Edmonton building permits run from **2009** and development
-permits from **2015**; Calgary's and Vancouver's go back further still — each
-through the present, the full span the cities currently publish (no date filter
-is applied). Coverage is not uniform across those years: older permits less often
-use modern terms like "barrier-free," so recent years are over-represented.
-Calgary and Vancouver permit descriptions are also terser than Edmonton's, so
-they yield fewer matches.
+**Data coverage:** each city's permits run through the present, the full span it
+currently publishes (no date filter is applied). Coverage is not uniform across
+the years: older permits less often use modern terms like "barrier-free," so
+recent years are over-represented. Calgary, Vancouver, and Toronto permit
+descriptions are terser than Edmonton's, so they yield fewer matches. Toronto
+permits carry no coordinates, so they are geocoded against the City's address
+points (~85% located; the rest are listed for manual lookup).
 
 > **Caveat — keyword false positives.** A word like "ramp" sometimes refers to a
 > *parking-garage* ramp rather than a wheelchair ramp. Each record keeps its full
@@ -131,12 +133,16 @@ they yield fewer matches.
 | Calgary | Building Permits | `c2es-76ed` | Construction/renovation records (coords included) |
 | Calgary | Development Permits | `6933-unw5` | Land-use/development approvals (coords included) |
 | Vancouver | Issued Building Permits | `issued-building-permits` | Construction/renovation records (coords included) |
+| Toronto | Building Permits – Active Permits | `6d0229af-…` (CKAN) | Construction/renovation records (geocoded) |
+| Toronto | Address Points (Municipal) | `0b3756af-…` (CKAN) | Address → latitude/longitude (geocoding) |
 
 Per-city sources, field names, platform, and classification rules live in
 [`scripts/cities.py`](scripts/cities.py). Calgary and Vancouver permits already
-carry coordinates, so they need no separate geocoding step. Vancouver is on
-**OpenDataSoft** (the others are Socrata); the query step has a fetch adapter per
-platform. Vancouver publishes building permits only (no separate development set).
+carry coordinates; Edmonton and Toronto are geocoded (Edmonton against Parcel
+Addresses, Toronto against Address Points). The portals span three platforms —
+Socrata (Edmonton, Calgary), OpenDataSoft (Vancouver), and CKAN (Toronto) — and
+the query step has a fetch adapter per platform. Vancouver and Toronto publish
+building permits only (no separate development set).
 
 ## Data files
 
@@ -160,14 +166,14 @@ businesses, with a city filter).
 
 Requires Python 3.9+ and the `requests` library.
 
-Each pipeline script takes a `<city>` argument (`edmonton`, `calgary`, or
-`vancouver`); the final map step reads every city and writes one combined map.
-Run the per-city steps once for each city.
+Each pipeline script takes a `<city>` argument (`edmonton`, `calgary`,
+`vancouver`, or `toronto`); the final map step reads every city and writes one
+combined map. Run the per-city steps once for each city.
 
 ```bash
 pip install -r requirements.txt
 
-# Per city (repeat with calgary / vancouver in place of edmonton):
+# Per city (repeat with calgary / vancouver / toronto in place of edmonton):
 # 1. Query Open Data and write the raw + residential + commercial CSVs
 python scripts/edmonton_accessibility_query.py edmonton
 
@@ -176,7 +182,7 @@ python scripts/merge_residential_accessibility.py edmonton residential  # homes
 python scripts/merge_residential_accessibility.py edmonton commercial   # businesses
 
 # 3. Fill in coordinates (Edmonton: geocode from Parcel Addresses;
-#    Calgary/Vancouver: no-op, permits already carry coordinates)
+#    Toronto: geocode from Address Points; Calgary/Vancouver: no-op)
 python scripts/geocode_residential_accessibility.py edmonton residential
 python scripts/geocode_residential_accessibility.py edmonton commercial
 
@@ -290,14 +296,16 @@ apply here.
 - **Keyword false positives.** Substring matches like "ramp" / "lift" can catch
   parking-garage ramps or freight lifts. Full permit text is kept in every
   record so a human can judge.
-- **Location coverage is ~99–100%.** Calgary and Vancouver permits carry
-  coordinates; almost all Edmonton addresses geocode. Any remainder are listed in
-  each city's `data/<city>/unmatched_addresses.csv` for manual lookup.
-- **Calgary and Vancouver are newer, lighter layers.** Their permit descriptions
-  are terser than Edmonton's, so they surface fewer matches, and the same "worth
-  checking, not proof" framing applies. (Vancouver's open-data text search also
-  over-matches, so every record is re-checked against the keyword list before it
-  is kept.)
+- **Location coverage varies by city.** Calgary and Vancouver permits carry
+  coordinates (~100%); almost all Edmonton addresses geocode; Toronto permits
+  carry no coordinates and are matched against the City's address points (~85%).
+  Any remainder are listed in each city's `data/<city>/unmatched_addresses.csv`
+  for manual lookup.
+- **Calgary, Vancouver, and Toronto are newer, lighter layers.** Their permit
+  descriptions are terser than Edmonton's, so they surface fewer matches, and the
+  same "worth checking, not proof" framing applies. (Vancouver's open-data text
+  search over-matches, so every record is re-checked against the keyword list
+  before it is kept.)
 
 ### The genuine Civic Access Protocol piece is the next layer
 

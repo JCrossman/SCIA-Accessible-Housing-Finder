@@ -157,15 +157,32 @@ def _res_development_calgary(row, cfg):
     return _desc_says_residential(row, cfg)
 
 
+# --- Toronto rule ----------------------------------------------------------
+def _res_building_toronto(row, cfg):
+    # RESIDENTIAL is square-metres of residential occupancy covered by the
+    # permit; > 0 means the work touches a dwelling. Fall back to the use fields
+    # naming a dwelling (the sq-m column is often blank/0 on residential rows).
+    field = cfg["residential"]["building_residential_numeric_field"]
+    try:
+        if float(row.get(field) or 0) > 0:
+            return True
+    except (TypeError, ValueError):
+        pass
+    use = (str(row.get("CURRENT_USE") or "") + " " + str(row.get("PROPOSED_USE") or "")).lower()
+    return any(term in use for term in RESIDENTIAL_DESC_TERMS)
+
+
 _RES_BUILDING = {
     "edmonton": _res_building_edmonton,
     "calgary": _res_building_fieldmatch,
     "vancouver": _res_building_fieldmatch,
+    "toronto": _res_building_toronto,
 }
 _RES_DEVELOPMENT = {
     "edmonton": _res_development_edmonton,
     "calgary": _res_development_calgary,
     "vancouver": _desc_says_residential,  # no dev dataset; never invoked
+    "toronto": _desc_says_residential,    # no dev dataset; never invoked
 }
 
 
@@ -286,6 +303,57 @@ def ods_fetch(cfg, which, text_fields):
     return rows
 
 
+# --- CKAN fetch adapter (Toronto) ------------------------------------------
+def ckan_compose_address(rec):
+    """Toronto splits the address across four columns; join into one string."""
+    parts = [str(rec.get(k) or "").strip()
+             for k in ("STREET_NUM", "STREET_NAME", "STREET_TYPE", "STREET_DIRECTION")]
+    return re.sub(r"\s+", " ", " ".join(parts)).strip()
+
+
+def ckan_fetch(cfg, which, text_fields):
+    """Query a CKAN datastore one keyword at a time (full-text `q`), union the
+    results (deduped by row `_id`), and synthesize a single `address` field.
+    The keyword `q` is a coarse prefilter; classify_keywords confirms later."""
+    base = "%s/api/3/action/datastore_search" % cfg["domain"]
+    resource = cfg[which]["dataset"]
+    variants, seen = [], set()
+    for vs in KEYWORDS.values():
+        for v in vs:
+            if v not in seen:
+                seen.add(v)
+                variants.append(v)
+    by_id = {}
+    for kw in variants:
+        offset = 0
+        while True:
+            params = {"resource_id": resource, "q": kw, "limit": 1000, "offset": offset}
+            for attempt in range(4):
+                try:
+                    r = requests.get(base, params=params, timeout=120)
+                    r.raise_for_status()
+                    break
+                except requests.RequestException as e:
+                    wait = 2 ** (attempt + 1)
+                    print("  request failed (%s); retrying in %ss" % (e, wait), file=sys.stderr)
+                    time.sleep(wait)
+            else:
+                raise RuntimeError("Failed to fetch after retries: %s" % base)
+            result = r.json().get("result", {})
+            recs = result.get("records", [])
+            for rec in recs:
+                rid = rec.get("_id")
+                if rid not in by_id:
+                    rec["address"] = ckan_compose_address(rec)
+                    by_id[rid] = rec
+            offset += len(recs)
+            if not recs or offset >= result.get("total", 0):
+                break
+            time.sleep(0.2)
+        print("  q=%-22s unique so far: %d" % (kw, len(by_id)))
+    return list(by_id.values())
+
+
 def fetch_permits(cfg, which, text_fields):
     """Fetch matching permits for a city's 'building'/'development' dataset,
     dispatching on the city's open-data platform."""
@@ -294,6 +362,8 @@ def fetch_permits(cfg, which, text_fields):
         return fetch_all(dataset_url(cfg, which), build_where(text_fields))
     if platform == "opendatasoft":
         return ods_fetch(cfg, which, text_fields)
+    if platform == "ckan":
+        return ckan_fetch(cfg, which, text_fields)
     raise SystemExit("Unknown platform '%s' for %s" % (platform, cfg["display_name"]))
 
 

@@ -5,12 +5,13 @@ Guidance for Claude Code (and other AI assistants) working in this repository.
 ## What this project is
 
 A data pipeline + interactive map that identifies Canadian properties
-(**Edmonton, Calgary, Vancouver**) with **accessibility-related building work**
-(ramps, lifts/elevators, wheelchair access, barrier-free features, etc.), built
-for Spinal Cord Injury Alberta's accessible housing efforts. Source data is from
-the cities' **Open Data portals**: Socrata (`data.edmonton.ca`,
-`data.calgary.ca`) and OpenDataSoft (`opendata.vancouver.ca`). No API key is
-needed to gather data.
+(**Edmonton, Calgary, Vancouver, Toronto**) with **accessibility-related
+building work** (ramps, lifts/elevators, wheelchair access, barrier-free
+features, etc.), built for Spinal Cord Injury Alberta's accessible housing
+efforts. Source data is from the cities' **Open Data portals** across three
+platforms: Socrata (`data.edmonton.ca`, `data.calgary.ca`), OpenDataSoft
+(`opendata.vancouver.ca`), and CKAN (Toronto, `ckan0.cf.opendata.inter.prod-toronto.ca`).
+No API key is needed to gather data.
 
 ## Repository layout
 
@@ -27,16 +28,21 @@ package.json / scripts/audit.mjs   Node tooling for the offline axe-core audit
 ### Multi-city: config-driven + per-platform adapters
 
 `scripts/cities.py` holds a `CITIES` dict; each entry declares a `platform`
-(`socrata` | `opendatasoft`), maps this pipeline's canonical field names to the
-city's real columns, plus its residential rule and whether permits already carry
-coordinates. Everything else (keyword list, dedup, map UI) is shared.
+(`socrata` | `opendatasoft` | `ckan`), maps this pipeline's canonical field names
+to the city's real columns, plus its residential rule and whether/how permits
+carry coordinates. Everything else (keyword list, dedup, map UI) is shared.
 
 - **Fetch is dispatched by platform** in `fetch_permits()` (query script):
   Socrata uses SoQL `build_where` + `fetch_all`; OpenDataSoft uses `ods_fetch`
-  (ODSQL `like` where-builder + records API paging + `geo_point_2d`→lat/lon
-  normalization). **Adding a city on an existing platform is just a `CITIES`
-  entry**; a new platform (e.g. ArcGIS for Red Deer/Lethbridge/Toronto) needs one
-  new adapter.
+  (ODSQL `like` + records API + `geo_point_2d`→lat/lon); CKAN uses `ckan_fetch`
+  (per-keyword `datastore_search?q=`, union by `_id`, synthesize one `address`
+  from STREET_NUM/NAME/TYPE/DIRECTION). **Adding a city on an existing platform
+  is just a `CITIES` entry**; a new platform (e.g. ArcGIS for Red
+  Deer/Lethbridge/Ottawa) needs one new adapter.
+- **Geocoding is also platform-aware** (`geocode_residential_accessibility.py`):
+  Edmonton matches Parcel Addresses (Socrata); Toronto matches Address Points
+  (CKAN: filter by exact street number, match `LINEAR_NAME` in Python, read
+  `geometry` which the datastore returns as a JSON *string*). ~85% for Toronto.
 - **Server filter is a coarse prefilter; `classify_keywords` is the source of
   truth.** After fetching, every row is re-checked with `classify_keywords` and
   dropped if it has no keyword. No-op for Socrata (SoQL `like` is exact
@@ -47,8 +53,8 @@ coordinates. Everything else (keyword list, dedup, map UI) is shared.
 
 ### The pipeline (run per city, in this order)
 
-Each script takes a `<city>` slug (`edmonton` | `calgary` | `vancouver`). Outputs
-go to `data/<city>/`.
+Each script takes a `<city>` slug (`edmonton` | `calgary` | `vancouver` |
+`toronto`). Outputs go to `data/<city>/`.
 
 1. `edmonton_accessibility_query.py <city>` — query Open Data for accessibility
    keywords; write raw + residential + commercial CSVs (each permit classified
@@ -58,9 +64,10 @@ go to `data/<city>/`.
    the chosen cut (default `residential`). Run once per cut. Carries coordinates
    from whichever permits supply them; adds a `city` column.
 3. `geocode_residential_accessibility.py <city> [cut]` — Edmonton: geocode
-   missing coords against Parcel Addresses (`ut27-nrpn`). Calgary/Vancouver:
-   no-op (permits already carry coords), just records `coord_source`. Guarded by
-   `cfg["geocode"]["needed"]`.
+   against Parcel Addresses (`ut27-nrpn`, Socrata). Toronto: geocode against
+   Address Points (CKAN). Calgary/Vancouver: no-op (permits already carry
+   coords), just records `coord_source`. Dispatched by `cfg["geocode"]["needed"]`
+   and `["platform"]`.
 4. `export_unmatched_addresses.py <city>` — export addresses still missing
    coordinates for manual review.
 5. `generate_accessibility_map.py` — build the **single combined** map
@@ -103,13 +110,16 @@ parkades, etc.).
   `24uj-dj8v`, development `2ccn-pwtu`, Parcel Addresses `ut27-nrpn`
   (`data.edmonton.ca`); Calgary building `c2es-76ed`, development `6933-unw5`
   (`data.calgary.ca`); Vancouver `issued-building-permits`
-  (`opendata.vancouver.ca`, OpenDataSoft). Never hardcode dataset URLs/fields in
-  scripts — add them to `cities.py`.
+  (`opendata.vancouver.ca`, OpenDataSoft); Toronto building permits resource
+  `6d0229af-…` + Address Points `0b3756af-…` (CKAN). Never hardcode dataset
+  URLs/fields in scripts — add them to `cities.py`.
 - **Per-city classification**: Edmonton uses building_type numeric codes +
   R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
   and `landusedistrict` R-/M- prefixes (development); Vancouver uses
   `propertyuse in {"Dwelling Uses", ...}` (the generic field-match rule shared
-  with Calgary's building rule). All fall back to a shared dwelling-term scan.
+  with Calgary's building rule); Toronto uses `RESIDENTIAL` sq-m > 0 with a
+  CURRENT_USE/PROPOSED_USE dwelling-term fallback. All fall back to a shared
+  dwelling-term scan.
 - **Platform gotchas**: Edmonton `house_number` in Parcel Addresses is a
   *numeric* column — a letter-suffixed value (e.g. `7606A`) throws a
   type-mismatch 400; parse to the numeric base. Calgary addresses use `#unit`
@@ -117,7 +127,10 @@ parkades, etc.).
   `normalize_address`). OpenDataSoft (Vancouver) returns multi-value fields as
   *lists* (e.g. `propertyuse`) — the field-match classifier handles list-or-string;
   its `like` text search over-matches, hence the `classify_keywords` post-filter.
-  Use retry/backoff; the APIs throttle.
+  CKAN (Toronto): full-text `q` works on the permits resource but **not** on the
+  Address Points resource (filter by exact number + match name in Python), and
+  `geometry` comes back as a JSON *string*; addresses are split across four
+  columns. Use retry/backoff; the APIs throttle.
 - **Network calls**: always page results, retry with exponential backoff, and
   fail soft (skip a batch rather than crash the run).
 
@@ -178,16 +191,16 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
-- **Coverage** (~99–100%): Edmonton homes 354/355, businesses 1,032/1,044
-  (geocoded); Calgary homes 196/196, businesses 650/650; Vancouver homes 520/522,
-  businesses 738/741 (Calgary/Vancouver coords from permits). Any unmatched rows
-  are in `data/<city>/unmatched_addresses.csv`.
+- **Coverage**: Edmonton homes 354/355, businesses 1,032/1,044 (geocoded);
+  Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
+  permits); Toronto 249/292 + 746/874 (~85%, geocoded against Address Points).
+  Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /
   loading ramps (warehouses, parkades), not human access. Keep the "worth
   checking" framing and the README's "Note on businesses" caveat.
-- **Calgary/Vancouver descriptions are terser** than Edmonton's, so they surface
-  fewer matches; same "worth checking, not proof" framing.
+- **Calgary/Vancouver/Toronto descriptions are terser** than Edmonton's, so they
+  surface fewer matches; same "worth checking, not proof" framing.
 - Results reflect the cities' currently published (rolling) data, so counts
   change when the pipeline is re-run. Update the README "Results at a glance"
   table when they do.

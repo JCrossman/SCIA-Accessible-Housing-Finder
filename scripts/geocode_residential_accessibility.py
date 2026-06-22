@@ -15,6 +15,7 @@ Reads/Writes (in place): data/<city>/accessibility_<cut>_merged.csv
   adds a 'coord_source' column: permit | parcel_geocode | none
 """
 import csv
+import json
 import os
 import re
 import sys
@@ -32,6 +33,15 @@ SLEEP = 1.0     # politeness delay between requests to avoid throttling
 
 # Set by main() before any lookups: {"url", "house", "street", "lat", "lon"}.
 _GCFG = None
+
+# Street types / directions used to peel a street's core name off a one-line
+# address (e.g. "5100 YONGE ST E" -> name "YONGE") for CKAN address matching.
+_DIRS = {"N", "S", "E", "W", "NE", "NW", "SE", "SW"}
+_TYPES = {"ST", "STREET", "AVE", "AV", "AVENUE", "RD", "ROAD", "BLVD", "BOULEVARD",
+          "DR", "DRIVE", "CRT", "CT", "COURT", "CRES", "CRESCENT", "LANE", "LN",
+          "PL", "PLACE", "WAY", "TER", "TERRACE", "GDNS", "GARDENS", "SQ", "SQUARE",
+          "PKWY", "PARKWAY", "HWY", "TRL", "TRAIL", "CIR", "CIRCLE", "GRV", "GROVE",
+          "HTS", "HEIGHTS", "PARK", "PK", "GATE", "GT", "MEWS", "PATH", "RUN", "ROW"}
 
 
 def parse_permit_address(addr):
@@ -120,6 +130,112 @@ def _write(merged_csv, rows):
         w.writerows(rows)
 
 
+def _parse_oneline_address(addr):
+    """Split a one-line address ('5100 YONGE ST E') into (number, core_name)
+    by stripping a trailing direction and street type. Returns (None, None) if
+    unparseable."""
+    toks = (addr or "").upper().split()
+    if not toks:
+        return None, None
+    m = re.match(r"(\d+)", toks[0])
+    if not m:
+        return None, None
+    number = m.group(1)
+    rest = toks[1:]
+    if rest and rest[-1] in _DIRS:
+        rest = rest[:-1]
+    if rest and rest[-1] in _TYPES:
+        rest = rest[:-1]
+    name = " ".join(rest).strip()
+    return (number, name) if name else (None, None)
+
+
+def _ckan_geocode(merged_csv, rows, cfg):
+    """Geocode one-line addresses against a CKAN address-point datastore
+    (Toronto's Address Points). Matches on exact street number + a full-text
+    street-name query, taking the first point's geometry coordinates."""
+    g = cfg["geocode"]
+    base = "%s/api/3/action/datastore_search" % g["domain"]
+    resource, numf, namef = g["dataset"], g["number_field"], g["name_field"]
+    cache = {}
+
+    def _coords(rec):
+        geom = rec.get("geometry")
+        if isinstance(geom, str):          # datastore returns geometry as a JSON string
+            try:
+                geom = json.loads(geom)
+            except ValueError:
+                return None
+        c = geom.get("coordinates") if isinstance(geom, dict) else None
+        if isinstance(c, (list, tuple)) and len(c) >= 2:
+            return (c[1], c[0])   # GeoJSON [lon, lat] -> (lat, lon)
+        return None
+
+    def lookup(number, name):
+        # Full-text `q` is not indexed on the address-point datastore, so filter
+        # by exact street number and match the street name in Python.
+        key = (number, name)
+        if key in cache:
+            return cache[key]
+        # A street number can recur on many streets citywide, so fetch them all
+        # (high limit) and match the street name in Python.
+        params = {"resource_id": resource, "filters": json.dumps({numf: number}),
+                  "limit": 2000}
+        coords = None
+        for attempt in range(3):
+            try:
+                r = requests.get(base, params=params, timeout=60)
+                r.raise_for_status()
+                recs = r.json().get("result", {}).get("records", [])
+                # 1) exact core-name match (LINEAR_NAME, e.g. "Yonge")
+                for rec in recs:
+                    if str(rec.get("LINEAR_NAME") or "").strip().upper() == name:
+                        coords = _coords(rec)
+                        if coords:
+                            break
+                # 2) fallback: name appears in the full street name ("Yonge St")
+                if not coords:
+                    for rec in recs:
+                        if name in str(rec.get(namef) or "").strip().upper():
+                            coords = _coords(rec)
+                            if coords:
+                                break
+                break
+            except requests.RequestException:
+                time.sleep(2 ** attempt)
+        cache[key] = coords
+        time.sleep(0.1)
+        return coords
+
+    matched = 0
+    need = 0
+    for i, row in enumerate(rows):
+        if row.get("latitude") and row.get("longitude"):
+            row["coord_source"] = "permit"
+            continue
+        need += 1
+        number, name = _parse_oneline_address(row.get("address", ""))
+        coords = lookup(number, name) if number and name else None
+        if coords:
+            row["latitude"], row["longitude"] = coords
+            row["has_coords"] = "yes"
+            row["coord_source"] = "address_points"
+            matched += 1
+        else:
+            row["coord_source"] = "none"
+        if i % 200 == 0:
+            print("  geocoded %d/%d rows (matched %d, %d cached)"
+                  % (i, len(rows), matched, len(cache)))
+
+    _write(merged_csv, rows)
+    total = sum(1 for r in rows if r.get("has_coords") == "yes")
+    print("\nNewly geocoded         : %d" % matched)
+    print("Still missing coords   : %d" % (need - matched))
+    print("Total with coordinates : %d / %d (%.0f%%)"
+          % (total, len(rows), 100.0 * total / len(rows) if rows else 0))
+    print("Saved -> %s" % merged_csv)
+
+
 def _no_geocode(merged_csv, rows):
     """Cities whose permits already carry coordinates: just label the source."""
     for row in rows:
@@ -143,6 +259,10 @@ def main():
 
     if not cfg["geocode"]["needed"]:
         _no_geocode(merged_csv, rows)
+        return
+
+    if cfg["geocode"].get("platform") == "ckan":
+        _ckan_geocode(merged_csv, rows, cfg)
         return
 
     g = cfg["geocode"]
