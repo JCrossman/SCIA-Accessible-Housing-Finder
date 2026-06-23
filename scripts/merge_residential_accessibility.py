@@ -22,7 +22,7 @@ import re
 import sys
 
 from cities import get_city
-from edmonton_accessibility_query import classify_keywords
+from keywords import classify_keywords
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 

@@ -29,6 +29,9 @@ CITIES = {
             "date_field": "permit_date",
             "id_field": "row_id",
             "lat_field": None, "lon_field": None,   # building permits lack coords
+            # Completion: no status enum, but an occupancy-granted date marks a
+            # finished permit (classify_completion.py).
+            "status": {"completed_if_present": "occupancy_granted_date"},
         },
         "development": {
             "dataset": "2ccn-pwtu",
@@ -68,6 +71,8 @@ CITIES = {
             # Personal/identifying columns the pipeline never uses -- dropped
             # before writing CSVs so no names are republished (minimization).
             "drop_fields": ["applicantname", "contractorname"],
+            "status": {"field": "statuscurrent", "completed": {"Completed"},
+                       "abandoned": {"Cancelled"}},
         },
         "development": {
             "dataset": "6933-unw5",
@@ -147,6 +152,10 @@ CITIES = {
             "id_field": "PERMIT_NUM",
             "lat_field": None, "lon_field": None,   # no coords -> needs geocoding
             "drop_fields": ["BUILDER_NAME"],        # unused name -> minimization
+            "status": {"field": "STATUS", "completed": {"Closed", "File Closed"},
+                       "abandoned": {"Cancelled", "Revocation Pending",
+                                     "Pending Cancellation", "Superseded",
+                                     "Refused", "Refusal Notice", "Abandoned"}},
         },
         "development": None,   # Toronto building permits only
         "residential": {
@@ -183,6 +192,9 @@ CITIES = {
             "date_field": "ISSUE_DATE",
             "id_field": "BP_NO",
             "lat_field": "latitude", "lon_field": "longitude",  # from geometry
+            "status": {"field": "STATUS",
+                       "completed": {"COMPLETED -ALL INSP SIGNED OFF"},
+                       "abandoned": set()},
         },
         "development": None,
         "residential": {
@@ -207,6 +219,9 @@ CITIES = {
             "date_field": "ISSUEDATE",
             "id_field": "CUSTOMFOLDERNUMBER",
             "lat_field": "latitude", "lon_field": "longitude",
+            "status": {"field": "Status",
+                       "completed": {"Closed", "Occupancy Granted"},
+                       "abandoned": {"Cancelled", "Revoked"}},
         },
         "development": None,
         "residential": {
@@ -328,6 +343,9 @@ CITIES = {
                             "contractor_phone", "contractor_trade",
                             "contractor_address1", "contractor_address2",
                             "contractor_city", "contractor_zip"],
+            "status": {"field": "status_current", "completed": {"Final"},
+                       "abandoned": {"VOID", "Withdrawn", "Cancelled",
+                                     "Cancelled - Contractor Required"}},
         },
         "development": None,   # one combined construction-permit dataset
         "residential": {
@@ -339,33 +357,14 @@ CITIES = {
     },
 }
 
-
-# Permit completion / abandonment rules, applied to BUILDING permits (the only
-# datasets that publish a status), used by classify_completion.py.
-#   field                : the status column
-#   completed / abandoned: value sets, compared case-insensitively
-#   completed_if_present : a column that, when non-blank, marks completion
-#                          (Edmonton's occupancy_granted_date)
-# A city absent here has no completion data -> every permit is "status not
-# published". "abandoned" rows (cancelled/void/withdrawn/revoked/...) are dropped;
-# "Expired" is deliberately NOT abandoned (the work was often done, the permit
-# just lapsed before final sign-off).
-BUILDING_STATUS = {
-    "edmonton":    {"completed_if_present": "occupancy_granted_date"},
-    "calgary":     {"field": "statuscurrent", "completed": {"Completed"},
-                    "abandoned": {"Cancelled"}},
-    "toronto":     {"field": "STATUS", "completed": {"Closed", "File Closed"},
-                    "abandoned": {"Cancelled", "Revocation Pending",
-                                  "Pending Cancellation", "Superseded", "Refused",
-                                  "Refusal Notice", "Abandoned"}},
-    "mississauga": {"field": "STATUS", "completed": {"COMPLETED -ALL INSP SIGNED OFF"},
-                    "abandoned": set()},
-    "markham":     {"field": "Status", "completed": {"Closed", "Occupancy Granted"},
-                    "abandoned": {"Cancelled", "Revoked"}},
-    "austin":      {"field": "status_current", "completed": {"Final"},
-                    "abandoned": {"VOID", "Withdrawn", "Cancelled",
-                                  "Cancelled - Contractor Required"}},
-}
+# Completion / abandonment rules live in each city's `building["status"]`
+# (alongside `exclude` / `weak_alone_keywords`): a `field` + `completed`/
+# `abandoned` value sets (compared case-insensitively), or `completed_if_present`
+# (a column that, when non-blank, marks completion -- Edmonton's
+# occupancy-granted date). A building with no `status` has no completion data ->
+# every permit is "status not published". "Expired" is deliberately NOT abandoned
+# (the work was often done; the permit just lapsed before final sign-off).
+# See classify_completion.py.
 
 
 def get_city(slug):

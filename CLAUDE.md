@@ -24,6 +24,7 @@ controlled vocabulary with no free-text work narrative, so keywords never match.
 ```
 scripts/   Python data pipeline + the map generator and the JS a11y audit
 scripts/cities.py   Per-city config (datasets, field maps, residential rules)
+scripts/fetchers.py   Per-platform fetch adapters; scripts/keywords.py   keyword list + matching
 data/<city>/   Generated CSVs per city (edmonton/, calgary/, vancouver/)
 data/      The combined map (accessibility_map.html) + config.js (public key)
 docs/      Banner image + the accessibility CI workflow (copy to .github to use)
@@ -38,7 +39,7 @@ package.json / scripts/audit.mjs   Node tooling for the offline axe-core audit
 to the city's real columns, plus its residential rule and whether/how permits
 carry coordinates. Everything else (keyword list, dedup, map UI) is shared.
 
-- **Fetch is dispatched by platform** in `fetch_permits()` (query script):
+- **Fetch is dispatched by platform** in `fetch_permits()` (`fetchers.py`):
   Socrata uses SoQL `build_where` + `fetch_all`; OpenDataSoft uses `ods_fetch`
   (ODSQL `like` + records API + `geo_point_2d`→lat/lon); CKAN uses `ckan_fetch`
   (per-keyword `datastore_search?q=`, union, synthesize one `address`); ArcGIS
@@ -76,7 +77,7 @@ Each script takes a `<city>` slug (`edmonton` | `calgary` | `vancouver` |
 `toronto` | `mississauga` | `markham` | `ottawa` | `montreal` | `austin`).
 Outputs go to `data/<city>/`.
 
-1. `edmonton_accessibility_query.py <city>` — query Open Data for accessibility
+1. `accessibility_query.py <city>` — query Open Data for accessibility
    keywords; write raw + residential + commercial CSVs (each permit classified
    residential vs non-residential via the city's rule).
 2. `merge_residential_accessibility.py <city> [residential|commercial]` —
@@ -91,7 +92,7 @@ Outputs go to `data/<city>/`.
 4. `classify_completion.py <city> [cut]` — add a per-address `completion` label
    (completed | issued | unknown) from each city's permit status, and drop
    addresses whose permits were all abandoned (cancelled/void/withdrawn/...).
-   Rules live in `BUILDING_STATUS` (cities.py); "Expired" is deliberately kept.
+   Rules live in each city's `building["status"]` (cities.py); "Expired" is kept.
    Runs **after** geocode (updates the merged CSV in place, preserving coords).
 5. `export_unmatched_addresses.py <city>` — export addresses still missing
    coordinates for manual review.
@@ -236,7 +237,7 @@ complying — cite the article.
   parking-garage ramps or freight lifts, not accessibility features. Each
   record keeps its full description so a human can filter. Do not aggressively
   prune matches without surfacing the tradeoff.
-- **Cross-language substring collisions** (`_KEYWORD_REGEX` in the query
+- **Cross-language substring collisions** (`_KEYWORD_REGEX` in `keywords.py`,
   script): matching is plain case-insensitive substring EXCEPT for a few short
   English tokens that are substrings of unrelated foreign words. English "ramp"
   ⊂ French "rampe" (a balcony/stair **railing**), which floods Montréal with
