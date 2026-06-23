@@ -4,13 +4,14 @@ Guidance for Claude Code (and other AI assistants) working in this repository.
 
 ## What this project is
 
-A data pipeline + interactive map that identifies Canadian properties
+A data pipeline + interactive map that identifies North American properties
 (**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa,
-Montréal**) with **accessibility-related building work** (ramps,
-lifts/elevators, wheelchair access, barrier-free features, etc.), built for
-Spinal Cord Injury Alberta's accessible housing efforts. Source data is from the
-cities' **Open Data portals** across source types: Socrata (`data.edmonton.ca`,
-`data.calgary.ca`), OpenDataSoft (`opendata.vancouver.ca`), CKAN (Toronto,
+Montréal** in Canada, plus **Austin, TX** in the US) with
+**accessibility-related building work** (ramps, lifts/elevators, wheelchair
+access, barrier-free features, etc.), built for Spinal Cord Injury Alberta's
+accessible housing efforts. Source data is from the cities' **Open Data portals**
+across source types: Socrata (`data.edmonton.ca`, `data.calgary.ca`,
+`data.austintexas.gov`), OpenDataSoft (`opendata.vancouver.ca`), CKAN (Toronto,
 Montréal via `donnees.montreal.ca`), Esri ArcGIS REST (Mississauga, Markham),
 and downloadable Excel spreadsheets (Ottawa's yearly permit files, geocoded
 against Ottawa's ArcGIS address points). Montréal's permit text is **French**, so
@@ -72,7 +73,8 @@ carry coordinates. Everything else (keyword list, dedup, map UI) is shared.
 ### The pipeline (run per city, in this order)
 
 Each script takes a `<city>` slug (`edmonton` | `calgary` | `vancouver` |
-`toronto` | `mississauga` | `markham` | `ottawa`). Outputs go to `data/<city>/`.
+`toronto` | `mississauga` | `markham` | `ottawa` | `montreal` | `austin`).
+Outputs go to `data/<city>/`.
 
 1. `edmonton_accessibility_query.py <city>` — query Open Data for accessibility
    keywords; write raw + residential + commercial CSVs (each permit classified
@@ -140,12 +142,21 @@ parkades, etc.).
   ids (2011–2024) + geocodes against `Address_Information` (maps.ottawa.ca).
   Montréal building `5232a72d-…` (`donnees.montreal.ca`, CKAN; French text in
   `nature_travaux`, coords in permits → no geocode; sends a browser User-Agent
-  via `HTTP_HEADERS` because the portal 403s the default requests UA).
+  via `HTTP_HEADERS` because the portal 403s the default requests UA). Austin
+  building `3syk-w9eu` ("Issued Construction Permits", `data.austintexas.gov`,
+  Socrata; free-text `description`, coords in permits → no geocode). Two reusable
+  config knobs were added with Austin: `building.exclude` (server-side SoQL
+  `NOT IN` to drop a whole permit category — Austin drops `permit_type_desc`
+  "Driveway / Sidewalks" curb ramps, via `_apply_exclude`) and
+  `building.weak_alone_keywords` (drop rows whose ONLY matched keyword label is
+  in the set — Austin drops `lift`-only rows, ~99% noise: house-raising "lifted
+  residence", "Elevator Drive" street names, forklifts).
 - **Per-city classification**: Edmonton uses building_type numeric codes +
   R-prefix zoning; Calgary uses `permitclassmapped == "Residential"` (building)
   and `landusedistrict` R-/M- prefixes (development); Vancouver uses
   `propertyuse in {"Dwelling Uses", ...}` (the generic field-match rule shared
-  with Calgary's building rule); Toronto uses `RESIDENTIAL` sq-m > 0 with a
+  with Calgary's building rule); Austin uses `permit_class_mapped == "Residential"`
+  (the same field-match rule); Toronto uses `RESIDENTIAL` sq-m > 0 with a
   CURRENT_USE/PROPOSED_USE dwelling-term fallback; the ArcGIS cities use the
   generic `textscan` kind (scan configured use/desc fields for dwelling terms).
   All fall back to a shared dwelling-term scan.
@@ -229,7 +240,11 @@ complying — cite the article.
   explicit `rampe d'accès`/`rampe d'acces` variants. This leaves every English
   city byte-for-byte unchanged (only the false positive "Karampelas" drops). If
   you add another non-English city, check new collisions the same way — verify
-  with counts + a quoted sample before trusting a keyword.
+  with counts + a quoted sample before trusting a keyword. (Even an *English*
+  city can collide: Austin descriptions embed the street address, so "Elevator
+  Drive" matched `elevator` and flood-mitigation "lifted residence" matched
+  `lift`; rather than a regex, Austin drops rows whose only keyword is `lift` via
+  `weak_alone_keywords` — `lift` alone is ~99% noise there.)
 - **Coverage**: Edmonton homes 354/355, businesses 1,032/1,044 (geocoded);
   Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
   permits); Toronto 667/801 + 2,423/2,843 (~84%, geocoded against Address
@@ -237,8 +252,10 @@ complying — cite the article.
   flat CSV via download). Mississauga 143/167 and Markham 200/111 carry geometry
   coords; Ottawa 114/243 (yearly Excel 2011–2024, geocoded ~84-89% against
   Municipal Address Points); Montréal 2,734/2,786 homes + 1,105/1,140 businesses
-  (~98%/97%, coords from permits). Any unmatched rows are in
-  `data/<city>/unmatched_addresses.csv`.
+  (~98%/97%, coords from permits); Austin 759/828 homes + 1,176/1,486 businesses
+  (~92%/79%, Socrata coords from permits, after excluding "Driveway / Sidewalks"
+  curb ramps and dropping `lift`-only noise — see `exclude` / `weak_alone_keywords`).
+  Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /
   loading ramps (warehouses, parkades), not human access. Keep the "worth

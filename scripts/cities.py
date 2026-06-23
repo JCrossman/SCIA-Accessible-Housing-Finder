@@ -290,6 +290,53 @@ CITIES = {
         },
         "geocode": {"needed": False},  # coordinates included in the permits
     },
+
+    # --- United States (Socrata) -- first non-Canadian city. ---
+
+    "austin": {
+        "display_name": "Austin",
+        "platform": "socrata",
+        "domain": "https://data.austintexas.gov",
+        "streetview_suffix": ", Austin, TX, USA",
+        "map_center": {"lat": 30.2672, "lon": -97.7431},  # fallback only
+        "building": {
+            # "Issued Construction Permits": one combined dataset across all
+            # trades, with a free-text description, latitude/longitude, and a
+            # clean permit_class_mapped (Residential/Commercial) column.
+            "dataset": "3syk-w9eu",
+            "text_fields": ["description"],
+            "address_field": "original_address1",
+            "neighbourhood_field": "",   # no neighbourhood-name field
+            "date_field": "issue_date",
+            "id_field": "permit_number",
+            "lat_field": "latitude", "lon_field": "longitude",  # coords present
+            # "Driveway / Sidewalks" permits are curb/driveway ramps, not home
+            # access -- exclude them server-side (see _apply_exclude).
+            "exclude": {"field": "permit_type_desc",
+                        "values": ["Driveway / Sidewalks"]},
+            # "lift" alone is ~99% noise in Austin (house-raising "lifted
+            # residence", "Elevator Drive" street names, forklifts), so drop rows
+            # whose ONLY accessibility keyword is "lift". Rows that also mention
+            # ramp/wheelchair/accessible/etc. are kept.
+            "weak_alone_keywords": ["lift"],
+            # Applicant/contractor PII the pipeline never uses -- every
+            # applicant_*/contractor_* column dropped before writing (Arts. 5, 6).
+            "drop_fields": ["applicant_full_name", "applicant_org",
+                            "applicant_phone", "applicant_address1",
+                            "applicant_address2", "applicant_city", "applicantzip",
+                            "contractor_full_name", "contractor_company_name",
+                            "contractor_phone", "contractor_trade",
+                            "contractor_address1", "contractor_address2",
+                            "contractor_city", "contractor_zip"],
+        },
+        "development": None,   # one combined construction-permit dataset
+        "residential": {
+            "kind": "austin",
+            "building_class_field": "permit_class_mapped",
+            "building_residential_values": {"Residential"},
+        },
+        "geocode": {"needed": False},  # coordinates included in the permits
+    },
 }
 
 
