@@ -340,6 +340,34 @@ CITIES = {
 }
 
 
+# Permit completion / abandonment rules, applied to BUILDING permits (the only
+# datasets that publish a status), used by classify_completion.py.
+#   field                : the status column
+#   completed / abandoned: value sets, compared case-insensitively
+#   completed_if_present : a column that, when non-blank, marks completion
+#                          (Edmonton's occupancy_granted_date)
+# A city absent here has no completion data -> every permit is "status not
+# published". "abandoned" rows (cancelled/void/withdrawn/revoked/...) are dropped;
+# "Expired" is deliberately NOT abandoned (the work was often done, the permit
+# just lapsed before final sign-off).
+BUILDING_STATUS = {
+    "edmonton":    {"completed_if_present": "occupancy_granted_date"},
+    "calgary":     {"field": "statuscurrent", "completed": {"Completed"},
+                    "abandoned": {"Cancelled"}},
+    "toronto":     {"field": "STATUS", "completed": {"Closed", "File Closed"},
+                    "abandoned": {"Cancelled", "Revocation Pending",
+                                  "Pending Cancellation", "Superseded", "Refused",
+                                  "Refusal Notice", "Abandoned"}},
+    "mississauga": {"field": "STATUS", "completed": {"COMPLETED -ALL INSP SIGNED OFF"},
+                    "abandoned": set()},
+    "markham":     {"field": "Status", "completed": {"Closed", "Occupancy Granted"},
+                    "abandoned": {"Cancelled", "Revoked"}},
+    "austin":      {"field": "status_current", "completed": {"Final"},
+                    "abandoned": {"VOID", "Withdrawn", "Cancelled",
+                                  "Cancelled - Contractor Required"}},
+}
+
+
 def get_city(slug):
     """Return the config for a city slug, with a clear error if unknown."""
     try:

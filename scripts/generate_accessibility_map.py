@@ -109,6 +109,30 @@ def categories_for(keywords_str):
     return sorted(cats)
 
 
+# Permit completion status (from classify_completion.py) -> popup/list badge.
+# Honesty (Art. 7): a permit shows work was approved, not that it was finished;
+# where a city publishes a status we say so, and "not published" is its own
+# visible state, never silently treated as done or not-done.
+COMPLETION_LABEL = {
+    # value: (label, colour [AA-contrast on white], leading glyph)
+    "completed": ("Work completed (permit signed off)", "#1a7f37", "✓ "),
+    "issued": ("Permit issued &ndash; completion not confirmed", "#9a6700", ""),
+    "unknown": ("Completion status not published", "#666", ""),
+}
+# Display order + filter labels for the completion checkboxes.
+COMPLETION_ORDER = [
+    ("completed", "Completed"),
+    ("issued", "Issued (not confirmed)"),
+    ("unknown", "Status not published"),
+]
+
+
+def completion_badge(comp):
+    label, color, glyph = COMPLETION_LABEL.get(comp, COMPLETION_LABEL["unknown"])
+    return ("<div style='font-size:12px;margin-top:3px;color:%s'>%s%s</div>"
+            % (color, glyph, label))
+
+
 def build_points(csv_path, ptype, city, cfg):
     points = []
     if not os.path.exists(csv_path):
@@ -164,6 +188,8 @@ def build_points(csv_path, ptype, city, cfg):
                 "city": city,    # city slug (for the city filter)
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
+                "completion": r.get("completion", "unknown") or "unknown",
+                "cbadge": completion_badge(r.get("completion", "unknown") or "unknown"),
             })
     return points
 
@@ -188,6 +214,7 @@ def popup_html(p):
         parts.append("<b>Keywords:</b> %s<br>" % html.escape(p["keywords"]))
     parts.append("<b>Permits:</b> %s (%s building, %s development)<br>"
                  % (p["total"], p["n_b"], p["n_d"]))
+    parts.append(p.get("cbadge", ""))
     if p["d0"]:
         span = p["d0"] if p["d0"] == p["d1"] else "%s &ndash; %s" % (p["d0"], p["d1"])
         parts.append("<b>Dates:</b> %s<br>" % span)
@@ -230,6 +257,10 @@ def main():
         present.update(p["cats"])
     visible_categories = [c for c in CATEGORY_ORDER if c[0] in present]
     categories_json = json.dumps(visible_categories)
+    # Completion states actually present (so the filter has no dead checkboxes).
+    present_comp = {p["completion"] for p in points}
+    visible_completion = [c for c in COMPLETION_ORDER if c[0] in present_comp]
+    completion_json = json.dumps(visible_completion)
 
     html_doc = """<!DOCTYPE html>
 <html lang="en">
@@ -381,6 +412,10 @@ def main():
   <div id="filter-body">
     <div class="filter-head">Feature <span id="filter-actions"><button id="filter-all" class="linkbtn">all</button><button id="filter-none" class="linkbtn">none</button></span></div>
     <div id="filter-boxes"></div>
+    <div id="completion-section">
+      <div class="filter-head">Completion status</div>
+      <div id="completion-boxes"></div>
+    </div>
     <div id="year-section">
       <div class="filter-head">Permit year</div>
       <div id="year-row">
@@ -411,6 +446,7 @@ def main():
 var points = __DATA__;
 var CATEGORIES = __CATEGORIES__;  // [[id, label], ...] for the feature filter
 var CITIES = __CITIES__;          // [[slug, label], ...] cities present in data
+var COMPLETION = __COMPLETION__;  // [[id, label], ...] completion states present
 
 // localStorage can throw on file:// (e.g. Safari treats it as a unique
 // origin), so guard every access.
@@ -589,6 +625,7 @@ window.initMap = function(){
     m._cats = p.cats || [];
     m._type = p.type;            // "home" or "business"
     m._city = p.city;            // city slug (for the city filter)
+    m._completion = p.completion || 'unknown';  // completed | issued | unknown
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
@@ -659,6 +696,10 @@ window.initMap = function(){
   // ---- Filter (collapsed by default to avoid clutter) ----
   var active = {};
   CATEGORIES.forEach(function(c){ active[c[0]] = true; });
+  // Completion filter (Completed / Issued / Status not published) -- all on by
+  // default, so the map is complete and honest unless the user narrows it.
+  var complActive = {};
+  COMPLETION.forEach(function(c){ complActive[c[0]] = true; });
   // "Confirmed wheelchair only" button state. Turning it on sets the Feature
   // filter to Wheelchair access only; turning it off restores the prior choice.
   var wcBtn = document.getElementById('wc-only');
@@ -702,6 +743,7 @@ window.initMap = function(){
         + "<span class='meta'>" + loc + "</span><br>"
         + "<span class='meta'>" + meta.join(' &middot; ') + "</span><br>"
         + "<a href='" + maps + "' target='_blank' rel='noopener'>Open in Google Maps / Street View &#8599;</a>"
+        + (p.cbadge || '')
         + "</li>";
     }).join('');
     ul.innerHTML = html;
@@ -715,6 +757,7 @@ window.initMap = function(){
     var shown = allMarkers.filter(function(m){
       if (!cityOk(m)) return false;
       if (typeFilter !== 'both' && m._type !== typeFilter) return false;
+      if (complActive[m._completion] === false) return false;
       return m._cats.some(function(c){ return active[c]; }) && yearOk(m);
     });
     cluster.clearMarkers();
@@ -743,6 +786,23 @@ window.initMap = function(){
       applyFilter();
     });
   });
+  // Completion checkboxes (mirror the feature filter). Hidden if only one state
+  // is present (no dead control).
+  var compSection = document.getElementById('completion-section');
+  if (COMPLETION.length <= 1) {
+    if (compSection) compSection.style.display = 'none';
+  } else {
+    var compBoxes = document.getElementById('completion-boxes');
+    COMPLETION.forEach(function(c){
+      var lbl = document.createElement('label');
+      lbl.innerHTML = "<input type='checkbox' id='comp-" + c[0] + "' checked> " + c[1];
+      compBoxes.appendChild(lbl);
+      lbl.querySelector('input').addEventListener('change', function(e){
+        complActive[c[0]] = e.target.checked;
+        applyFilter();
+      });
+    });
+  }
   function setAll(v){
     CATEGORIES.forEach(function(c){
       active[c[0]] = v;
@@ -887,6 +947,7 @@ panelClose.onclick = function(){
                     'style="vertical-align:middle;margin-right:5px"')
     html_doc = html_doc.replace("__DATA__", data_json)
     html_doc = html_doc.replace("__CATEGORIES__", categories_json)
+    html_doc = html_doc.replace("__COMPLETION__", completion_json)
     html_doc = html_doc.replace("__CITIES__", cities_json)
     html_doc = html_doc.replace("__MARKER_WC_JS__", json.dumps(marker_wheelchair(28, 40)))
     html_doc = html_doc.replace("__MARKER_UNSURE_JS__", json.dumps(marker_unsure(28, 40)))
