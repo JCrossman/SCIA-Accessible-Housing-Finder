@@ -27,7 +27,7 @@ const STUBS = `
   window.markerClusterer = { MarkerClusterer: class { clearMarkers(){} addMarkers(){} } };
   window.google = { maps: {
     Map: function(){ return { addListener: noop, fitBounds: noop }; },
-    InfoWindow: function(){ return { setContent: noop, open: noop }; },
+    InfoWindow: function(){ return { setContent: noop, open: noop, addListener: noop }; },
     LatLngBounds: function(){ return { extend: noop }; },
     Marker: function(){ this.addListener = noop; },
     Size: function(){}, Point: function(){},

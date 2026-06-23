@@ -436,18 +436,122 @@ function esc(s){ return String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-// Street View uses the street ADDRESS (not raw coords) so Google places the
-// camera on the road in front of the property, not in the rear lane.
+// Street View thumbnail. Two improvements over a bare location lookup:
+//  (1) source=outdoor, so Google never returns an indoor business tour or a
+//      3rd-party 360 PhotoSphere as "the building". Those panoramas sit right on
+//      top of many addresses (especially dense Montreal) and otherwise show an
+//      interior hallway instead of the home's front. We still geocode the street
+//      ADDRESS (not raw coords) so the camera frames the front, not the rear lane.
+//  (2) When a 3rd-party / indoor 360 DOES exist nearby, offer it as an optional
+//      "View interior / other 360" toggle (enhanceStreetView, below). An interior
+//      view (hallway width, doorways, an inside ramp) is often more useful for
+//      accessibility than the facade -- shown clearly attributed and flagged as
+//      not proof of current accessibility (Art. 7).
+function svMapsLink(p){
+  return 'https://www.google.com/maps/search/?api=1&query='
+       + encodeURIComponent(p.q || (p.lat + ',' + p.lon));
+}
+function svStaticUrl(locParam){
+  return 'https://maps.googleapis.com/maps/api/streetview?size=280x160&fov=80&'
+       + locParam + '&key=' + encodeURIComponent(KEY);
+}
 function svElement(p){
   var q = encodeURIComponent(p.q || (p.lat + ',' + p.lon));
-  var link = 'https://www.google.com/maps/search/?api=1&query=' + q;
-  var img = 'https://maps.googleapis.com/maps/api/streetview?size=280x160&fov=80&location='
-          + q + '&key=' + KEY;
+  var outdoor = svStaticUrl('location=' + q + '&source=outdoor');
   var alt = 'Street View of ' + esc(p.address || 'this address');
-  return "<a href='" + link + "' target='_blank' rel='noopener' "
-       + "title='Open " + esc(p.address || 'this address') + " in Google Maps'>"
-       + "<img src='" + img + "' alt='" + alt + "' onerror='svImgFail(this)' "
-       + "style='margin-top:6px;border-radius:4px;display:block'></a>";
+  return "<div id='sv-box'>"
+       + "<a id='sv-link' href='" + svMapsLink(p) + "' target='_blank' rel='noopener' "
+       +   "title='Open " + esc(p.address || 'this address') + " in Google Maps'>"
+       +   "<img src='" + outdoor + "' alt='" + alt + "' onerror='svImgFail(this)' "
+       +     "style='margin-top:6px;border-radius:4px;display:block'></a>"
+       + "<div id='sv-extra' style='margin-top:4px'></div>"
+       + "</div>";
+}
+
+// One shared StreetViewService (part of the already-loaded Maps JS SDK).
+var _svService = null;
+function getSV(){
+  if (!_svService && window.google && google.maps && google.maps.StreetViewService)
+    _svService = new google.maps.StreetViewService();
+  return _svService;
+}
+// Run once a popup is in the DOM: look up nearby panoramas client-side (no extra
+// API plumbing, no CORS) and decide what to do with the thumbnail -- keep the
+// outdoor view, add an interior/other 360 toggle, show that 360 as the only
+// image, or fall back cleanly when there is no imagery at all.
+function enhanceStreetView(p){
+  var slot = document.getElementById('sv-extra');
+  if (!slot || slot.dataset.done) return;
+  slot.dataset.done = '1';
+  if (p.lat == null || p.lon == null) return;
+  var svc = getSV();
+  if (!svc || !google.maps.StreetViewSource) return;  // SDK lacks Street View (e.g. test stub)
+  var loc = {lat: p.lat, lng: p.lon};
+  var SRC = google.maps.StreetViewSource, OK = google.maps.StreetViewStatus.OK;
+  var res = {outdoor: undefined, alt: undefined};
+  function join(){
+    if (res.outdoor === undefined || res.alt === undefined || !slot.isConnected) return;
+    applyStreetView(slot, p, res.outdoor, res.alt);
+  }
+  // Is there outdoor imagery here at all? (radius is generous to avoid a false
+  // "no imagery" when the address geocoded a little off the panorama.)
+  svc.getPanorama({location: loc, radius: 100, source: SRC.OUTDOOR}, function(d, st){
+    res.outdoor = (st === OK); join();
+  });
+  // What is the nearest panorama of ANY kind? A non-Google one is the indoor /
+  // 3rd-party 360 (business tour, PhotoSphere, city collection).
+  svc.getPanorama({location: loc, radius: 50, source: SRC.DEFAULT}, function(d, st){
+    var copy = (st === OK && d && d.copyright) ? d.copyright : '';
+    var pano = (st === OK && d && d.location) ? d.location.pano : '';
+    res.alt = (pano && !/google/i.test(copy)) ? {pano: pano, copyright: copy} : null;
+    join();
+  });
+}
+function svAttribLine(copyright){
+  return "<div style='color:#555;font-size:11px;margin-top:2px'>"
+       + "Third-party interior / other view " + esc(copyright || '')
+       + " \\u2014 not proof of current accessibility</div>";
+}
+function applyStreetView(slot, p, outdoorExists, alt){
+  var box = document.getElementById('sv-box');
+  var img = box ? box.querySelector('img') : null;
+  if (!img) return;
+  if (!outdoorExists && !alt){
+    // No panorama of any kind -> a clean line, not Google's grey "no imagery" tile.
+    box.innerHTML = "<div style='margin-top:6px;color:#555;font-size:12.5px'>"
+      + "No Street View imagery at this spot. "
+      + "<a href='" + svMapsLink(p) + "' target='_blank' rel='noopener'>Open in Google Maps</a></div>";
+    return;
+  }
+  if (!outdoorExists && alt){
+    // Only a 3rd-party / indoor 360 exists here -> show it (clearly attributed).
+    img.src = svStaticUrl('pano=' + encodeURIComponent(alt.pano));
+    img.alt = 'Interior / other 360-degree view of ' + (p.address || 'this address');
+    slot.innerHTML = svAttribLine(alt.copyright);
+    return;
+  }
+  if (alt){
+    // Outdoor shown by default; offer the interior / other 360 as a toggle.
+    var outdoorSrc = img.getAttribute('src');
+    var interiorSrc = svStaticUrl('pano=' + encodeURIComponent(alt.pano));
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'btn';
+    btn.style.cssText = 'margin-top:2px;font-size:12px;padding:4px 8px';
+    var attrib = document.createElement('div');
+    var showing = false;
+    function render(){
+      btn.textContent = showing ? 'Show outdoor view' : 'View interior / other 360\\u00b0';
+      btn.setAttribute('aria-pressed', showing ? 'true' : 'false');
+      img.src = showing ? interiorSrc : outdoorSrc;
+      img.alt = (showing ? 'Interior / other 360-degree view of ' : 'Street View of ')
+              + (p.address || 'this address');
+      attrib.innerHTML = showing ? svAttribLine(alt.copyright) : '';
+    }
+    btn.addEventListener('click', function(){ showing = !showing; render(); });
+    slot.appendChild(btn);
+    slot.appendChild(attrib);
+    render();
+  }
 }
 
 // "Check availability" links (GitHub issue #2, Option A): per-property searches
@@ -500,6 +604,12 @@ window.initMap = function(){
     streetViewControl: true, fullscreenControl: false
   });
   var info = new google.maps.InfoWindow({maxWidth: 300});
+  // Once a popup's DOM is attached, upgrade its Street View thumbnail
+  // (outdoor by default, with an optional interior/other 360 -- see svElement).
+  var currentPoint = null;
+  info.addListener('domready', function(){
+    if (currentPoint) enhanceStreetView(currentPoint);
+  });
   var bounds = new google.maps.LatLngBounds();
   var allMarkers = points.map(function(p){
     var pos = {lat: p.lat, lng: p.lon};
@@ -517,6 +627,7 @@ window.initMap = function(){
     m._y0 = p.y0; m._y1 = p.y1;   // earliest / latest permit year (or null)
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
+      currentPoint = p;
       info.setContent(p.popup.replace('__SV__', svElement(p))
                              .replace('__AVAIL__', availabilityHtml(p)));
       info.open(map, m);
