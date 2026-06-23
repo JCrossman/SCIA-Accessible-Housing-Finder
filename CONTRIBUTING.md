@@ -16,11 +16,12 @@ All scripts read and write the `data/` folder and are run from the repo root,
 in order:
 
 ```bash
-python scripts/edmonton_accessibility_query.py        # 1. query Edmonton Open Data
-python scripts/merge_residential_accessibility.py     # 2. merge + dedupe residential
-python scripts/geocode_residential_accessibility.py   # 3. add coordinates
-python scripts/export_unmatched_addresses.py          # 4. (optional) export gaps
-python scripts/generate_accessibility_map.py          # 5. build the map
+python scripts/accessibility_query.py        city     # 1. query a city's Open Data
+python scripts/merge_residential_accessibility.py city # 2. merge + dedupe per cut
+python scripts/geocode_residential_accessibility.py city # 3. add coordinates
+python scripts/classify_completion.py        city     # 4. completion + drop abandoned
+python scripts/export_unmatched_addresses.py city     # 5. (optional) export gaps
+python scripts/generate_accessibility_map.py          # 6. build the combined map
 ```
 
 When you change a script, re-run the affected steps and commit the regenerated

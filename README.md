@@ -210,7 +210,7 @@ pip install -r requirements.txt
 
 # Per city (repeat for each city slug in place of edmonton):
 # 1. Query Open Data and write the raw + residential + commercial CSVs
-python scripts/edmonton_accessibility_query.py edmonton
+python scripts/accessibility_query.py edmonton
 
 # 2. Merge building + development permits into one address list per cut
 python scripts/merge_residential_accessibility.py edmonton residential  # homes
@@ -221,11 +221,15 @@ python scripts/merge_residential_accessibility.py edmonton commercial   # busine
 python scripts/geocode_residential_accessibility.py edmonton residential
 python scripts/geocode_residential_accessibility.py edmonton commercial
 
-# 4. (optional) Export the addresses that couldn't be geocoded
+# 4. Label completion status + drop abandoned permits (after geocode)
+python scripts/classify_completion.py edmonton residential
+python scripts/classify_completion.py edmonton commercial
+
+# 5. (optional) Export the addresses that couldn't be geocoded
 python scripts/export_unmatched_addresses.py edmonton
 
 # Once per refresh, after all cities are processed:
-# 5. Build the single combined map (reads every city's merged lists)
+# 6. Build the single combined map (reads every city's merged lists)
 python scripts/generate_accessibility_map.py
 ```
 

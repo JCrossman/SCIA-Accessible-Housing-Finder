@@ -127,10 +127,10 @@ COMPLETION_ORDER = [
 ]
 
 
-def completion_badge(comp):
-    label, color, glyph = COMPLETION_LABEL.get(comp, COMPLETION_LABEL["unknown"])
-    return ("<div style='font-size:12px;margin-top:3px;color:%s'>%s%s</div>"
-            % (color, glyph, label))
+def _yr(s):
+    """First 4 chars of a date string as an int year, or None."""
+    s = (s or "")[:4]
+    return int(s) if s.isdigit() else None
 
 
 def build_points(csv_path, ptype, city, cfg):
@@ -155,10 +155,6 @@ def build_points(csv_path, ptype, city, cfg):
                 addr_q += cfg["streetview_suffix"]
             d0 = r.get("earliest_permit_date", "")[:10]
             d1 = r.get("latest_permit_date", "")[:10]
-
-            def _yr(s):
-                s = (s or "")[:4]
-                return int(s) if s.isdigit() else None
 
             # "Explicit wheelchair" = the word appears in the matched keywords
             # or in the permit description shown in the popup.
@@ -189,7 +185,6 @@ def build_points(csv_path, ptype, city, cfg):
                 "desc": r.get("sample_description", ""),
                 "source": r.get("coord_source", ""),
                 "completion": r.get("completion", "unknown") or "unknown",
-                "cbadge": completion_badge(r.get("completion", "unknown") or "unknown"),
             })
     return points
 
@@ -214,7 +209,7 @@ def popup_html(p):
         parts.append("<b>Keywords:</b> %s<br>" % html.escape(p["keywords"]))
     parts.append("<b>Permits:</b> %s (%s building, %s development)<br>"
                  % (p["total"], p["n_b"], p["n_d"]))
-    parts.append(p.get("cbadge", ""))
+    parts.append("__CBADGE__")  # completion badge, built client-side from COMPLETION_BADGE
     if p["d0"]:
         span = p["d0"] if p["d0"] == p["d1"] else "%s &ndash; %s" % (p["d0"], p["d1"])
         parts.append("<b>Dates:</b> %s<br>" % span)
@@ -261,6 +256,9 @@ def main():
     present_comp = {p["completion"] for p in points}
     visible_completion = [c for c in COMPLETION_ORDER if c[0] in present_comp]
     completion_json = json.dumps(visible_completion)
+    # [label, colour, glyph] per state -> the JS builds each badge (so the badge
+    # HTML isn't baked into every point's data).
+    completion_badge_json = json.dumps({k: list(v) for k, v in COMPLETION_LABEL.items()})
 
     html_doc = """<!DOCTYPE html>
 <html lang="en">
@@ -447,6 +445,11 @@ var points = __DATA__;
 var CATEGORIES = __CATEGORIES__;  // [[id, label], ...] for the feature filter
 var CITIES = __CITIES__;          // [[slug, label], ...] cities present in data
 var COMPLETION = __COMPLETION__;  // [[id, label], ...] completion states present
+var COMPLETION_BADGE = __COMPLETION_BADGE__;  // id -> [label, colour, glyph]
+function completionBadge(comp){
+  var e = COMPLETION_BADGE[comp] || COMPLETION_BADGE['unknown'] || ['', '#666', ''];
+  return "<div style='font-size:12px;margin-top:3px;color:" + e[1] + "'>" + e[2] + e[0] + "</div>";
+}
 
 // localStorage can throw on file:// (e.g. Safari treats it as a unique
 // origin), so guard every access.
@@ -630,7 +633,8 @@ window.initMap = function(){
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
       currentPoint = p;
-      info.setContent(p.popup.replace('__SV__', svElement(p)));
+      info.setContent(p.popup.replace('__SV__', svElement(p))
+                             .replace('__CBADGE__', completionBadge(p.completion)));
       info.open(map, m);
     });
     return m;
@@ -743,7 +747,7 @@ window.initMap = function(){
         + "<span class='meta'>" + loc + "</span><br>"
         + "<span class='meta'>" + meta.join(' &middot; ') + "</span><br>"
         + "<a href='" + maps + "' target='_blank' rel='noopener'>Open in Google Maps / Street View &#8599;</a>"
-        + (p.cbadge || '')
+        + completionBadge(p.completion)
         + "</li>";
     }).join('');
     ul.innerHTML = html;
@@ -948,6 +952,7 @@ panelClose.onclick = function(){
     html_doc = html_doc.replace("__DATA__", data_json)
     html_doc = html_doc.replace("__CATEGORIES__", categories_json)
     html_doc = html_doc.replace("__COMPLETION__", completion_json)
+    html_doc = html_doc.replace("__COMPLETION_BADGE__", completion_badge_json)
     html_doc = html_doc.replace("__CITIES__", cities_json)
     html_doc = html_doc.replace("__MARKER_WC_JS__", json.dumps(marker_wheelchair(28, 40)))
     html_doc = html_doc.replace("__MARKER_UNSURE_JS__", json.dumps(marker_unsure(28, 40)))
