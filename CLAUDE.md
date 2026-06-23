@@ -88,9 +88,14 @@ Outputs go to `data/<city>/`.
    Address Points (CKAN). Calgary/Vancouver: no-op (permits already carry
    coords), just records `coord_source`. Dispatched by `cfg["geocode"]["needed"]`
    and `["platform"]`.
-4. `export_unmatched_addresses.py <city>` — export addresses still missing
+4. `classify_completion.py <city> [cut]` — add a per-address `completion` label
+   (completed | issued | unknown) from each city's permit status, and drop
+   addresses whose permits were all abandoned (cancelled/void/withdrawn/...).
+   Rules live in `BUILDING_STATUS` (cities.py); "Expired" is deliberately kept.
+   Runs **after** geocode (updates the merged CSV in place, preserving coords).
+5. `export_unmatched_addresses.py <city>` — export addresses still missing
    coordinates for manual review.
-5. `generate_accessibility_map.py` — build the **single combined** map
+6. `generate_accessibility_map.py` — build the **single combined** map
    (`data/accessibility_map.html`) reading every city's merged lists. Run once
    after all cities are processed.
 
@@ -245,17 +250,18 @@ complying — cite the article.
   Drive" matched `elevator` and flood-mitigation "lifted residence" matched
   `lift`; rather than a regex, Austin drops rows whose only keyword is `lift` via
   `weak_alone_keywords` — `lift` alone is ~99% noise there.)
-- **Coverage**: Edmonton homes 354/355, businesses 1,032/1,044 (geocoded);
-  Calgary 196/196 + 650/650 and Vancouver 520/522 + 738/741 (coords from
-  permits); Toronto 667/801 + 2,423/2,843 (~84%, geocoded against Address
+- **Coverage** (mapped/total addresses, after dropping abandoned permits —
+  see `classify_completion.py`): Edmonton homes 354/355, businesses 1,032/1,044
+  (geocoded); Calgary 195/195 + 639/639 and Vancouver 520/522 + 738/741 (coords
+  from permits); Toronto 635/755 + 2,283/2,677 (~84%, geocoded against Address
   Points; queries Active + Cleared-since-2017 datastores AND the pre-2017 Cleared
-  flat CSV via download). Mississauga 143/167 and Markham 200/111 carry geometry
-  coords; Ottawa 114/243 (yearly Excel 2011–2024, geocoded ~84-89% against
-  Municipal Address Points); Montréal 2,734/2,786 homes + 1,105/1,140 businesses
-  (~98%/97%, coords from permits); Austin 759/828 homes + 1,176/1,486 businesses
-  (~92%/79%, Socrata coords from permits, after excluding "Driveway / Sidewalks"
-  curb ramps and dropping `lift`-only noise — see `exclude` / `weak_alone_keywords`).
-  Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
+  flat CSV via download); Mississauga 143/143 + 167/167 and Markham 195/204 +
+  100/136 (geometry coords); Ottawa 114/128 + 243/289 (yearly Excel 2011–2024,
+  geocoded ~84-89% against Municipal Address Points); Montréal 2,734/2,786 homes
+  + 1,105/1,140 businesses (~98%/97%, coords from permits); Austin 721/787 homes
+  + 1,133/1,417 businesses (~92%/80%, Socrata coords from permits, after excluding
+  "Driveway / Sidewalks" curb ramps and dropping `lift`-only noise — see `exclude`
+  / `weak_alone_keywords`). Any unmatched rows are in `data/<city>/unmatched_addresses.csv`.
 - **Businesses are a weaker signal than homes**: commercial accessibility is
   largely *required* by building codes, and some matches are freight lifts /
   loading ramps (warehouses, parkades), not human access. Keep the "worth

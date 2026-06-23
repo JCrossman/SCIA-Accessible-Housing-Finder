@@ -84,7 +84,15 @@ an optional interior / other 360° view where one exists).
   map (and the Feature filter) to just the blue-pin (confirmed-wheelchair) ones.
 - **Map / Satellite** toggle (top-left) for satellite imagery.
 - **Filter** panel to narrow by feature (ramps, lifts, wheelchair access,
-  step-free entries, or general barrier-free work) and by **permit year**.
+  step-free entries, or general barrier-free work), by **permit year**, and by
+  **completion status**.
+- **Completion status** — every popup and list row is labelled **Completed**
+  (the city signed off the permit), **Issued — completion not confirmed**, or
+  **Status not published** (the city records no status: Vancouver, Ottawa,
+  Montréal, most of Edmonton). The Filter panel can show only the states you
+  want. "Status not published" is its own bucket — homes we can't verify stay
+  visible by default and only hide if you deliberately untick it, so the map
+  never implies completion it can't back up.
 - **View as list** — a keyboard- and screen-reader-friendly text version of the
   same places.
 
@@ -108,15 +116,18 @@ an optional interior / other 360° view where one exists).
 | City | Homes (mapped) | Businesses / public places (mapped) |
 | --- | --- | --- |
 | **Edmonton** | 355 (354 mapped, 100%) | 1,044 (1,032 mapped, 99%) |
-| **Calgary** | 196 (196 mapped, 100%) | 650 (650 mapped, 100%) |
+| **Calgary** | 195 (195 mapped, 100%) | 639 (639 mapped, 100%) |
 | **Vancouver** | 522 (520 mapped, 100%) | 741 (738 mapped, 100%) |
-| **Toronto** | 801 (667 mapped, 83%) | 2,843 (2,423 mapped, 85%) |
+| **Toronto** | 755 (635 mapped, 84%) | 2,677 (2,283 mapped, 85%) |
 | **Mississauga** | 143 (143 mapped, 100%) | 167 (167 mapped, 100%) |
-| **Markham** | 211 (200 mapped, 95%) | 147 (111 mapped, 76%) |
+| **Markham** | 204 (195 mapped, 96%) | 136 (100 mapped, 74%) |
 | **Ottawa** (2011–2024) | 128 (114 mapped, 89%) | 289 (243 mapped, 84%) |
 | **Montréal** | 2,786 (2,734 mapped, 98%) | 1,140 (1,105 mapped, 97%) |
-| **Austin** (TX, US) | 828 (759 mapped, 92%) | 1,486 (1,176 mapped, 79%) |
-| **Total on the map** | **5,687 homes** | **7,645 businesses** — **~13,332 places** total |
+| **Austin** (TX, US) | 787 (721 mapped, 92%) | 1,417 (1,133 mapped, 80%) |
+| **Total on the map** | **5,611 homes** | **7,440 businesses** — **~13,051 places** total |
+
+Counts exclude permits that were cancelled, voided, withdrawn, or revoked (work
+that demonstrably didn't proceed), where the city publishes a permit status.
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
