@@ -226,6 +226,7 @@ _RES_BUILDING = {
     "edmonton": _res_building_edmonton,
     "calgary": _res_building_fieldmatch,
     "vancouver": _res_building_fieldmatch,
+    "austin": _res_building_fieldmatch,   # permit_class_mapped in {"Residential"}
     "toronto": _res_building_toronto,
     "textscan": _res_building_textscan,
 }
@@ -233,6 +234,7 @@ _RES_DEVELOPMENT = {
     "edmonton": _res_development_edmonton,
     "calgary": _res_development_calgary,
     "vancouver": _desc_says_residential,  # no dev dataset; never invoked
+    "austin": _desc_says_residential,     # no dev dataset; never invoked
     "toronto": _desc_says_residential,    # no dev dataset; never invoked
     "textscan": _desc_says_residential,   # ArcGIS cities are building-only
 }
@@ -262,6 +264,19 @@ def build_where(text_fields):
     for field in text_fields:
         field_clauses.append(soql_like_clause(field, all_variants))
     return " OR ".join(field_clauses)
+
+
+def _apply_exclude(where, exclude):
+    """AND a NOT-IN filter onto a Socrata 'where' to drop permit categories that
+    match a keyword but are not building accessibility -- e.g. Austin's
+    'Driveway / Sidewalks' permits, which are curb/driveway ramps, not home
+    access (~63% of Austin's keyword-matching residential rows otherwise). Rows
+    whose field is NULL are kept (NOT IN would otherwise drop them)."""
+    if not exclude:
+        return where
+    field = exclude["field"]
+    vals = ", ".join("'%s'" % str(v).replace("'", "''") for v in exclude["values"])
+    return "(%s) AND (%s IS NULL OR %s NOT IN (%s))" % (where, field, field, vals)
 
 
 def fetch_all(url, where):
@@ -652,7 +667,8 @@ def fetch_permits(cfg, which, text_fields):
     dispatching on the city's open-data platform."""
     platform = cfg.get("platform", "socrata")
     if platform == "socrata":
-        return fetch_all(dataset_url(cfg, which), build_where(text_fields))
+        where = _apply_exclude(build_where(text_fields), cfg[which].get("exclude"))
+        return fetch_all(dataset_url(cfg, which), where)
     if platform == "opendatasoft":
         return ods_fetch(cfg, which, text_fields)
     if platform == "ckan":
@@ -747,6 +763,17 @@ def main():
     # prefilter; SoQL 'like' is exact substring (no change), but OpenDataSoft's
     # text analyzer over-matches, so this drops those false positives.
     building = [r for r in building if classify_keywords(r, b_text)]
+    # Some keywords are too weak to count on their own for a given city. Austin's
+    # "lift" is ~99% noise standalone -- house-raising ("lifted residence", common
+    # in flood-prone Austin), street names ("Elevator Drive"), forklifts -- so a
+    # row is dropped if its ONLY matched keyword(s) are in weak_alone_keywords. A
+    # row that also matches ramp/wheelchair/etc. is kept.
+    weak_alone = set(b_cfg.get("weak_alone_keywords", []))
+    if weak_alone:
+        n0 = len(building)
+        building = [r for r in building if not (classify_keywords(r, b_text) <= weak_alone)]
+        print("  dropped %d rows whose only keyword(s) were weak-alone %s"
+              % (n0 - len(building), sorted(weak_alone)))
     strip_fields(building, b_cfg.get("drop_fields", []))  # drop unused name cols
     write_csv(path("building_permits_accessibility.csv"), building)
 

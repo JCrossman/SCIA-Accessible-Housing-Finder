@@ -2,17 +2,17 @@
 
 ![Accessible Housing Finder — mapping Edmonton and Calgary homes with accessibility features. Built for Spinal Cord Injury Alberta using City of Edmonton and City of Calgary open data.](docs/social-preview.png)
 
-A tool that builds a database and interactive map of Canadian properties
+A tool that builds a database and interactive map of North American properties
 (**Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa, and
-Montréal**) with **accessibility-related building work** — ramps,
-lifts/elevators, wheelchair access, barrier-free features, and similar — to
-support [Spinal Cord Injury Alberta](https://sci-ab.ca/)'s accessible housing
-work.
+Montréal** in Canada, plus **Austin, Texas** in the US) with
+**accessibility-related building work** — ramps, lifts/elevators, wheelchair
+access, barrier-free features, and similar — to support [Spinal Cord Injury
+Alberta](https://sci-ab.ca/)'s accessible housing work.
 
 All data comes from each city's **free public Open Data**: **Socrata** (Edmonton,
-Calgary), **OpenDataSoft** (Vancouver), **CKAN** (Toronto, Montréal), **Esri
-ArcGIS REST** (Mississauga, Markham), and **downloadable spreadsheets** (Ottawa's
-yearly Excel permit files, geocoded against Ottawa's ArcGIS address points).
+Calgary, Austin), **OpenDataSoft** (Vancouver), **CKAN** (Toronto, Montréal),
+**Esri ArcGIS REST** (Mississauga, Markham), and **downloadable spreadsheets**
+(Ottawa's yearly Excel permit files, geocoded against Ottawa's ArcGIS address points).
 Montréal's permit descriptions are in **French**, so the keyword list includes
 French accessibility terms (e.g. *rampe d'accès*, *fauteuil roulant*,
 *ascenseur*, *mobilité réduite*). No API key is
@@ -75,8 +75,8 @@ an optional interior / other 360° view where one exists).
 **Controls:**
 
 - **City** toggle — *All cities* by default; narrow to any single city
-  (Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa, or
-  Montréal).
+  (Edmonton, Calgary, Vancouver, Toronto, Mississauga, Markham, Ottawa,
+  Montréal, or Austin).
 - **Homes / Businesses / Both** toggle — homes by default; switch to commercial
   & public places (offices, shops, restaurants, rec centres, clinics, schools,
   etc.) or show both.
@@ -115,7 +115,8 @@ an optional interior / other 360° view where one exists).
 | **Markham** | 211 (200 mapped, 95%) | 147 (111 mapped, 76%) |
 | **Ottawa** (2011–2024) | 128 (114 mapped, 89%) | 289 (243 mapped, 84%) |
 | **Montréal** | 2,786 (2,734 mapped, 98%) | 1,140 (1,105 mapped, 97%) |
-| **Total on the map** | **4,928 homes** | **6,469 businesses** — **~11,397 places** total |
+| **Austin** (TX, US) | 828 (759 mapped, 92%) | 1,486 (1,176 mapped, 79%) |
+| **Total on the map** | **5,687 homes** | **7,645 businesses** — **~13,332 places** total |
 
 These accessibility-keyword permits are a tiny slice of each city's hundreds of
 thousands of building + development permits — and a *floor*, since many real
