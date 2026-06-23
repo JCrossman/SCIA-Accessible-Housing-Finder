@@ -61,7 +61,9 @@ parking-garage ramp) — we'll refine the list over time.
 **[View the interactive map →](https://jcrossman.github.io/SCIA-Accessible-Housing-Finder/)**
 
 No setup needed — just open the link. Click any dot for the address, the
-accessibility work done, permit history, and a Street View photo.
+accessibility work done, permit history, an outdoor Street View photo (with an
+optional interior / other 360° view where one exists), and one-click links to
+check whether the home is currently for sale or for rent.
 
 **Two pin types:**
 
@@ -86,6 +88,12 @@ accessibility work done, permit history, and a Street View photo.
   step-free entries, or general barrier-free work) and by **permit year**.
 - **View as list** — a keyboard- and screen-reader-friendly text version of the
   same places.
+- **Check availability** — every popup (and each row of the list view) has
+  one-click search links to see whether that exact address is currently listed
+  **for sale** (Realtor.ca) or **for rent** (RentFaster, Kijiji), plus a general
+  web search. These are address-scoped searches — no scraping, no API key — and a
+  permit is only a *worth-checking* signal, not proof the home is listed or still
+  accessible today.
 
 > **Note on businesses:** commercial accessibility is largely *required* by the
 > Alberta Building Code, so a business permit is a weaker signal than a home
@@ -97,8 +105,10 @@ accessibility work done, permit history, and a Street View photo.
 
 - **An interactive map** (`data/accessibility_map.html`) — open in any
   browser. Each pin is a property; click it for the address, neighbourhood,
-  what accessibility work was done, permit counts, dates, and a Street View
-  photo of the front of the building.
+  what accessibility work was done, permit counts, dates, an outdoor Street
+  View photo of the building front (with an optional interior / other 360° view
+  where available), and links to check whether it is currently for sale or for
+  rent.
 - **Spreadsheets (CSV)** you can open in Excel — see [Data files](#data-files).
 
 ## Results at a glance
@@ -222,13 +232,16 @@ All scripts read/write the `data/` folder (per-city subfolders).
 1. Open `data/accessibility_map.html` in a browser.
 2. Click **Enter Google key to load map**, paste your Google Maps API key once
    (it is stored in your browser only — never committed or shared).
-3. Click any dot to see the property details and a Street View photo.
+3. Click any dot to see the property details and a Street View photo (outdoor by
+   default; where a third-party interior / other 360° panorama exists, a button
+   lets you switch to it).
 
 **Accessible alternative:** because an interactive pin map is hard to use with a
 keyboard or screen reader, the panel includes a **"View as list"** button that
 opens a keyboard- and screen-reader-friendly text list of the same homes
-(address, features, years, and a link to each in Google Maps / Street View). The
-list reflects whatever filters are active.
+(address, features, years, a link to each in Google Maps / Street View, and the
+same *check availability* search links). The list reflects whatever filters are
+active.
 
 The map uses the **Google Maps JavaScript API**, so the key needs both of these
 enabled in the [Google Cloud Console](https://console.cloud.google.com/):
