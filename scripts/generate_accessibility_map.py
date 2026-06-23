@@ -200,7 +200,6 @@ def popup_html(p):
         parts.append("<div style='color:#888;font-size:11px;margin-top:4px'>"
                      "Approximate location (matched by address)</div>")
     parts.append("__SV__")  # filled in by JS (link, or thumbnail if key present)
-    parts.append("__AVAIL__")  # filled in by JS: "check availability" search links
     parts.append("</div>")
     return "".join(parts)
 
@@ -554,40 +553,6 @@ function applyStreetView(slot, p, outdoorExists, alt){
   }
 }
 
-// "Check availability" links (GitHub issue #2, Option A): per-property searches
-// for whether the home is *currently* for sale or rent. Honesty (Art. 7): a past
-// accessibility permit is not proof a home is still accessible or available now,
-// so these are a "worth checking" signal, not a listing. No API and no scraping
-// -- Realtor.ca / RentFaster / Kijiji have no stable public address-search URL
-// (Realtor.ca is a GeoId/lat-long map app, the others use SEO path URLs), so we
-// scope a Google search to each site by exact address, plus a plain web search.
-// That answers "is THIS address listed?", works in every province, and survives
-// the listing sites changing their own URLs. Same helper feeds the map popup and
-// the accessible list view so the two never drift apart.
-function availSearch(q){
-  return 'https://www.google.com/search?q=' + encodeURIComponent(q);
-}
-function availLink(href, label){
-  return "<a href='" + href + "' target='_blank' rel='noopener nofollow' "
-       + "style='color:#1f78b4'>" + label + "</a>";
-}
-function availabilityHtml(p){
-  var addr = (p.q || p.address || '').trim();
-  if (!addr) return '';
-  return "<div style='margin-top:8px;font-size:12.5px;line-height:1.9'>"
-    + "<b>Check availability</b> "
-    + "<span style='color:#555;font-size:11.5px'>"
-    + "&ndash; a permit is not proof a home is for sale or rent now</span><br>"
-    + availLink(availSearch('site:realtor.ca ' + addr), 'For sale (Realtor.ca)')
-    + " &middot; "
-    + availLink(availSearch('site:rentfaster.ca ' + addr), 'For rent (RentFaster)')
-    + " &middot; "
-    + availLink(availSearch('site:kijiji.ca ' + addr), 'Kijiji')
-    + " &middot; "
-    + availLink(availSearch(addr + ' for sale OR for rent'), 'Web search')
-    + "</div>";
-}
-
 // Google Maps needs the key to load the base map itself, so load the API
 // script dynamically once we have a key.
 function loadGoogle(){
@@ -628,8 +593,7 @@ window.initMap = function(){
     m._p = p;                      // backing record for the text list
     m.addListener('click', function(){
       currentPoint = p;
-      info.setContent(p.popup.replace('__SV__', svElement(p))
-                             .replace('__AVAIL__', availabilityHtml(p)));
+      info.setContent(p.popup.replace('__SV__', svElement(p)));
       info.open(map, m);
     });
     return m;
@@ -738,7 +702,6 @@ window.initMap = function(){
         + "<span class='meta'>" + loc + "</span><br>"
         + "<span class='meta'>" + meta.join(' &middot; ') + "</span><br>"
         + "<a href='" + maps + "' target='_blank' rel='noopener'>Open in Google Maps / Street View &#8599;</a>"
-        + availabilityHtml(p)
         + "</li>";
     }).join('');
     ul.innerHTML = html;
